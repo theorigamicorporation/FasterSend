@@ -2066,6 +2066,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@iconify-json/ic@npm:^1.2.4":
+  version: 1.2.4
+  resolution: "@iconify-json/ic@npm:1.2.4"
+  dependencies:
+    "@iconify/types": "npm:*"
+  checksum: 10c0/b0e4d01a1b259defb391412b263ac4adb80d7b87161a0aac1a14fa748ee6e805a855f3e5635d66beb896082d0a4ee160fb3365fdcc44f2cf54687e2585922fa4
+  languageName: node
+  linkType: hard
+
+"@iconify-json/material-symbols-light@npm:^1.2.96":
+  version: 1.2.96
+  resolution: "@iconify-json/material-symbols-light@npm:1.2.96"
+  dependencies:
+    "@iconify/types": "npm:*"
+  checksum: 10c0/c14de852590f5913a20b296c87c3b0745f3df7c8136c4074fdd8e65914ffdbca850ba565a42cf4b26ff177247cbf5ad20caa7abad2298f5f127991904f4f31a2
+  languageName: node
+  linkType: hard
+
+"@iconify-json/material-symbols@npm:^1.2.95":
+  version: 1.2.95
+  resolution: "@iconify-json/material-symbols@npm:1.2.95"
+  dependencies:
+    "@iconify/types": "npm:*"
+  checksum: 10c0/0018ed65d14d56d7cb1447f024a179ca430254017080cc65fe2a5be074763fe951a8e9da6e553fa681bca5d7cca81c23469a11cf5859554b030f0eb5db86f91f
+  languageName: node
+  linkType: hard
+
+"@iconify-json/solar@npm:^1.2.13":
+  version: 1.2.13
+  resolution: "@iconify-json/solar@npm:1.2.13"
+  dependencies:
+    "@iconify/types": "npm:*"
+  checksum: 10c0/41f0b7cbe5b2ac4ed40228847bcf82a104a561deb383d947daba3ed87f6ae54bcf4baa7b247aba3ea46f70ca5a60dfa7b185506c543c42a03cd1146f6218effa
+  languageName: node
+  linkType: hard
+
 "@iconify/collections@npm:^1.0.727":
   version: 1.0.754
   resolution: "@iconify/collections@npm:1.0.754"
@@ -8014,6 +8050,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "fastersend@workspace:."
   dependencies:
+    "@iconify-json/ic": "npm:^1.2.4"
+    "@iconify-json/material-symbols": "npm:^1.2.95"
+    "@iconify-json/material-symbols-light": "npm:^1.2.96"
+    "@iconify-json/solar": "npm:^1.2.13"
     "@isaacs/ttlcache": "npm:^2.1.5"
     "@nuxt/icon": "npm:^2.5.1"
     "@nuxtjs/color-mode": "npm:^4.0.1"
