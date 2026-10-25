@@ -103,11 +103,13 @@ const nodes = computed(calcTreeNodes)
       /></template>
       <template #default="item" class="flex flex-row">
         <span class="break-all">{{ item.node.label }}</span>
-        <span v-if="item.node.data != -1" class="ml-1">{{ humanFileSize(item.node.data) }}</span>
+        <span v-if="item.node.data != -1" class="fs-muted ml-2 text-xs">{{
+          humanFileSize(item.node.data)
+        }}</span>
       </template>
     </Tree>
-    <p class="text-right">
-      {{ selectedFileCount }} / {{ totalFileCount }} - {{ humanFileSize(totalSize) }}
+    <p class="fs-muted mt-2 text-right text-xs tabular-nums">
+      {{ selectedFileCount }} / {{ totalFileCount }} · {{ humanFileSize(totalSize) }}
     </p>
   </div>
 </template>

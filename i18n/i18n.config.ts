@@ -43,7 +43,8 @@ export default defineI18nConfig(() => ({
         syncDir: 'Folder synchronization',
         selectDir: 'Select folder',
         toHome: 'Back to home',
-        terminate: 'Terminate'
+        terminate: 'Terminate',
+        randomize: 'New random name'
       },
       hint: {
         noModernFileAPIWarn:
@@ -78,7 +79,112 @@ export default defineI18nConfig(() => ({
         dirIsEmpty: 'The folder is empty',
         fileNotFound: 'File not found',
         selectAtLeastOneFile: 'Please select at least one file',
-        disconnected: 'Disconnected'
+        disconnected: 'Disconnected',
+        copyFailed: 'Could not copy, please copy it manually'
+      },
+      nav: {
+        profile: 'Profile',
+        theme: 'Toggle theme',
+        help: 'Help'
+      },
+      hero: {
+        badge: 'Peer-to-peer file transfer',
+        title: 'Send files straight to another device',
+        subtitle:
+          'No uploads and no accounts. Files go directly from browser to browser over an encrypted connection.',
+        chipDirect: 'Direct transfer',
+        chipEncrypted: 'Encrypted in transit',
+        chipNoStorage: 'Nothing stored on the server'
+      },
+      send: {
+        title: 'Send',
+        desc: 'Choose what to share and you get a 6-digit code.',
+        choose: 'Choose a file',
+        drop: 'or drop it anywhere on this page',
+        unsupported: 'Folders need Chrome or Edge on https.'
+      },
+      receive: {
+        title: 'Receive',
+        desc: "Enter the 6-digit code from the sender's screen.",
+        scan: "Or scan the sender's QR code with your phone camera."
+      },
+      steps: {
+        title: 'How it works',
+        s1t: 'Pick a file',
+        s1d: 'Choose a file or folder and you get a 6-digit code.',
+        s2t: 'Share the code',
+        s2d: 'The recipient types the code or scans the QR code.',
+        s3t: 'Transfer directly',
+        s3d: 'After you approve, data flows straight between the two browsers.'
+      },
+      senderPage: {
+        yourCode: 'Your code',
+        shareHint: 'Give this code to the recipient, or let them scan the QR code.',
+        waiting: 'Waiting for the recipient',
+        keepOpen: 'Keep this tab open until the transfer finishes.',
+        copyCode: 'Copy code',
+        files: '{n} file | {n} files',
+        wantsToReceive: '{name} wants to receive your files',
+        approveHint: 'Only approve if you know who this is.',
+        allow: 'Allow',
+        decline: 'Decline',
+        sendingTo: 'Sending to',
+        sendMore: 'Send something else',
+        cancel: 'Cancel'
+      },
+      recipientPage: {
+        from: 'From',
+        waitingApproval: 'Waiting for the sender to approve',
+        waitingApprovalHint: 'The transfer starts as soon as the sender allows it.',
+        ready: 'Ready to receive',
+        current: 'Current file',
+        receiveMore: 'Receive something else',
+        folder: 'Folder'
+      },
+      help: {
+        title: 'Help',
+        tabQuick: 'Quick start',
+        tabHow: 'How it works',
+        tabPrivacy: 'Privacy',
+        q1t: 'Choose what to send',
+        q1d: 'Click Send file, or drop a file anywhere on the page. Folders work in Chrome and Edge.',
+        q2t: 'Share the code',
+        q2d: 'You get a 6-digit code, a QR code and a link. Send any of them to the recipient.',
+        q3t: 'Approve the recipient',
+        q3d: 'When they connect you see their name. Click Allow to start. You can turn on auto-approve in your profile.',
+        q4t: 'Receive',
+        q4d: 'The recipient clicks Receive and picks where to save. Keep both tabs open until it finishes.',
+        tipsTitle: 'Good to know',
+        tip1: 'On the same network the transfer stays local, which is usually much faster.',
+        tip2: 'Firefox, and Chrome on plain http, cannot send folders and can receive at most 1 GB.',
+        tip3: 'Behind strict firewalls a relay server may be needed. Ask the admin of this site.',
+        how1t: 'Direct connection',
+        how1d:
+          'FasterSend uses WebRTC to connect the two browsers directly and picks the fastest route automatically.',
+        how2t: 'The server only introduces',
+        how2d:
+          'The server exchanges the connection details between both sides. File data never passes through it.',
+        how3t: 'Relay fallback',
+        how3d:
+          'If no direct route exists, traffic can go through a TURN relay. It stays encrypted the whole way.',
+        how4t: 'Writing to disk',
+        how4d:
+          'Browsers with the File System Access API write straight to disk, without a size limit, and can receive folders.',
+        p1t: 'No accounts, no tracking',
+        p1d: 'There is no sign-up, no analytics and no third-party scripts.',
+        p2t: 'Files are never stored',
+        p2d: 'Files go directly between the two browsers and never touch the server.',
+        p3t: 'Encrypted in transit',
+        p3d: 'WebRTC encrypts all data with DTLS.',
+        p4t: 'Your IP is visible to the other side',
+        p4d: 'A direct connection reveals your public IP address to the person you transfer with. Only transfer with people you trust.',
+        ipLabel: 'Your IP as this site sees it',
+        responsibility: 'You are responsible for the content you send.'
+      },
+      footer: {
+        source: 'Source code',
+        basedOn: 'Based on',
+        by: 'by'
       }
     },
     de: {
@@ -122,12 +228,14 @@ export default defineI18nConfig(() => ({
         syncDir: 'Ordner synchronisieren',
         selectDir: 'Ordner auswählen',
         toHome: 'Zur Startseite',
-        terminate: 'Abbrechen'
+        terminate: 'Abbrechen',
+        randomize: 'Neuer Zufallsname'
       },
       hint: {
         noModernFileAPIWarn:
           'Hinweis: Ihr Browser unterstützt die modernen Dateizugriffs-APIs nicht, daher sind `Ordner synchronisieren` und `Ordner senden` nicht verfügbar. Außerdem ist der Empfang auf 1 GB begrenzt.',
-        toManyPeople: 'Derzeit sind zu viele Personen verbunden, bitte versuchen Sie es später erneut',
+        toManyPeople:
+          'Derzeit sind zu viele Personen verbunden, bitte versuchen Sie es später erneut',
         serverError: 'Der Dienst hat ein Problem, bitte versuchen Sie es später erneut',
         closeTheProxy:
           'Falls Sie einen Proxy verwenden, deaktivieren Sie ihn bitte und versuchen Sie es erneut',
@@ -157,7 +265,113 @@ export default defineI18nConfig(() => ({
         dirIsEmpty: 'Der Ordner ist leer',
         fileNotFound: 'Datei nicht gefunden',
         selectAtLeastOneFile: 'Bitte wählen Sie mindestens eine Datei',
-        disconnected: 'Verbindung getrennt'
+        disconnected: 'Verbindung getrennt',
+        copyFailed: 'Kopieren fehlgeschlagen, bitte manuell kopieren'
+      },
+      nav: {
+        profile: 'Profil',
+        theme: 'Design wechseln',
+        help: 'Hilfe'
+      },
+      hero: {
+        badge: 'Peer-to-Peer-Dateiübertragung',
+        title: 'Dateien direkt an ein anderes Gerät senden',
+        subtitle:
+          'Kein Upload und kein Konto. Dateien gehen über eine verschlüsselte Verbindung direkt von Browser zu Browser.',
+        chipDirect: 'Direkte Übertragung',
+        chipEncrypted: 'Verschlüsselt übertragen',
+        chipNoStorage: 'Nichts wird auf dem Server gespeichert'
+      },
+      send: {
+        title: 'Senden',
+        desc: 'Wählen Sie, was Sie teilen möchten, und Sie erhalten einen 6-stelligen Code.',
+        choose: 'Datei auswählen',
+        drop: 'oder irgendwo auf der Seite ablegen',
+        unsupported: 'Ordner benötigen Chrome oder Edge über https.'
+      },
+      receive: {
+        title: 'Empfangen',
+        desc: 'Geben Sie den 6-stelligen Code vom Bildschirm des Senders ein.',
+        scan: 'Oder scannen Sie den QR-Code des Senders mit der Handykamera.'
+      },
+      steps: {
+        title: "So funktioniert's",
+        s1t: 'Datei wählen',
+        s1d: 'Wählen Sie eine Datei oder einen Ordner und Sie erhalten einen 6-stelligen Code.',
+        s2t: 'Code teilen',
+        s2d: 'Der Empfänger gibt den Code ein oder scannt den QR-Code.',
+        s3t: 'Direkt übertragen',
+        s3d: 'Nach Ihrer Freigabe fließen die Daten direkt zwischen beiden Browsern.'
+      },
+      senderPage: {
+        yourCode: 'Ihr Code',
+        shareHint:
+          'Geben Sie diesen Code an den Empfänger weiter oder lassen Sie ihn den QR-Code scannen.',
+        waiting: 'Warte auf den Empfänger',
+        keepOpen: 'Lassen Sie diesen Tab geöffnet, bis die Übertragung abgeschlossen ist.',
+        copyCode: 'Code kopieren',
+        files: '{n} Datei | {n} Dateien',
+        wantsToReceive: '{name} möchte Ihre Dateien empfangen',
+        approveHint: 'Geben Sie nur frei, wenn Sie wissen, wer das ist.',
+        allow: 'Zulassen',
+        decline: 'Ablehnen',
+        sendingTo: 'Senden an',
+        sendMore: 'Etwas anderes senden',
+        cancel: 'Abbrechen'
+      },
+      recipientPage: {
+        from: 'Von',
+        waitingApproval: 'Warte auf die Freigabe des Senders',
+        waitingApprovalHint: 'Die Übertragung beginnt, sobald der Sender sie zulässt.',
+        ready: 'Bereit zum Empfangen',
+        current: 'Aktuelle Datei',
+        receiveMore: 'Etwas anderes empfangen',
+        folder: 'Ordner'
+      },
+      help: {
+        title: 'Hilfe',
+        tabQuick: 'Schnellstart',
+        tabHow: "So funktioniert's",
+        tabPrivacy: 'Datenschutz',
+        q1t: 'Auswählen, was gesendet wird',
+        q1d: 'Klicken Sie auf Datei senden oder legen Sie eine Datei irgendwo auf der Seite ab. Ordner funktionieren in Chrome und Edge.',
+        q2t: 'Code teilen',
+        q2d: 'Sie erhalten einen 6-stelligen Code, einen QR-Code und einen Link. Schicken Sie eines davon an den Empfänger.',
+        q3t: 'Empfänger freigeben',
+        q3d: 'Sobald er sich verbindet, sehen Sie seinen Namen. Klicken Sie auf Zulassen. Die automatische Freigabe lässt sich im Profil einschalten.',
+        q4t: 'Empfangen',
+        q4d: 'Der Empfänger klickt auf Empfangen und wählt einen Speicherort. Lassen Sie beide Tabs bis zum Ende geöffnet.',
+        tipsTitle: 'Gut zu wissen',
+        tip1: 'Im selben Netzwerk bleibt die Übertragung lokal und ist meist deutlich schneller.',
+        tip2: 'Firefox und Chrome über reines http können keine Ordner senden und höchstens 1 GB empfangen.',
+        tip3: 'Hinter strengen Firewalls kann ein Relay-Server nötig sein. Fragen Sie den Betreiber dieser Seite.',
+        how1t: 'Direkte Verbindung',
+        how1d:
+          'FasterSend verbindet die beiden Browser per WebRTC direkt und wählt automatisch den schnellsten Weg.',
+        how2t: 'Der Server vermittelt nur',
+        how2d:
+          'Der Server tauscht nur die Verbindungsdaten zwischen beiden Seiten aus. Dateidaten laufen nie über ihn.',
+        how3t: 'Relay als Ausweg',
+        how3d:
+          'Gibt es keinen direkten Weg, kann der Verkehr über ein TURN-Relay laufen. Er bleibt dabei durchgehend verschlüsselt.',
+        how4t: 'Direkt auf die Festplatte',
+        how4d:
+          'Browser mit File System Access API schreiben direkt auf die Festplatte, ohne Größenlimit, und können Ordner empfangen.',
+        p1t: 'Kein Konto, kein Tracking',
+        p1d: 'Es gibt keine Registrierung, keine Analyse und keine Skripte von Dritten.',
+        p2t: 'Dateien werden nie gespeichert',
+        p2d: 'Dateien gehen direkt zwischen beiden Browsern und berühren den Server nie.',
+        p3t: 'Verschlüsselt übertragen',
+        p3d: 'WebRTC verschlüsselt alle Daten mit DTLS.',
+        p4t: 'Ihre IP ist für die Gegenseite sichtbar',
+        p4d: 'Eine direkte Verbindung zeigt Ihrer Gegenseite Ihre öffentliche IP-Adresse. Übertragen Sie nur mit Personen, denen Sie vertrauen.',
+        ipLabel: 'Ihre IP aus Sicht dieser Seite',
+        responsibility: 'Sie sind für die gesendeten Inhalte verantwortlich.'
+      },
+      footer: {
+        source: 'Quellcode',
+        basedOn: 'Basiert auf',
+        by: 'von'
       }
     },
     fr: {
@@ -201,7 +415,8 @@ export default defineI18nConfig(() => ({
         syncDir: 'Synchroniser un dossier',
         selectDir: 'Choisir un dossier',
         toHome: "Retour à l'accueil",
-        terminate: 'Arrêter'
+        terminate: 'Arrêter',
+        randomize: 'Nouveau nom au hasard'
       },
       hint: {
         noModernFileAPIWarn:
@@ -210,7 +425,8 @@ export default defineI18nConfig(() => ({
         serverError: 'Le service rencontre un problème, veuillez réessayer plus tard',
         closeTheProxy: 'Si vous utilisez un proxy, désactivez-le et réessayez',
         connecting: 'Connexion en cours',
-        noSupportDirTrans2: 'Le navigateur du destinataire ne prend pas en charge le transfert de dossiers',
+        noSupportDirTrans2:
+          'Le navigateur du destinataire ne prend pas en charge le transfert de dossiers',
         connectInterrupted: 'Connexion interrompue, échec du transfert',
         areYouSureContinue: 'Voulez-vous vraiment poursuivre le transfert ?',
         inTransit: 'Transfert en cours',
@@ -235,7 +451,112 @@ export default defineI18nConfig(() => ({
         dirIsEmpty: 'Le dossier est vide',
         fileNotFound: 'Fichier introuvable',
         selectAtLeastOneFile: 'Veuillez choisir au moins un fichier',
-        disconnected: 'Déconnecté'
+        disconnected: 'Déconnecté',
+        copyFailed: 'Copie impossible, veuillez copier manuellement'
+      },
+      nav: {
+        profile: 'Profil',
+        theme: 'Changer de thème',
+        help: 'Aide'
+      },
+      hero: {
+        badge: 'Transfert de fichiers en pair à pair',
+        title: 'Envoyez vos fichiers directement à un autre appareil',
+        subtitle:
+          "Pas d'envoi sur un serveur, pas de compte. Les fichiers passent directement d'un navigateur à l'autre par une connexion chiffrée.",
+        chipDirect: 'Transfert direct',
+        chipEncrypted: 'Chiffré pendant le transfert',
+        chipNoStorage: 'Rien n’est stocké sur le serveur'
+      },
+      send: {
+        title: 'Envoyer',
+        desc: 'Choisissez ce que vous partagez et obtenez un code à 6 chiffres.',
+        choose: 'Choisir un fichier',
+        drop: "ou déposez-le n'importe où sur la page",
+        unsupported: 'Les dossiers nécessitent Chrome ou Edge en https.'
+      },
+      receive: {
+        title: 'Recevoir',
+        desc: "Saisissez le code à 6 chiffres affiché chez l'expéditeur.",
+        scan: "Ou scannez le QR code de l'expéditeur avec l'appareil photo de votre téléphone."
+      },
+      steps: {
+        title: 'Comment ça marche',
+        s1t: 'Choisissez un fichier',
+        s1d: 'Choisissez un fichier ou un dossier et obtenez un code à 6 chiffres.',
+        s2t: 'Partagez le code',
+        s2d: 'Le destinataire saisit le code ou scanne le QR code.',
+        s3t: 'Transfert direct',
+        s3d: 'Une fois approuvé, les données circulent directement entre les deux navigateurs.'
+      },
+      senderPage: {
+        yourCode: 'Votre code',
+        shareHint: 'Donnez ce code au destinataire ou laissez-le scanner le QR code.',
+        waiting: 'En attente du destinataire',
+        keepOpen: "Gardez cet onglet ouvert jusqu'à la fin du transfert.",
+        copyCode: 'Copier le code',
+        files: '{n} fichier | {n} fichiers',
+        wantsToReceive: '{name} veut recevoir vos fichiers',
+        approveHint: "N'acceptez que si vous savez de qui il s'agit.",
+        allow: 'Autoriser',
+        decline: 'Refuser',
+        sendingTo: 'Envoi à',
+        sendMore: 'Envoyer autre chose',
+        cancel: 'Annuler'
+      },
+      recipientPage: {
+        from: 'De',
+        waitingApproval: "En attente de l'accord de l'expéditeur",
+        waitingApprovalHint: "Le transfert démarre dès que l'expéditeur l'autorise.",
+        ready: 'Prêt à recevoir',
+        current: 'Fichier en cours',
+        receiveMore: 'Recevoir autre chose',
+        folder: 'Dossier'
+      },
+      help: {
+        title: 'Aide',
+        tabQuick: 'Démarrage rapide',
+        tabHow: 'Fonctionnement',
+        tabPrivacy: 'Confidentialité',
+        q1t: 'Choisissez quoi envoyer',
+        q1d: "Cliquez sur Envoyer un fichier ou déposez un fichier n'importe où sur la page. Les dossiers fonctionnent avec Chrome et Edge.",
+        q2t: 'Partagez le code',
+        q2d: "Vous obtenez un code à 6 chiffres, un QR code et un lien. Envoyez l'un d'eux au destinataire.",
+        q3t: 'Approuvez le destinataire',
+        q3d: "Quand il se connecte, son nom s'affiche. Cliquez sur Autoriser pour démarrer. L'approbation automatique s'active dans votre profil.",
+        q4t: 'Recevez',
+        q4d: "Le destinataire clique sur Recevoir et choisit où enregistrer. Gardez les deux onglets ouverts jusqu'à la fin.",
+        tipsTitle: 'Bon à savoir',
+        tip1: 'Sur le même réseau, le transfert reste local et est généralement bien plus rapide.',
+        tip2: 'Firefox, et Chrome en http simple, ne peuvent pas envoyer de dossiers et reçoivent au plus 1 Go.',
+        tip3: "Derrière un pare-feu strict, un serveur relais peut être nécessaire. Demandez à l'administrateur de ce site.",
+        how1t: 'Connexion directe',
+        how1d:
+          'FasterSend relie les deux navigateurs directement grâce à WebRTC et choisit automatiquement le chemin le plus rapide.',
+        how2t: 'Le serveur ne fait que présenter',
+        how2d:
+          'Le serveur échange uniquement les informations de connexion entre les deux côtés. Les fichiers ne passent jamais par lui.',
+        how3t: 'Relais de secours',
+        how3d:
+          "S'il n'existe aucun chemin direct, le trafic peut passer par un relais TURN. Il reste chiffré de bout en bout.",
+        how4t: 'Écriture sur le disque',
+        how4d:
+          "Les navigateurs dotés de l'API File System Access écrivent directement sur le disque, sans limite de taille, et peuvent recevoir des dossiers.",
+        p1t: 'Ni compte, ni pistage',
+        p1d: "Pas d'inscription, pas de statistiques, aucun script tiers.",
+        p2t: 'Aucun fichier stocké',
+        p2d: 'Les fichiers passent directement entre les deux navigateurs et ne touchent jamais le serveur.',
+        p3t: 'Chiffré pendant le transfert',
+        p3d: 'WebRTC chiffre toutes les données avec DTLS.',
+        p4t: "Votre IP est visible par l'autre partie",
+        p4d: 'Une connexion directe révèle votre adresse IP publique à votre correspondant. Ne transférez qu’avec des personnes de confiance.',
+        ipLabel: 'Votre IP vue par ce site',
+        responsibility: 'Vous êtes responsable du contenu que vous envoyez.'
+      },
+      footer: {
+        source: 'Code source',
+        basedOn: 'Basé sur',
+        by: 'par'
       }
     }
   }

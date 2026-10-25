@@ -187,8 +187,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
       dispose()
       toast.add({
         severity: 'success',
-        summary: 'Success',
-        detail: t('hint.transCompleted'),
+        summary: t('hint.transCompleted'),
         life: 5e3
       })
       return
@@ -207,7 +206,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
     pdc.onDispose = () => {
       status.value.isConnectPeer = false
       dispose()
-      toast.add({ severity: 'warn', summary: 'Warn', detail: 'Disconnected', life: 5e3 })
+      toast.add({ severity: 'warn', summary: t('hint.disconnected'), life: 5e3 })
       if (!status.value.isDone && status.value.warn.code === 0) {
         status.value.warn.code = -10
       }
@@ -228,18 +227,20 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
     }
   }
 
-  async function copyLink() {
-    if (!shareLink.value) {
+  async function copyText(text: string) {
+    if (!text) {
       return
     }
-    await copyToClipboard(shareLink.value)
+    const ok = await copyToClipboard(text)
     toast.add({
-      severity: 'success',
-      summary: 'Success',
-      detail: 'Code copied successfully',
+      severity: ok ? 'success' : 'warn',
+      summary: ok ? t('btn.copied') : t('hint.copyFailed'),
       life: 3e3
     })
   }
+
+  const copyLink = () => copyText(shareLink.value)
+  const copyCode = () => copyText(code.value)
 
   async function renderQRCode(canvas: HTMLCanvasElement | null) {
     if (!canvas || !shareLink.value) {
@@ -258,7 +259,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
     }
 
     if (Object.keys(transferConfigStore.fileMap).length === 0) {
-      toast.add({ severity: 'warn', summary: 'Warn', detail: t('hint.dirIsEmpty'), life: 5e3 })
+      toast.add({ severity: 'warn', summary: t('hint.dirIsEmpty'), life: 5e3 })
       router.replace(localePath('/'))
       return
     }
@@ -297,7 +298,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
       if (data.type === 'err') {
         status.value.error.code = data.data
         status.value.isWaitingConnect = false
-        toast.add({ severity: 'error', summary: 'Error', detail: data.msg, life: 5e3 })
+        toast.add({ severity: 'error', summary: data.msg, life: 5e3 })
         console.warn(data.msg)
       }
     }
@@ -308,8 +309,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
         status.value.error.msg = 'Connect sign server error'
         toast.add({
           severity: 'error',
-          summary: 'Error',
-          detail: 'Connect sign server error',
+          summary: t('hint.serverError'),
           life: 5e3
         })
       } else if (status.value.isWaitingConnect) {
@@ -341,6 +341,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
     cleanup,
     confirmUser,
     copyLink,
+    copyCode,
     renderQRCode
   }
 })

@@ -1,25 +1,13 @@
 <template>
-  <div class="my-12">
-    <div class="text-center text-sm text-neutral-500/80 flex flex-row items-center justify-center">
+  <footer class="mx-auto max-w-6xl px-4 pt-6 pb-24 sm:px-6 sm:pb-10">
+    <div class="fs-muted flex justify-center text-xs">
       <a
         target="_blank"
+        rel="noopener"
         href="https://github.com/thereisnotime/FasterSend"
-        class="underline hover:text-sky-500"
-        >Github</a
+        class="inline-flex items-center gap-1 hover:text-zinc-900 dark:hover:text-white"
+        ><Icon name="solar:code-square-linear" size="14" />{{ $t('footer.source') }}</a
       >
-      <div class="w-px h-4 bg-neutral-500/80 mx-2"></div>
-      <span
-        >Based on
-        <a
-          target="_blank"
-          href="https://github.com/ShouChenICU/FastSend"
-          class="underline hover:text-sky-500"
-          >FastSend</a
-        >
-        by ShouChenICU</span
-      >
-      <div class="w-px h-4 bg-neutral-500/80 mx-2"></div>
-      <span>v0.7.3</span>
     </div>
-  </div>
+  </footer>
 </template>
