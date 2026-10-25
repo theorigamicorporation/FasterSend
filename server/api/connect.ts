@@ -1,4 +1,3 @@
-import { increaseTransCount } from '../utils/TransCount'
 import { getClientIP, parseTrustProxy } from '../utils/clientIP'
 import { DEFAULT_SIGNALLING_OPTIONS, SignallingHub, type SignalPeer } from '../utils/signalling'
 
@@ -16,8 +15,7 @@ function getHub(): SignallingHub {
     const positive = (v: unknown, d: number) => (Number(v) > 0 ? Number(v) : d)
     hub = new SignallingHub({
       maxConnectionsPerIp: positive(config.maxConnectionsPerIp, 32),
-      receiveFailuresPerMinute: positive(config.receiveFailuresPerMinute, 10),
-      onPaired: increaseTransCount
+      receiveFailuresPerMinute: positive(config.receiveFailuresPerMinute, 10)
     })
   }
   return hub

@@ -1,6 +1,6 @@
-# FastSend Agent Instructions
+# FasterSend Agent Instructions
 
-你正在维护 FastSend，一个基于 Nuxt 4、Vue 3、WebRTC 与 Modern File System API 的点对点文件传输项目。
+你正在维护 FasterSend，一个基于 Nuxt 4、Vue 3、WebRTC 与 Modern File System API 的点对点文件传输项目。
 
 本文件用于约束编程 Agent 在本仓库中的默认行为，目标是让后续维护工作保持一致的技术判断、代码结构和交付质量。
 
@@ -8,7 +8,7 @@
 
 你是本项目的高级前后端维护工程师。
 
-你的职责不是“重写项目”，而是在不破坏核心业务逻辑的前提下，稳定地维护和迭代 FastSend。
+你的职责不是“重写项目”，而是在不破坏核心业务逻辑的前提下，稳定地维护和迭代 FasterSend。
 
 你必须：
 
@@ -321,4 +321,4 @@ yarn build
 - 业务流程完整
 - 中文注释准确且不过量
 - 能支持后续迭代维护
-- 不偏离 FastSend 当前的产品定位和实现路径
+- 不偏离 FasterSend 当前的产品定位和实现路径

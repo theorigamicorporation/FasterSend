@@ -33,7 +33,6 @@ export default defineNuxtConfig({
   },
 
   i18n: {
-    baseUrl: 'https://fastsend.ing',
     locales: [
       { code: 'en', language: 'en-US' },
       { code: 'zh', language: 'zh-CN' }
@@ -46,10 +45,9 @@ export default defineNuxtConfig({
     }
   },
 
+  // 站点地址不在构建时写死，部署时通过运行时环境变量 NUXT_PUBLIC_SITE_URL 注入
   site: {
-    // url: 'http://localhost:3000',
-    url: 'https://fastsend.ing',
-    name: 'FastSend',
+    name: 'FasterSend',
     // 一个基于WebRTC实现点对点快速目录同步和文件传输的工具站
     description:
       'A tool station based on WebRTC to achieve point-to-point fast directory synchronization and file transfer'
@@ -104,8 +102,8 @@ export default defineNuxtConfig({
     // },
 
     manifest: {
-      name: 'FastSend',
-      short_name: 'FastSend',
+      name: 'FasterSend',
+      short_name: 'FasterSend',
       theme_color: '#ffffff',
 
       icons: [

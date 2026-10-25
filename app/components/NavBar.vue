@@ -71,7 +71,7 @@ onMounted(() => {
   >
     <NuxtLink :to="localePath('/')">
       <div class="tracking-wider">
-        <img src="/favicon.webp" class="inline-block size-[32px] mr-1" />FastSend
+        <img src="/favicon.webp" class="inline-block size-[32px] mr-1" />FasterSend
       </div>
     </NuxtLink>
 
@@ -137,12 +137,6 @@ onMounted(() => {
     </Popover>
 
     <div class="contents">
-      <NuxtLink to="https://www.buymeacoffee.com/shouchen" target="_blank" class="ml-2 md:ml-4">
-        <Button severity="warning" text size="small" class="py-3" aria-label="Buy Me A Coffee">
-          <IconCoffee class="size-5 text-black dark:text-white/90" />
-        </Button>
-      </NuxtLink>
-
       <Button
         severity="secondary"
         text

@@ -169,12 +169,6 @@ onUnmounted(() => {
         <p class="text-xl tracking-wider">{{ t('hint.transCompleted') }}</p>
 
         <div class="py-4 flex flex-col md:flex-row items-center justify-center gap-6">
-          <NuxtLink to="https://www.buymeacoffee.com/shouchen" target="_blank">
-            <Button outlined severity="contrast" class="tracking-wider"
-              ><IconCoffee class="size-4.5 mr-2" />{{ t('btn.buyMeCoffee') }}</Button
-            >
-          </NuxtLink>
-
           <NuxtLink :to="localePath('/')">
             <Button severity="contrast" class="tracking-wider"
               ><Icon name="solar:home-2-linear" class="mr-2" />{{ t('btn.toHome') }}</Button

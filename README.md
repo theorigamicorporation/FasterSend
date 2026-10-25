@@ -1,153 +1,64 @@
-<h1 align="center">FastSend 文件快传 🚀</h1>
+# FasterSend
 
-<p align="center">
-  <img alt="Version" src="https://img.shields.io/badge/version-0.7.3-blue.svg?style=flat-square" />
-  <a href="#" target="_blank">
-    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square" />
-  </a>
-</p>
+FasterSend is a browser-based tool for sending files and folders directly between two devices over WebRTC. The server only handles signaling: file data goes peer to peer and never passes through it. Folder transfer and folder sync need a browser with the File System Access API and an HTTPS origin.
 
-<p align="center">
-  <img src="./public/ogImg.webp" />
-</p>
+FasterSend is a hard fork of [FastSend](https://github.com/ShouChenICU/FastSend) by ShouChenICU, maintained by [The Origami Corporation](https://github.com/theorigamicorporation).
 
-## 📖 项目介绍
+> 本项目是 [ShouChenICU/FastSend](https://github.com/ShouChenICU/FastSend) 的硬分叉。中文文档请参阅上游仓库。
 
-FastSend 是一个基于 WebRTC 技术的点对点文件传输工具，支持快速的目录同步和文件传输。通过浏览器即可实现安全、高效的文件共享。
+## Changes from upstream
 
-🌐 在线体验：[fastsend.ing](https://fastsend.ing)
+- Rebranded to FasterSend. The donation link, mascot avatar, console banner and public transfer counter are removed.
+- Self-hostable configuration: the public site URL and other deployment settings come from environment variables instead of being hardcoded.
+- Security fixes and hardening of the signaling server.
+- Updated dependencies.
+- Docker image built for amd64 and arm64, published to GHCR, running as a non-root user.
 
-## ✨ 特性
+## Features
 
-- 🔒 点对点加密传输，确保数据安全
-- 📁 支持文件和文件夹传输
-- 🚀 局域网自动优化，传输更快
-- 🎯 简单易用的界面设计
-- 🌍 支持中英文界面
-- 📲 支持PWA轻量安装
+- Send single files or whole folders
+- Folder sync with add, update and delete selection
+- Transfers stay on the local network when both peers are on it
+- English and Chinese UI
+- Installable as a PWA
 
-## 🛠️ 技术栈
-
-- WebRTC
-- Vue.js
-- Nuxt 4
-- Pinia
-- TypeScript
-- Modern File System API
-
-## 🗂️ 目录结构
-
-项目已按 Nuxt 4 默认约定迁移为 `app/` 目录结构：
-
-- `app/`：前端应用层源码，包括页面、组件、stores、composables、utils、全局样式与 `app.vue`
-- `server/`：Nitro 服务端接口与 WebSocket 信令逻辑
-- `public/`：静态资源与 PWA 相关文件
-- `presets/`：PrimeVue 主题预设
-
-这样可以更清晰地分离前端应用层与服务端上下文，也更符合 Nuxt 4 的默认扫描方式。
-
-## 📦 安装与构建
+## Running with Docker
 
 ```bash
-# 安装依赖
-yarn install
-
-# 构建项目
-yarn build
+docker run -d --name fastersend -p 3000:3000 \
+  -e NUXT_PUBLIC_SITE_URL=https://send.example.com \
+  ghcr.io/theorigamicorporation/fastersend:latest
 ```
 
-## 🚀 使用方法
+Or with Docker Compose from a checkout of this repository:
 
 ```bash
-# 启动服务
-node .output/server/index.mjs
+docker compose up -d
 ```
 
-> [!IMPORTANT]
-> 目录传输和同步需要 `HTTPS` 以及浏览器支持，一般新版本的桌面浏览器都支持
->
-> 本项目自身的 HTTPS 配置方式（测试环境）请参考：
->
-> - [置顶 Issue](https://github.com/ShouChenICU/FastSend/issues/9#issuecomment-2562353775)
-> - [Nuxt 部署教程（英文）](https://nuxt.com/docs/4.x/getting-started/deployment#entry-point)
->
-> FastSend 不建议直接以 HTTPS 形式进行生产环境部署，而应当位于反向代理服务器之后，请参考：
->
-> - [Nginx](https://nginx.org/en/docs/http/configuring_https_servers.html)
-> - [Apache httpd](https://httpd.apache.org/docs/current/ssl/)
-> - [Caddy](https://caddyserver.com/docs/quick-starts/https)
-> - [Windows IIS](https://learn.microsoft.com/zh-cn/iis/manage/configuring-security/how-to-set-up-ssl-on-iis)
+The app listens on port 3000. Put it behind a reverse proxy that terminates TLS (Caddy, nginx, Traefik). Browsers only allow folder transfer and sync on HTTPS origins, and the proxy must pass WebSocket upgrades for `/api/connect`.
 
-## 🐳 Docker 和 Docker Compose
+Image tags:
 
-### 使用 Docker Hub 发行版
-
-```bash
-docker run -d --name fastsend -p 3000:3000 shouchenicu/fastsend:latest
-```
-
-> [!CAUTION]
->
-> `shouchenicu/fastsend` 是此项目在 Docker Hub 上的 **唯一** 官方镜像！
->
-> 当前已发现 12 个第三方镜像，其中5个[^1]的下载使用量高于官方镜像。请注意甄别，风险自负！
-
-[^1]: 比如 `niliaerith/fastsend`
-
-### Docker 构建
-
-```bash
-docker build -t fastsend .
-docker run -d --name fastsend -p 3000:3000 fastsend
-```
-
-### Docker Compose
-
-将项目拉取到本地，然后运行：
-
-```bash
-docker-compose up -d
-```
-
-访问 `http://localhost:3000` 即可使用。
-
-## 💡 使用提示
-
-1. 确保浏览器启用了 WebRTC 功能
-2. 如需传输文件夹或同步目录，请确保浏览器支持现代文件系统 API 并已启用 HTTPS 传输
-3. 在同一局域网内传输速度最快
-4. 建议在网络状态良好时使用，部分网络环境可能会阻止 P2P / WebRTC 正确建立连接，从而导致传输失败
-
-## 👨‍💻 作者
-
-**ShouChen**
-
-- 博客: [shouchen.blog](https://shouchen.blog)
-- X: [@ShouChen\_](https://x.com/ShouChen_)
-
-## 🤝 贡献
-
-欢迎提交 Issue 和 Pull Request！
-
-[![Contributors](https://contrib.nn.ci/api?no_bot=true&repo=shouchenicu/fastsend)](https://github.com/shouchenicu/fastsend/graphs/contributors)
-
-## 📝 开源协议
-
-本项目基于 MIT 协议开源。
-
-## ⭐ 支持项目
-
-如果这个项目对你有帮助，欢迎给一个 star 支持一下！
+| Tag            | Source                  |
+| -------------- | ----------------------- |
+| `latest`       | Latest `v*` release tag |
+| `X.Y.Z`, `X.Y` | Release tags            |
+| `main`         | Latest commit on `main` |
+| `sha-<short>`  | A specific commit       |
 
 ## Configuration
 
-All settings are read from environment variables when the server starts, so one build or image works in every environment.
+All settings are read from environment variables when the server starts, so one image works in every environment.
 
 | Variable | Default | Description |
 | --- | --- | --- |
+| `NUXT_PUBLIC_SITE_URL` | unset | Public URL of the deployment, e.g. `https://send.example.com`. Used for canonical links and Open Graph image URLs. When unset, the request origin is used. |
+| `PORT` | `3000` | Port the server listens on. |
+| `HOST` | `0.0.0.0` | Address the server binds to (set in the Docker image). |
+| `NUXT_TRUST_PROXY` | `false` | Set to `true` (or the number of proxy hops) when running behind a reverse proxy, so the client IP is taken from `X-Forwarded-For`. Leave it off otherwise, the header can be spoofed. |
 | `NUXT_PUBLIC_ICE_SERVERS` | `[{"urls":"stun:stun.l.google.com:19302"}]` | JSON array of [`RTCIceServer`](https://developer.mozilla.org/en-US/docs/Web/API/RTCIceServer) objects (`urls`, optional `username` / `credential`). Add a TURN server so transfers work across restrictive NATs. Invalid JSON falls back to the default. |
 | `NUXT_PUBLIC_ICE_TRANSPORT_POLICY` | `all` | `all` or `relay`. `relay` forces traffic through TURN, useful for testing a relay. |
-| `NUXT_TRUST_PROXY` | `false` | Set to `true` (or the number of proxy hops) when running behind a reverse proxy, so the client IP is taken from `X-Forwarded-For`. Leave it off otherwise, the header can be spoofed. |
 | `NUXT_MAX_CONNECTIONS_PER_IP` | `32` | Maximum concurrent signalling connections per client IP. |
 | `NUXT_RECEIVE_FAILURES_PER_MINUTE` | `10` | Failed pickup code lookups allowed per IP per minute before further attempts are refused. |
 
@@ -160,3 +71,31 @@ node .output/server/index.mjs
 ```
 
 ICE servers are sent to the browser, so any TURN credentials here are visible to every visitor. Use a dedicated TURN user with quotas for this deployment.
+
+## Development
+
+Requires Node.js 24 and Yarn 4 through corepack.
+
+```bash
+corepack enable
+yarn install
+yarn dev        # dev server with hot reload on http://localhost:3000
+yarn build      # production build in .output/
+node .output/server/index.mjs
+```
+
+Build the image locally:
+
+```bash
+docker build -t fastersend .
+```
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for how to report vulnerabilities.
+
+## License
+
+MIT, see [LICENSE](LICENSE). Original work copyright ShouChenICU, modifications copyright The Origami Corporation.
+
+Based on [FastSend](https://github.com/ShouChenICU/FastSend) by ShouChenICU.

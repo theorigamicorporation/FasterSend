@@ -304,16 +304,9 @@ onUnmounted(() => {
           >
 
           <div v-if="status.isDone" class="py-6">
-            <!-- buy me coffee -->
-            <NuxtLink to="https://www.buymeacoffee.com/shouchen" target="_blank">
-              <Button rounded outlined severity="contrast" class="w-full tracking-wider"
-                ><IconCoffee class="size-4.5 mr-2" />{{ t('btn.buyMeCoffee') }}</Button
-              >
-            </NuxtLink>
-
             <!-- 回主页 -->
             <NuxtLink :to="localePath('/')">
-              <Button rounded severity="contrast" class="w-full tracking-wider block mt-6"
+              <Button rounded severity="contrast" class="w-full tracking-wider block"
                 ><Icon name="solar:home-2-linear" class="mr-2" />{{ t('btn.toHome') }}</Button
               ></NuxtLink
             >

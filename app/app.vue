@@ -1,14 +1,18 @@
 <script setup lang="ts">
+// 分享图需要绝对地址，基于运行时站点配置（NUXT_PUBLIC_SITE_URL）生成
+const siteConfig = useSiteConfig()
+const ogImageURL = computed(() =>
+  siteConfig.url ? new URL('/ogImg.webp', siteConfig.url).href : '/ogImg.webp'
+)
+
 useSeoMeta({
-  ogTitle: 'Fast Send',
+  ogTitle: 'FasterSend',
   ogType: 'website',
-  ogImage: 'https://fastsend.ing/ogImg.webp',
+  ogImage: ogImageURL,
   twitterCard: 'summary_large_image',
-  twitterTitle: 'Fast Send',
+  twitterTitle: 'FasterSend',
   twitterDescription: 'Fast peer-to-peer file and directory transfers',
-  twitterImage: 'https://fastsend.ing/ogImg.webp',
-  twitterSite: '@ShouChen_',
-  twitterCreator: '@ShouChen_'
+  twitterImage: ogImageURL
 })
 
 const appStore = useAppStore()
@@ -18,10 +22,6 @@ onMounted(() => {
     appStore.setDeferredPrompt(event as BeforeInstallPromptEvent)
   })
   appStore.setFullScreenLoading(false)
-
-  fetch('/banner.txt')
-    .then((res) => res.text())
-    .then(console.log)
 })
 </script>
 

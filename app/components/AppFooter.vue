@@ -3,12 +3,21 @@
     <div class="text-center text-sm text-neutral-500/80 flex flex-row items-center justify-center">
       <a
         target="_blank"
-        href="https://github.com/ShouChenICU/FastSend"
+        href="https://github.com/theorigamicorporation/FasterSend"
         class="underline hover:text-sky-500"
         >Github</a
       >
       <div class="w-px h-4 bg-neutral-500/80 mx-2"></div>
-      <span>fastsend.ing</span>
+      <span
+        >Based on
+        <a
+          target="_blank"
+          href="https://github.com/ShouChenICU/FastSend"
+          class="underline hover:text-sky-500"
+          >FastSend</a
+        >
+        by ShouChenICU</span
+      >
       <div class="w-px h-4 bg-neutral-500/80 mx-2"></div>
       <span>v0.7.3</span>
     </div>
