@@ -3,7 +3,7 @@
     <div class="text-center text-sm text-neutral-500/80 flex flex-row items-center justify-center">
       <a
         target="_blank"
-        href="https://github.com/theorigamicorporation/FasterSend"
+        href="https://github.com/thereisnotime/FasterSend"
         class="underline hover:text-sky-500"
         >Github</a
       >

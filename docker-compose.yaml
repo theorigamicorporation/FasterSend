@@ -1,7 +1,7 @@
 name: fastersend
 services:
   app:
-    image: ghcr.io/theorigamicorporation/fastersend:latest
+    image: ghcr.io/thereisnotime/fastersend:latest
     build:
       context: .
       dockerfile: Dockerfile

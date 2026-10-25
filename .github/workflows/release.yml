@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  IMAGE: ghcr.io/theorigamicorporation/fastersend
+  IMAGE: ghcr.io/thereisnotime/fastersend
 
 jobs:
   image:

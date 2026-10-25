@@ -2,7 +2,7 @@
 
 FasterSend is a browser-based tool for sending files and folders directly between two devices over WebRTC. The server only handles signaling: file data goes peer to peer and never passes through it. Folder transfer and folder sync need a browser with the File System Access API and an HTTPS origin.
 
-FasterSend is a hard fork of [FastSend](https://github.com/ShouChenICU/FastSend) by ShouChenICU, maintained by [The Origami Corporation](https://github.com/theorigamicorporation).
+FasterSend is a hard fork of [FastSend](https://github.com/ShouChenICU/FastSend) by ShouChenICU, maintained by [thereisnotime](https://github.com/thereisnotime).
 
 > 本项目是 [ShouChenICU/FastSend](https://github.com/ShouChenICU/FastSend) 的硬分叉。中文文档请参阅上游仓库。
 
@@ -27,7 +27,7 @@ FasterSend is a hard fork of [FastSend](https://github.com/ShouChenICU/FastSend)
 ```bash
 docker run -d --name fastersend -p 3000:3000 \
   -e NUXT_PUBLIC_SITE_URL=https://send.example.com \
-  ghcr.io/theorigamicorporation/fastersend:latest
+  ghcr.io/thereisnotime/fastersend:latest
 ```
 
 Or with Docker Compose from a checkout of this repository:
@@ -96,6 +96,6 @@ See [SECURITY.md](SECURITY.md) for how to report vulnerabilities.
 
 ## License
 
-MIT, see [LICENSE](LICENSE). Original work copyright ShouChenICU, modifications copyright The Origami Corporation.
+MIT, see [LICENSE](LICENSE). Original work copyright ShouChenICU, modifications copyright thereisnotime.
 
 Based on [FastSend](https://github.com/ShouChenICU/FastSend) by ShouChenICU.
