@@ -5,18 +5,6 @@ const { isModernFileAPISupport, isDirSupport, receiveCode, isFileDraging } = sto
 const fileDragArea = ref()
 const codeLength = RECEIVE_CODE_LENGTH
 
-const heroChips = [
-  { key: 'hero.chipDirect', icon: 'solar:routing-2-linear' },
-  { key: 'hero.chipEncrypted', icon: 'solar:lock-keyhole-minimalistic-linear' },
-  { key: 'hero.chipNoStorage', icon: 'solar:server-square-linear' }
-]
-
-const steps = [
-  { title: 'steps.s1t', desc: 'steps.s1d', icon: 'solar:upload-minimalistic-linear' },
-  { title: 'steps.s2t', desc: 'steps.s2d', icon: 'solar:qr-code-linear' },
-  { title: 'steps.s3t', desc: 'steps.s3d', icon: 'solar:routing-2-linear' }
-]
-
 useSeoMeta({
   title: t('home')
 })
@@ -75,7 +63,7 @@ onMounted(() => {
 
 <template>
   <div class="mx-auto max-w-6xl px-4 sm:px-6">
-    <!-- 全屏拖放区域 -->
+    <!-- Full-window drop target -->
     <div
       ref="fileDragArea"
       @dragover="fileDragOver"
@@ -86,57 +74,23 @@ onMounted(() => {
       <p class="mt-4 text-lg font-medium">{{ $t('label.dragHereToSendFile') }}</p>
     </div>
 
-    <!-- 标题 -->
-    <section class="pt-10 pb-10 text-center sm:pt-16 sm:pb-14">
-      <span
-        class="inline-flex items-center gap-2 rounded-full border border-primary-200 bg-primary-50/80 px-3 py-1 text-xs font-medium text-primary-700 dark:border-primary-500/30 dark:bg-primary-500/10 dark:text-primary-300"
-      >
-        <span class="relative flex size-2">
-          <span
-            class="fs-ping absolute inline-flex size-full rounded-full bg-primary-500/60"
-          ></span>
-          <span class="relative inline-flex size-2 rounded-full bg-primary-500"></span>
-        </span>
-        {{ $t('hero.badge') }}
-      </span>
-      <h1
-        class="mx-auto mt-5 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-6xl"
-      >
-        {{ $t('hero.title') }}
-      </h1>
-      <p class="fs-muted mx-auto mt-5 max-w-2xl text-base text-balance sm:text-lg">
-        {{ $t('hero.subtitle') }}
-      </p>
-      <ul class="mt-7 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
-        <li
-          v-for="chip in heroChips"
-          :key="chip.key"
-          class="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-300"
-        >
-          <Icon :name="chip.icon" class="text-primary-600 dark:text-primary-400" size="18" />
-          {{ $t(chip.key) }}
-        </li>
-      </ul>
+    <section class="pt-8 pb-6 sm:pt-12 sm:pb-8">
+      <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">{{ $t('hero.title') }}</h1>
+      <p class="fs-muted mt-2 max-w-2xl text-sm sm:text-base">{{ $t('hero.subtitle') }}</p>
     </section>
 
-    <!-- 发送 / 接收 -->
-    <section class="grid gap-5 md:grid-cols-2">
+    <!-- Send / receive -->
+    <section class="grid gap-4 pb-12 md:grid-cols-2">
       <div class="fs-card flex flex-col p-5 sm:p-7">
-        <div class="flex items-center gap-3">
-          <span
-            class="flex size-10 items-center justify-center rounded-xl bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-400"
-            ><Icon name="solar:card-send-linear" size="22"
-          /></span>
-          <div>
-            <h2 class="text-lg font-semibold tracking-tight">{{ $t('send.title') }}</h2>
-            <p class="fs-muted text-sm">{{ $t('send.desc') }}</p>
-          </div>
+        <div>
+          <h2 class="text-lg font-semibold tracking-tight">{{ $t('send.title') }}</h2>
+          <p class="fs-muted text-sm">{{ $t('send.desc') }}</p>
         </div>
 
         <button
           type="button"
           data-testid="send-file"
-          class="group mt-6 flex flex-1 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 px-6 py-10 text-center transition-colors hover:border-primary-400 hover:bg-primary-50/50 focus-visible:border-primary-500 focus-visible:outline-none dark:border-zinc-700 dark:hover:border-primary-500/60 dark:hover:bg-primary-500/5"
+          class="group mt-6 flex flex-1 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 px-6 py-8 text-center transition-colors hover:border-primary-400 hover:bg-primary-50/50 focus-visible:border-primary-500 focus-visible:outline-none dark:border-zinc-700 dark:hover:border-primary-500/60 dark:hover:bg-primary-500/5"
           @click="sendFile"
         >
           <span
@@ -176,18 +130,12 @@ onMounted(() => {
       </div>
 
       <div class="fs-card flex flex-col p-5 sm:p-7">
-        <div class="flex items-center gap-3">
-          <span
-            class="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
-            ><Icon name="solar:card-recive-linear" size="22"
-          /></span>
-          <div>
-            <h2 class="text-lg font-semibold tracking-tight">{{ $t('receive.title') }}</h2>
-            <p class="fs-muted text-sm">{{ $t('receive.desc') }}</p>
-          </div>
+        <div>
+          <h2 class="text-lg font-semibold tracking-tight">{{ $t('receive.title') }}</h2>
+          <p class="fs-muted text-sm">{{ $t('receive.desc') }}</p>
         </div>
 
-        <div class="flex flex-1 flex-col items-center justify-center py-10">
+        <div class="flex flex-1 flex-col items-center justify-center py-8">
           <InputOtp
             integerOnly
             :length="codeLength"
@@ -208,29 +156,11 @@ onMounted(() => {
               />
             </template>
           </InputOtp>
-          <p class="fs-muted mt-6 flex items-center gap-2 text-center text-sm">
-            <Icon name="solar:qr-code-linear" size="18" class="shrink-0" />{{ $t('receive.scan') }}
+          <p class="fs-muted mt-6 flex items-start gap-2 text-sm">
+            <Icon name="solar:qr-code-linear" size="18" class="mt-px shrink-0" />{{ $t('receive.scan') }}
           </p>
         </div>
       </div>
-    </section>
-
-    <!-- 使用步骤 -->
-    <section class="py-16 sm:py-20">
-      <h2 class="fs-eyebrow text-center">{{ $t('steps.title') }}</h2>
-      <ol class="mt-8 grid gap-4 sm:grid-cols-3">
-        <li v-for="(step, i) in steps" :key="step.title" class="fs-card relative p-5">
-          <div class="flex items-center gap-3">
-            <span
-              class="flex size-8 items-center justify-center rounded-full bg-zinc-900 text-sm font-semibold text-white dark:bg-white dark:text-zinc-900"
-              >{{ i + 1 }}</span
-            >
-            <Icon :name="step.icon" size="22" class="text-primary-600 dark:text-primary-400" />
-          </div>
-          <h3 class="mt-4 font-semibold">{{ $t(step.title) }}</h3>
-          <p class="fs-muted mt-1 text-sm">{{ $t(step.desc) }}</p>
-        </li>
-      </ol>
     </section>
   </div>
 </template>

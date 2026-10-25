@@ -46,10 +46,10 @@ export default defineNuxtConfig({
     }
   },
 
-  // 站点地址不在构建时写死，部署时通过运行时环境变量 NUXT_PUBLIC_SITE_URL 注入
+  // Site URL is not baked in at build time; injected at deploy via NUXT_PUBLIC_SITE_URL
   site: {
     name: 'FasterSend',
-    // 一个基于WebRTC实现点对点快速目录同步和文件传输的工具站
+    // Peer-to-peer directory sync and file transfer over WebRTC
     description:
       'A tool station based on WebRTC to achieve point-to-point fast directory synchronization and file transfer'
     // defaultLocale: 'zh'
@@ -133,16 +133,16 @@ export default defineNuxtConfig({
     }
   },
 
-  // 运行时配置，均可通过 NUXT_* 环境变量在启动时覆盖，无需重新构建镜像
+  // Runtime config; all values can be overridden at startup via NUXT_* env vars without rebuilding the image
   runtimeConfig: {
-    // NUXT_TRUST_PROXY：true 或可信代理跳数，仅在位于反向代理之后时开启
+    // NUXT_TRUST_PROXY: true or trusted proxy hop count; enable only behind a reverse proxy
     trustProxy: false,
     // NUXT_MAX_CONNECTIONS_PER_IP
     maxConnectionsPerIp: 32,
     // NUXT_RECEIVE_FAILURES_PER_MINUTE
     receiveFailuresPerMinute: 10,
     public: {
-      // NUXT_PUBLIC_ICE_SERVERS：RTCIceServer[] 的 JSON
+      // NUXT_PUBLIC_ICE_SERVERS: JSON array of RTCIceServer
       iceServers: '',
       // NUXT_PUBLIC_ICE_TRANSPORT_POLICY：all | relay
       iceTransportPolicy: ''
@@ -153,8 +153,8 @@ export default defineNuxtConfig({
     experimental: {
       websocket: true
     },
-    // 将所有依赖内联打包进 server bundle，
-    // 避免外置 node_modules 中传递依赖缺失（Node 24+ ESM 严格解析）
+    // Inline all dependencies into the server bundle,
+    // avoiding missing transitive deps in external node_modules (Node 24+ strict ESM resolution)
     externals: {
       inline: [/.*/]
     }

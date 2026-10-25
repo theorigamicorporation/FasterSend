@@ -1,5 +1,6 @@
 // Adjectives are at most 8 characters and animals at most 7, so every
 // generated name fits the 16 character nickname limit.
+// prettier-ignore
 export const NICKNAME_ADJECTIVES = [
   'Bashful', 'Bouncy', 'Cheeky', 'Chunky', 'Clumsy', 'Cosmic', 'Crispy', 'Dapper',
   'Dizzy', 'Dramatic', 'Feisty', 'Fancy', 'Fluffy', 'Frosty', 'Funky', 'Fuzzy',
@@ -9,6 +10,7 @@ export const NICKNAME_ADJECTIVES = [
   'Wobbly', 'Wiggly', 'Zesty', 'Zippy'
 ]
 
+// prettier-ignore
 export const NICKNAME_ANIMALS = [
   'Alpaca', 'Axolotl', 'Badger', 'Beaver', 'Bison', 'Camel', 'Chicken', 'Corgi',
   'Crab', 'Dingo', 'Donkey', 'Duck', 'Ferret', 'Frog', 'Gecko', 'Goat',
@@ -27,13 +29,13 @@ function pick<T>(list: readonly T[], random: () => number): T {
 }
 
 /**
- * 生成 "形容词 动物" 形式的随机昵称，例如 "Sleepy Otter"
+ * Generates a random "Adjective Animal" nickname, e.g. "Sleepy Otter"
  */
 export function genAnimalNickname(random: () => number = Math.random): string {
   return `${pick(NICKNAME_ADJECTIVES, random)} ${pick(NICKNAME_ANIMALS, random)}`
 }
 
-/** 旧版自动生成的昵称（User_xxxxxx），需要替换为新的动物昵称 */
+/** Legacy auto-generated nickname (User_xxxxxx); to be replaced with an animal nickname */
 export function isLegacyNickname(nickname: string): boolean {
   return LEGACY_NICKNAME.test(nickname)
 }

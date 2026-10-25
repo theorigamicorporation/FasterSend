@@ -2,7 +2,7 @@
 const props = defineProps({
   fileMap: { type: Object, default: {} },
   disabled: { type: Boolean, default: false },
-  /** 可选的虚拟根目录名称，传入后会在树顶层包裹一个根节点方便全选 */
+  /** Optional virtual root directory name; if given, wraps the tree in a root node to make select-all easy */
   rootLabel: { type: String, default: '' }
 })
 const selectedKey = defineModel<Record<string, boolean>>('selectedKey', { default: () => ({}) })
@@ -66,7 +66,7 @@ function calcTreeNodes() {
 
   const tmpNodes = dealNodes(root)
 
-  // 如果指定了虚拟根目录名，则用一个根节点包裹所有子项
+  // If a virtual root name is given, wrap all children in a root node
   if (props.rootLabel) {
     return [
       {

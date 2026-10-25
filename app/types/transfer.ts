@@ -1,11 +1,11 @@
 /**
- * 传输模式。
- * 空字符串表示当前尚未选择要发送的内容。
+ * Transfer mode.
+ * An empty string means nothing to send has been selected yet.
  */
 export type TransferType = '' | 'transFile' | 'transDir' | 'syncDir'
 
 /**
- * 用户基础信息。
+ * Basic user info.
  */
 export interface UserInfo {
   nickname: string
@@ -13,7 +13,7 @@ export interface UserInfo {
 }
 
 /**
- * 单个文件的扁平化描述信息。
+ * Flat description of a single file.
  */
 export interface FlatFileItem {
   paths: string[]
@@ -25,12 +25,12 @@ export interface FlatFileItem {
 }
 
 /**
- * 扁平文件树结构。
+ * Flat file tree.
  */
 export type FlatFileMap = Record<string, FlatFileItem>
 
 /**
- * 发送给接收端的文件信息载荷。
+ * File info payload sent to the receiver.
  */
 export interface FilesPayload {
   type: TransferType
@@ -39,7 +39,7 @@ export interface FilesPayload {
 }
 
 /**
- * 通用错误/警告状态。
+ * Generic error/warning state.
  */
 export interface MessageState {
   code: number
@@ -47,7 +47,7 @@ export interface MessageState {
 }
 
 /**
- * 发送端当前文件状态。
+ * Sender's current file state.
  */
 export interface SenderCurrentFileState {
   name: string
@@ -59,7 +59,7 @@ export interface SenderCurrentFileState {
 }
 
 /**
- * 发送端页面状态。
+ * Sender page state.
  */
 export interface SenderStatusState {
   isIniting: boolean
@@ -73,7 +73,7 @@ export interface SenderStatusState {
 }
 
 /**
- * 接收端当前文件状态。
+ * Receiver's current file state.
  */
 export interface RecipientCurrentFileState {
   name: string
@@ -85,7 +85,7 @@ export interface RecipientCurrentFileState {
 }
 
 /**
- * 接收端页面状态。
+ * Receiver page state.
  */
 export interface RecipientStatusState {
   isConnectServer: boolean
@@ -101,13 +101,13 @@ export interface RecipientStatusState {
 }
 
 /**
- * 目录同步阶段状态。
+ * Directory sync stage state.
  */
 export interface SyncDirState {
   folderName: string
   isWaitingSelectDir: boolean
   isDiffing: boolean
-  /** 是否使用快速对比模式（仅比较大小和修改时间，不计算哈希） */
+  /** Quick diff mode: compares only size and modified time, no hashing */
   isQuickDiff: boolean
   fileMapAdd: FlatFileMap
   fileMapUpdate: FlatFileMap
@@ -121,7 +121,7 @@ export interface SyncDirState {
 }
 
 /**
- * 构造默认错误/警告状态。
+ * Creates the default error/warning state.
  */
 export function createMessageState(): MessageState {
   return {
@@ -131,7 +131,7 @@ export function createMessageState(): MessageState {
 }
 
 /**
- * 构造默认发送端文件状态。
+ * Creates the default sender file state.
  */
 export function createSenderCurrentFileState(): SenderCurrentFileState {
   return {
@@ -145,7 +145,7 @@ export function createSenderCurrentFileState(): SenderCurrentFileState {
 }
 
 /**
- * 构造默认发送端状态。
+ * Creates the default sender state.
  */
 export function createSenderStatusState(): SenderStatusState {
   return {
@@ -161,7 +161,7 @@ export function createSenderStatusState(): SenderStatusState {
 }
 
 /**
- * 构造默认接收端文件状态。
+ * Creates the default receiver file state.
  */
 export function createRecipientCurrentFileState(): RecipientCurrentFileState {
   return {
@@ -175,7 +175,7 @@ export function createRecipientCurrentFileState(): RecipientCurrentFileState {
 }
 
 /**
- * 构造默认接收端状态。
+ * Creates the default receiver state.
  */
 export function createRecipientStatusState(): RecipientStatusState {
   return {
@@ -193,7 +193,7 @@ export function createRecipientStatusState(): RecipientStatusState {
 }
 
 /**
- * 构造默认目录同步状态。
+ * Creates the default directory sync state.
  */
 export function createSyncDirState(): SyncDirState {
   return {
@@ -214,7 +214,7 @@ export function createSyncDirState(): SyncDirState {
 }
 
 /**
- * 浅拷贝文件树，保留 File 引用，复制数组结构，避免在发送前污染原始状态。
+ * Shallow-copies the file tree, keeping File references and copying arrays, so the original state isn't mutated before sending.
  */
 export function cloneFlatFileMap(fileMap: FlatFileMap): FlatFileMap {
   const result: FlatFileMap = {}

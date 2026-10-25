@@ -11,16 +11,16 @@ async function getResponseByCache(cacheName, request) {
       request.url === location.origin + '/' ||
       request.url === location.origin + '/zh'
     ) {
-      // 不缓存
+      // Do not cache
       return fetch(request)
     }
     let res = await cache.match(request)
     if (res) {
-      // 匹配成功，异步更新缓存
+      // Cache hit: refresh the cache in the background
       cache.add(request)
       return res
     } else {
-      // 匹配失败，同步更新缓存
+      // Cache miss: fetch and update the cache
       res = await fetch(request)
       await cache.put(request, res.clone())
       return res

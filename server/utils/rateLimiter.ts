@@ -1,6 +1,6 @@
 /**
- * 滑动窗口计数限流器：记录每个 key 在窗口期内的命中时间，命中数达到上限即视为受限。
- * 用于限制同一 IP 的取件码查询失败次数，防止枚举取件码。
+ * Sliding-window rate limiter: records hit times per key within the window; a key is limited once hits reach the cap.
+ * Used to cap failed pickup-code lookups per IP and prevent code enumeration.
  */
 export class RateLimiter {
   private hits = new Map<string, number[]>()
@@ -26,12 +26,12 @@ export class RateLimiter {
     return list
   }
 
-  /** 当前 key 是否已经达到上限 */
+  /** Whether the key has reached the cap */
   public isLimited(key: string): boolean {
     return this.prune(key).length >= this.limit
   }
 
-  /** 记录一次命中，返回记录后是否达到上限 */
+  /** Record a hit; returns whether the cap is now reached */
   public hit(key: string): boolean {
     const list = this.prune(key)
     list.push(this.now())
@@ -42,7 +42,7 @@ export class RateLimiter {
     return list.length >= this.limit
   }
 
-  /** 清理所有过期记录，避免长时间运行时内存增长 */
+  /** Drop expired entries to avoid memory growth over long runs */
   public sweep(): void {
     for (const key of [...this.hits.keys()]) {
       this.prune(key)
@@ -55,14 +55,14 @@ export class RateLimiter {
 }
 
 /**
- * 每个 key 的并发计数器，用于限制同一 IP 的并发 WebSocket 连接数。
+ * Per-key concurrency counter, used to cap concurrent WebSocket connections per IP.
  */
 export class ConcurrencyCounter {
   private counts = new Map<string, number>()
 
   constructor(private readonly max: number) {}
 
-  /** 尝试占用一个名额，超过上限时返回 false 且不计数 */
+  /** Try to take a slot; returns false without counting if over the cap */
   public acquire(key: string): boolean {
     const n = this.counts.get(key) || 0
     if (n >= this.max) {

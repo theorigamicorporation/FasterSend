@@ -1,19 +1,19 @@
 /**
- * PeerDataChannel 配置类
+ * PeerDataChannel config
  */
 interface PeerDataChannelConfig {
   iceServers?: RTCIceServer[]
   iceTransportPolicy?: RTCIceTransportPolicy
   blockSize?: number
   initializeDataChannel?: boolean
-  /** disconnected 状态的容忍时间，超时后尝试 ICE 重启 */
+  /** Grace period in the disconnected state; after it expires, try an ICE restart */
   disconnectGraceMs?: number
-  /** ICE 重启后等待恢复的时间，超时仍未连接则视为断开 */
+  /** Time to wait for recovery after an ICE restart; if still not connected, treat as disconnected */
   iceRestartTimeoutMs?: number
 }
 
 /**
- * 封装用于点对点数据传输的 WebRTC 数据通道
+ * Wraps a WebRTC data channel for peer-to-peer transfer
  */
 export class PeerDataChannel {
   private static readonly DEFAULT_BLOCK_SIZE = 32768
@@ -32,7 +32,7 @@ export class PeerDataChannel {
   private sendPromiseReject: ((reason?: any) => void) | null = null
   private eventQueue: EventQueue<ArrayBuffer | string>
   private blockSize: number
-  // 创建数据通道的一方负责发起 offer，也只由它发起 ICE 重启，避免双方同时 offer 冲突
+  // The side that creates the data channel sends the offer and is the only one to restart ICE, avoiding glare from simultaneous offers
   private isOfferer: boolean
   private disposed = false
   private everConnected = false
@@ -54,8 +54,8 @@ export class PeerDataChannel {
   public onOpen: () => void = () => {}
 
   /**
-   * 创建一个新的 PeerDataChannel 实例
-   * @param config 配置
+   * Creates a new PeerDataChannel instance
+   * @param config config
    */
   constructor(config: PeerDataChannelConfig = {}) {
     this.blockSize = config.blockSize || PeerDataChannel.DEFAULT_BLOCK_SIZE
@@ -106,10 +106,10 @@ export class PeerDataChannel {
   }
 
   /**
-   * 连接状态处理：
-   * - disconnected 通常是短暂波动（移动网络、Wi-Fi 漫游、TURN 切换），先等待一段时间
-   * - failed 或等待超时后尝试一次 ICE 重启，重协商经 onnegotiationneeded -> onSDP 走信令通道
-   * - 只有 closed，或重启后仍未恢复，才视为断开
+   * Connection state handling:
+   * - disconnected is usually a brief blip (mobile network, Wi-Fi roaming, TURN switch), so wait a while first
+   * - on failed or wait timeout, try one ICE restart; renegotiation goes through onnegotiationneeded -> onSDP over the signalling channel
+   * - only closed, or no recovery after the restart, counts as disconnected
    */
   private handleConnectionStateChange(): void {
     if (this.disposed) {
@@ -119,7 +119,7 @@ export class PeerDataChannel {
     if (state === 'connected') {
       this.clearRecoveryTimers()
       this.restartAttempted = false
-      // 只在首次连接时通知，重连成功不应重复触发确认等业务流程
+      // Notify on first connect only; a successful reconnect must not re-trigger flows like confirmation
       if (!this.everConnected) {
         this.everConnected = true
         this.onConnected()
@@ -144,7 +144,7 @@ export class PeerDataChannel {
     }
   }
 
-  // 尝试一次 ICE 重启，已重启过或重启失败则断开
+  // Try one ICE restart; disconnect if already restarted or the restart fails
   private recover(): void {
     if (this.disposed || this.restartTimer) {
       return
@@ -167,7 +167,7 @@ export class PeerDataChannel {
         return
       }
     }
-    // 应答方不发起重启，而是等待对方的重启 offer；对方可能晚一个容忍周期才开始重启，因此多等一些
+    // The answerer doesn't restart; it waits for the peer's restart offer. The peer may start a full grace period later, so wait longer
     const timeout = this.isOfferer
       ? this.iceRestartTimeoutMs
       : this.iceRestartTimeoutMs + this.disconnectGraceMs
@@ -190,7 +190,7 @@ export class PeerDataChannel {
     }
   }
 
-  // 终止连接并通知上层
+  // Terminate the connection and notify the caller
   private terminate(): void {
     if (this.disposed) {
       return
@@ -227,8 +227,8 @@ export class PeerDataChannel {
   }
 
   /**
-   * 发送数据，注意只能串行调用
-   * @param data 要发送的数据
+   * Sends data; must be called serially
+   * @param data data to send
    */
   public async sendData(data: ArrayBuffer | string): Promise<void> {
     if (!this.dc) {
@@ -239,8 +239,8 @@ export class PeerDataChannel {
       this.sendPromiseReject = reject
       const dc = this.dc!
       dc.bufferedAmountLowThreshold = 0
-      // 字符串先编码为 UTF-8 再按字节分片，避免在 UTF-16 代理对中间切断导致字符损坏；
-      // 接收端本来就是把分片拼成 Blob 再 text()，协议保持不变
+      // Strings are encoded to UTF-8 and chunked by bytes, so a UTF-16 surrogate pair is never split and corrupted;
+      // the receiver already joins chunks into a Blob and calls text(), so the protocol is unchanged
       const payload = typeof data === 'string' ? new TextEncoder().encode(data) : data
       const count = Math.ceil(payload.byteLength / this.blockSize)
       let offset = 0
@@ -271,7 +271,7 @@ export class PeerDataChannel {
   }
 
   /**
-   * 重协商 SDP
+   * Renegotiates SDP
    */
   private async reNegotiation(options?: RTCOfferOptions): Promise<void> {
     return this.pc
@@ -286,8 +286,8 @@ export class PeerDataChannel {
   }
 
   /**
-   * 设置远程 SDP
-   * @param sdp SDP描述
+   * Sets the remote SDP
+   * @param sdp SDP description
    */
   public async setRemoteSDP(sdp: RTCSessionDescriptionInit): Promise<void> {
     try {
@@ -305,7 +305,7 @@ export class PeerDataChannel {
   }
 
   /**
-   * 添加一个 ICE candidate
+   * Adds an ICE candidate
    * @param candidate ICE candidate
    */
   public async addICECandidate(candidate: RTCIceCandidateInit): Promise<void> {
@@ -313,16 +313,16 @@ export class PeerDataChannel {
   }
 
   /**
-   * 检查连接是否断开
-   * @returns 如果连接则为 True，否则为 false
+   * Checks whether the connection is down
+   * @returns true if connected, otherwise false
    */
   public isConnected(): boolean {
     return this.pc.connectionState === 'connected'
   }
 
   /**
-   * 获取接收缓存的大小
-   * @returns 接收缓存的大小
+   * Gets the size of the receive buffer
+   * @returns receive buffer size
    */
   public getReceivedBufferSize(): number {
     return this.receiveData.chunks.reduce(
@@ -332,7 +332,7 @@ export class PeerDataChannel {
   }
 
   /**
-   * 关闭对等连接并清理资源
+   * Closes the peer connection and cleans up resources
    */
   public dispose(): void {
     if (this.disposed) {
@@ -372,7 +372,7 @@ export class EventQueue<T> {
   }
 
   public enqueue(e: T): void {
-    // 每次把新任务链到上一个任务后面
+    // Chain each new task after the previous one
     this.tail = this.tail
       .then(() => this.handler(e))
       .catch((error) => {

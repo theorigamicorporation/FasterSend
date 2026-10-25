@@ -1,5 +1,5 @@
 /**
- * 未配置 NUXT_PUBLIC_ICE_SERVERS 时使用的默认 ICE 服务器
+ * Default ICE servers, used when NUXT_PUBLIC_ICE_SERVERS is not set
  */
 export const DEFAULT_ICE_SERVERS: RTCIceServer[] = [{ urls: 'stun:stun.l.google.com:19302' }]
 
@@ -24,9 +24,9 @@ function isValidIceServer(v: unknown): v is RTCIceServer {
 }
 
 /**
- * 解析 ICE 服务器配置。
- * Nuxt 会把 JSON 形式的环境变量预先解析成对象，因此同时接受字符串和数组。
- * 无效 JSON 或没有任何合法条目时回退到默认值。
+ * Parses the ICE server config.
+ * Nuxt pre-parses JSON env vars into objects, so both strings and arrays are accepted.
+ * Falls back to the defaults on invalid JSON or when no valid entries remain.
  */
 export function parseIceServers(raw: unknown): RTCIceServer[] {
   let value = raw
@@ -60,7 +60,7 @@ export function parseIceServers(raw: unknown): RTCIceServer[] {
 }
 
 /**
- * 解析 ICE 传输策略，只接受 all / relay，其余返回 undefined（浏览器默认 all）
+ * Parses the ICE transport policy; only all / relay are accepted, anything else yields undefined (browser default is all)
  */
 export function parseIceTransportPolicy(raw: unknown): RTCIceTransportPolicy | undefined {
   const v = typeof raw === 'string' ? raw.trim().toLowerCase() : ''

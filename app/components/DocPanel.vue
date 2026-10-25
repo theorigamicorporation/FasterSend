@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const isDocPanelShow = ref(false)
+const isDocPanelShow = useHelpOpen()
 const tab = ref<'quick' | 'how' | 'privacy'>('quick')
 const curIP = ref('')
 
@@ -31,10 +31,7 @@ const privacyItems = [
   { title: 'help.p4t', desc: 'help.p4d', icon: 'solar:eye-linear' }
 ]
 
-function showDocPanel() {
-  tab.value = 'quick'
-  isDocPanelShow.value = true
-}
+watch(isDocPanelShow, (open) => open && (tab.value = 'quick'))
 
 onMounted(() => {
   fetch('/api/getIP', { method: 'post' })
@@ -45,17 +42,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <button
-    type="button"
-    data-testid="help-button"
-    class="fixed right-4 bottom-4 z-40 flex h-12 items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 shadow-lg shadow-zinc-900/10 transition-colors hover:text-zinc-900 sm:right-6 sm:bottom-6 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:text-white"
-    :aria-label="$t('nav.help')"
-    @click="showDocPanel"
-  >
-    <Icon name="solar:question-circle-linear" size="20" />
-    <span class="hidden sm:inline">{{ $t('nav.help') }}</span>
-  </button>
-
   <Dialog
     v-model:visible="isDocPanelShow"
     dismissable-mask
@@ -85,7 +71,7 @@ onMounted(() => {
       </button>
     </div>
 
-    <!-- 快速上手 -->
+    <!-- Quick start -->
     <div v-if="tab === 'quick'" role="tabpanel">
       <ol class="space-y-3">
         <li
@@ -118,7 +104,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- 工作原理 / 隐私 -->
+    <!-- How it works / privacy -->
     <div v-else role="tabpanel" class="grid gap-3 sm:grid-cols-2">
       <div
         v-for="item in tab === 'how' ? howItems : privacyItems"

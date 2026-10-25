@@ -1,4 +1,4 @@
 /**
- * 取件码位数，需要与服务端 server/utils/signalling.ts 中的 codeLength 保持一致
+ * Receive code length; must match codeLength in server/utils/signalling.ts
  */
 export const RECEIVE_CODE_LENGTH = 6

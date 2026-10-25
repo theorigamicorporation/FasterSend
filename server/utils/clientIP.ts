@@ -1,6 +1,6 @@
 /**
- * 解析 trustProxy 配置，返回可信反向代理的跳数。
- * true / "true" 表示信任 1 跳；数字表示信任对应跳数；其余情况一律不信任 X-Forwarded-For。
+ * Parse the trustProxy setting into a trusted reverse-proxy hop count.
+ * true / "true" trusts 1 hop; a number trusts that many hops; anything else ignores X-Forwarded-For.
  */
 export function parseTrustProxy(value: unknown): number {
   if (value === true || value === 'true') {
@@ -10,16 +10,16 @@ export function parseTrustProxy(value: unknown): number {
   return Number.isInteger(n) && n > 0 ? n : 0
 }
 
-// IPv4 映射的 IPv6 地址统一还原为 IPv4，避免同一客户端被计为两个地址
+// Unmap IPv4-mapped IPv6 addresses so one client is not counted as two
 function normalizeIP(ip: string): string {
   const v = ip.trim()
   return v.startsWith('::ffff:') && v.includes('.') ? v.slice(7) : v
 }
 
 /**
- * 获取客户端 IP。
- * 只有在配置了可信代理时才读取 X-Forwarded-For，并且从右往左数可信跳数取值：
- * 最左侧的条目由客户端自行填写，可以被伪造，不能直接使用。
+ * Get the client IP.
+ * X-Forwarded-For is only read when a trusted proxy is configured, taking the entry
+ * that many hops from the right. Leftmost entries are client-supplied and can be spoofed.
  */
 export function getClientIP(
   xForwardedFor: string | null | undefined,

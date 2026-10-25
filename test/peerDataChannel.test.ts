@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-// 最小化的 RTCDataChannel 替身：按顺序把消息投递给对端，并异步触发 bufferedamountlow
+// Minimal RTCDataChannel stand-in: delivers messages to the peer in order and fires bufferedamountlow asynchronously
 class FakeDataChannel {
   bufferedAmountLowThreshold = 0
   onmessage: ((e: { data: unknown }) => void) | null = null
@@ -11,7 +11,7 @@ class FakeDataChannel {
   private lowPending = false
 
   send(data: unknown) {
-    // 模拟浏览器：发送时复制数据
+    // Like browsers, copy the data on send
     const copy = typeof data === 'string' ? data : (data as Uint8Array | ArrayBuffer).slice(0)
     this.sent.push(copy)
     const peer = this.peer
@@ -88,7 +88,7 @@ describe('PeerDataChannel framing', () => {
     await a.sendData(text)
     await got
     expect(received[0]!.data).toBe(text)
-    // 1 个头 + ceil(len / blockSize) 个分片
+    // 1 header + ceil(len / blockSize) chunks
     expect(dcA.sent).toHaveLength(1 + Math.ceil(text.length / 1024))
     expect(JSON.parse(dcA.sent[0] as string)).toEqual({
       count: Math.ceil(text.length / 1024),
@@ -192,7 +192,7 @@ describe('PeerDataChannel connection recovery', () => {
     pc.setState('connected')
     vi.advanceTimersByTime(60000)
     expect(onDispose).not.toHaveBeenCalled()
-    // 恢复后再次失败，允许再重启一次
+    // Fails again after recovery; one more restart is allowed
     pc.setState('failed')
     expect(pc.restartIce).toHaveBeenCalledTimes(2)
   })

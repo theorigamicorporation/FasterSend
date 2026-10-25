@@ -88,13 +88,9 @@ export default defineI18nConfig(() => ({
         help: 'Help'
       },
       hero: {
-        badge: 'Peer-to-peer file transfer',
         title: 'Send files straight to another device',
         subtitle:
-          'No uploads and no accounts. Files go directly from browser to browser over an encrypted connection.',
-        chipDirect: 'Direct transfer',
-        chipEncrypted: 'Encrypted in transit',
-        chipNoStorage: 'Nothing stored on the server'
+          'No uploads and no accounts. Files go directly from browser to browser over an encrypted connection.'
       },
       send: {
         title: 'Send',
@@ -107,15 +103,6 @@ export default defineI18nConfig(() => ({
         title: 'Receive',
         desc: "Enter the 6-digit code from the sender's screen.",
         scan: "Or scan the sender's QR code with your phone camera."
-      },
-      steps: {
-        title: 'How it works',
-        s1t: 'Pick a file',
-        s1d: 'Choose a file or folder and you get a 6-digit code.',
-        s2t: 'Share the code',
-        s2d: 'The recipient types the code or scans the QR code.',
-        s3t: 'Transfer directly',
-        s3d: 'After you approve, data flows straight between the two browsers.'
       },
       senderPage: {
         yourCode: 'Your code',
@@ -272,13 +259,9 @@ export default defineI18nConfig(() => ({
         help: 'Hilfe'
       },
       hero: {
-        badge: 'Peer-to-Peer-Dateiübertragung',
         title: 'Dateien direkt an ein anderes Gerät senden',
         subtitle:
-          'Kein Upload und kein Konto. Dateien gehen über eine verschlüsselte Verbindung direkt von Browser zu Browser.',
-        chipDirect: 'Direkte Übertragung',
-        chipEncrypted: 'Verschlüsselt übertragen',
-        chipNoStorage: 'Nichts wird auf dem Server gespeichert'
+          'Kein Upload und kein Konto. Dateien gehen über eine verschlüsselte Verbindung direkt von Browser zu Browser.'
       },
       send: {
         title: 'Senden',
@@ -291,15 +274,6 @@ export default defineI18nConfig(() => ({
         title: 'Empfangen',
         desc: 'Geben Sie den 6-stelligen Code vom Bildschirm des Senders ein.',
         scan: 'Oder scannen Sie den QR-Code des Senders mit der Handykamera.'
-      },
-      steps: {
-        title: "So funktioniert's",
-        s1t: 'Datei wählen',
-        s1d: 'Wählen Sie eine Datei oder einen Ordner und Sie erhalten einen 6-stelligen Code.',
-        s2t: 'Code teilen',
-        s2d: 'Der Empfänger gibt den Code ein oder scannt den QR-Code.',
-        s3t: 'Direkt übertragen',
-        s3d: 'Nach Ihrer Freigabe fließen die Daten direkt zwischen beiden Browsern.'
       },
       senderPage: {
         yourCode: 'Ihr Code',
@@ -456,13 +430,9 @@ export default defineI18nConfig(() => ({
         help: 'Aide'
       },
       hero: {
-        badge: 'Transfert de fichiers en pair à pair',
         title: 'Envoyez vos fichiers directement à un autre appareil',
         subtitle:
-          "Pas d'envoi sur un serveur, pas de compte. Les fichiers passent directement d'un navigateur à l'autre par une connexion chiffrée.",
-        chipDirect: 'Transfert direct',
-        chipEncrypted: 'Chiffré pendant le transfert',
-        chipNoStorage: 'Rien n’est stocké sur le serveur'
+          "Pas d'envoi sur un serveur, pas de compte. Les fichiers passent directement d'un navigateur à l'autre par une connexion chiffrée."
       },
       send: {
         title: 'Envoyer',
@@ -475,15 +445,6 @@ export default defineI18nConfig(() => ({
         title: 'Recevoir',
         desc: "Saisissez le code à 6 chiffres affiché chez l'expéditeur.",
         scan: "Ou scannez le QR code de l'expéditeur avec l'appareil photo de votre téléphone."
-      },
-      steps: {
-        title: 'Comment ça marche',
-        s1t: 'Choisissez un fichier',
-        s1d: 'Choisissez un fichier ou un dossier et obtenez un code à 6 chiffres.',
-        s2t: 'Partagez le code',
-        s2d: 'Le destinataire saisit le code ou scanne le QR code.',
-        s3t: 'Transfert direct',
-        s3d: 'Une fois approuvé, les données circulent directement entre les deux navigateurs.'
       },
       senderPage: {
         yourCode: 'Votre code',
