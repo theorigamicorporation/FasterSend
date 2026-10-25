@@ -612,6 +612,11 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
           status.value.error.code = 404
           status.value.error.msg = '404'
           dispose()
+        } else if (data.code === 429) {
+          // 429：该 IP 取件码查询失败次数过多，被信令服务限流
+          status.value.error.code = 429
+          status.value.error.msg = '429'
+          dispose()
         } else if (data.code === 0) {
           initPDC()
         }

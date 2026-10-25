@@ -147,11 +147,15 @@ All settings are read from environment variables when the server starts, so one 
 | --- | --- | --- |
 | `NUXT_PUBLIC_ICE_SERVERS` | `[{"urls":"stun:stun.l.google.com:19302"}]` | JSON array of [`RTCIceServer`](https://developer.mozilla.org/en-US/docs/Web/API/RTCIceServer) objects (`urls`, optional `username` / `credential`). Add a TURN server so transfers work across restrictive NATs. Invalid JSON falls back to the default. |
 | `NUXT_PUBLIC_ICE_TRANSPORT_POLICY` | `all` | `all` or `relay`. `relay` forces traffic through TURN, useful for testing a relay. |
+| `NUXT_TRUST_PROXY` | `false` | Set to `true` (or the number of proxy hops) when running behind a reverse proxy, so the client IP is taken from `X-Forwarded-For`. Leave it off otherwise, the header can be spoofed. |
+| `NUXT_MAX_CONNECTIONS_PER_IP` | `32` | Maximum concurrent signalling connections per client IP. |
+| `NUXT_RECEIVE_FAILURES_PER_MINUTE` | `10` | Failed pickup code lookups allowed per IP per minute before further attempts are refused. |
 
 Example:
 
 ```bash
 NUXT_PUBLIC_ICE_SERVERS='[{"urls":"stun:turn.example.com:3478"},{"urls":["turn:turn.example.com:3478","turns:turn.example.com:5349"],"username":"user","credential":"secret"}]' \
+NUXT_TRUST_PROXY=true \
 node .output/server/index.mjs
 ```
 

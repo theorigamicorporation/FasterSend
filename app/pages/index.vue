@@ -4,6 +4,7 @@ const toast = useToast()
 const homeStore = useHomeStore()
 const { isModernFileAPISupport, isDirSupport, receiveCode, isFileDraging } = storeToRefs(homeStore)
 const fileDragArea = ref()
+const codeLength = RECEIVE_CODE_LENGTH
 
 const { data: transCount, error: transCountError } = await useFetch('/api/transCount', {
   method: 'post'
@@ -150,7 +151,7 @@ onMounted(() => {
           <Icon name="solar:card-recive-linear" />{{ $t('label.receiveCode') }}
         </h2>
 
-        <InputOtp integerOnly v-model="receiveCode" class="gap-4">
+        <InputOtp integerOnly :length="codeLength" v-model="receiveCode" class="gap-2 md:gap-3">
           <template #default="{ attrs, events, index }">
             <input
               :autofocus="index === 1"
@@ -158,7 +159,7 @@ onMounted(() => {
               inputmode="numeric"
               v-bind="attrs"
               v-on="events"
-              class="border border-neutral-500/70 rounded-sm bg-neutral-50 dark:bg-zinc-900 focus:outline-hidden size-14 text-2xl text-center no-arrows"
+              class="border border-neutral-500/70 rounded-sm bg-neutral-50 dark:bg-zinc-900 focus:outline-hidden size-11 md:size-14 text-2xl text-center no-arrows"
             />
           </template>
         </InputOtp>

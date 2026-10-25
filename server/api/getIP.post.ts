@@ -1,3 +1,10 @@
+import { getClientIP, parseTrustProxy } from '../utils/clientIP'
+
 export default defineEventHandler((event) => {
-  return getRequestIP(event, { xForwardedFor: true })
+  const trustProxyHops = parseTrustProxy(useRuntimeConfig(event).trustProxy)
+  return getClientIP(
+    getRequestHeader(event, 'x-forwarded-for'),
+    event.node.req.socket?.remoteAddress,
+    trustProxyHops
+  )
 })
