@@ -1,11 +1,13 @@
-name: FastSend
+name: fastersend
 services:
   app:
+    image: ghcr.io/theorigamicorporation/fastersend:latest
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
-    command: node server/index.mjs
+      # Public URL of this deployment, used for canonical and OG tags
+      - NUXT_PUBLIC_SITE_URL=http://localhost:3000
+    restart: unless-stopped
