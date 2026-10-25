@@ -1,4 +1,3 @@
-import CryptoJS from 'crypto-js'
 import { toCanvas } from 'qrcode'
 import { PeerDataChannel } from '~/utils/PeerDataChannel'
 import {
@@ -36,7 +35,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
   let calcSpeedJobId: ReturnType<typeof setInterval> | undefined
   let ws: WebSocket | null = null
   let pdc: PeerDataChannel | null = null
-  const hasher = CryptoJS.algo.MD5.create()
+  const hasher = createMD5Hasher()
   // syncDir 场景下，payload 中的键是去根后的，需要映射回原始文件项
   let payloadFileMap: FlatFileMap = {}
 
@@ -122,7 +121,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
     }
 
     if (obj.type === 'reqFile') {
-      hasher.reset()
+      await hasher.reset()
       const fileDetail = payloadFileMap[obj.data]
       const file = fileDetail?.file
       const name = `${fileDetail?.paths[fileDetail?.paths?.length - 1] || ''}`
@@ -149,7 +148,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
           continue
         }
 
-        hasher.update(CryptoJS.lib.WordArray.create(ab))
+        await hasher.update(ab)
         await pdc?.sendData(ab)
 
         curFile.value.lastBytes = curFile.value.transmittedBytes
@@ -165,17 +164,12 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
         curFile.value.startTime = nowTime
       }
 
-      await pdc?.sendData(
-        JSON.stringify({
-          type: 'fileDone',
-          data: hasher.finalize().toString(CryptoJS.enc.Base64)
-        })
-      )
+      await pdc?.sendData(JSON.stringify({ type: 'fileDone', data: await hasher.digest() }))
       return
     }
 
     if (obj.type === 'calcFileHash') {
-      hasher.reset()
+      await hasher.reset()
       const fileDetail = payloadFileMap[obj.data]
       const file = fileDetail?.file
       if (!file) {
