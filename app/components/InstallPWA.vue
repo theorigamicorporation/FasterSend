@@ -20,7 +20,7 @@ onMounted(() => {
       rounded
       severity="contrast"
       size="large"
-      class="shadow-sm shadow-black/25 border-0 dark:border border-white/25"
+      class="shadow-xs shadow-black/25 border-0 dark:border border-white/25"
       aria-label="Install PWA"
       @click="installPWA"
     >

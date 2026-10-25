@@ -90,8 +90,8 @@ onUnmounted(() => {
     <div v-else>
       <!-- 接入的用户 -->
       <div class="flex flex-col items-center mt-4">
-        <div class="flex-col items-center py-4 px-8 rounded-lg shadow flex">
-          <Avatar shape="circle" size="xlarge" :image="peerUserInfo.avatarURL" class="shadow" />
+        <div class="flex-col items-center py-4 px-8 rounded-lg shadow-sm flex">
+          <Avatar shape="circle" size="xlarge" :image="peerUserInfo.avatarURL" class="shadow-sm" />
           <p class="text-center mt-2">{{ peerUserInfo.nickname }}</p>
         </div>
       </div>
@@ -171,7 +171,7 @@ onUnmounted(() => {
         <div class="py-4 flex flex-col md:flex-row items-center justify-center gap-6">
           <NuxtLink to="https://www.buymeacoffee.com/shouchen" target="_blank">
             <Button outlined severity="contrast" class="tracking-wider"
-              ><IconCoffee class="size-[1.125rem] mr-2" />{{ t('btn.buyMeCoffee') }}</Button
+              ><IconCoffee class="size-4.5 mr-2" />{{ t('btn.buyMeCoffee') }}</Button
             >
           </NuxtLink>
 

@@ -67,7 +67,7 @@ onMounted(() => {
 <template>
   <nav
     class="flex flex-row items-center py-3 px-4 md:py-4 md:px-[10vw] sticky left-0 right-0 top-0 z-50 nav-bar"
-    :class="{ 'backdrop-blur': isBgBlur }"
+    :class="{ 'backdrop-blur-sm': isBgBlur }"
   >
     <NuxtLink :to="localePath('/')">
       <div class="tracking-wider">
@@ -81,10 +81,10 @@ onMounted(() => {
       <Avatar
         :image="userInfo.avatarURL"
         shape="circle"
-        class="shadow cursor-pointer"
+        class="shadow-sm cursor-pointer"
         @click="showNicknameEditor"
       />
-      <p class="ml-2 truncate shrink-[1000] hidden md:block">
+      <p class="ml-2 truncate shrink-1000 hidden md:block">
         {{ userInfo.nickname }}
       </p>
     </div>

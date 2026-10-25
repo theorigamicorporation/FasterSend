@@ -24,15 +24,15 @@
 - Nuxt 4
 - Vue 3 Composition API
 - TypeScript
-- Pinia
+- Pinia 4
 - PrimeVue 4 与 `@primevue/nuxt-module`
-- Tailwind CSS 3
+- Tailwind CSS 4（`@tailwindcss/vite`，主题变量在 `app/assets/main.css`）
 - `@nuxtjs/i18n`
 - `@vite-pwa/nuxt`
 - WebRTC DataChannel
 - WebSocket 信令通道
 - Modern File System API
-- CryptoJS MD5 校验
+- `hash-wasm` 增量 MD5 校验（Base64 摘要）
 
 维护时必须遵守以下技术约束：
 
@@ -40,7 +40,7 @@
 - 锁文件以 `yarn.lock` 为准
 - 不要改用 `npm`、`bun` 或 `pnpm`
 - 依赖安装、升级、验证命令优先使用 `yarn install`、`yarn build`
-- Tailwind 当前固定在 v3 体系，除非用户明确要求并批准，不要擅自迁移到 Tailwind 4
+- Tailwind 已迁移到 v4（CSS-first 配置，无 `tailwind.config.js`）；PrimeVue 停留在 v4（v5 起改为商业授权，需 license key），升级前需用户明确批准
 
 ## 3. 项目结构认知
 

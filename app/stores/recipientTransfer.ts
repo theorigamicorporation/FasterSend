@@ -1,4 +1,3 @@
-import CryptoJS from 'crypto-js'
 import {
   createRecipientCurrentFileState,
   createRecipientStatusState,
@@ -42,7 +41,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
   const status = ref<RecipientStatusState>(createRecipientStatusState())
   const syncDirStatus = ref<SyncDirState>(createSyncDirState())
 
-  const hasher = CryptoJS.algo.MD5.create()
+  const hasher = createMD5Hasher()
 
   let calcSpeedJobId: ReturnType<typeof setInterval> | undefined
   let ws: WebSocket | null = null
@@ -117,7 +116,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
   async function handleBufferData(buf: ArrayBuffer) {
     curFile.value.transmittedBytes += buf.byteLength
     totalTransmittedBytes.value += buf.byteLength
-    hasher.update(CryptoJS.lib.WordArray.create(buf))
+    await hasher.update(buf)
 
     if (isModernFileAPISupport.value) {
       await curFileWriter?.write(buf)
@@ -180,7 +179,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
     }
 
     if (obj.type === 'fileDone') {
-      const hash = hasher.finalize().toString(CryptoJS.enc.Base64)
+      const hash = await hasher.digest()
       if (hash !== obj.data) {
         console.error(
           'Hash check failure.',
@@ -291,7 +290,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
   }
 
   async function requestFile(key: string) {
-    hasher.reset()
+    await hasher.reset()
     await pdc?.sendData(JSON.stringify({ type: 'reqFile', data: key }))
     return new Promise<void>((resolve, reject) => {
       reqFileResolveFn = resolve

@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import path from 'path'
+import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   srcDir: 'app',
   devtools: { enabled: true },
@@ -13,17 +14,14 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxtjs/color-mode',
     '@nuxtjs/i18n',
-    '@nuxtjs/tailwindcss',
     '@nuxtjs/seo',
     '@nuxt/icon',
     '@vite-pwa/nuxt',
     '@primevue/nuxt-module'
   ],
 
-  postcss: {
-    plugins: {
-      'tailwindcss/nesting': false
-    }
+  vite: {
+    plugins: [tailwindcss()]
   },
 
   app: {
@@ -61,6 +59,11 @@ export default defineNuxtConfig({
   ogImage: {
     enabled: false
   },
+
+  // Bundled with @nuxtjs/seo v6 and on by default. Skew protection registers its own
+  // service worker next to the PWA one and can reload the page mid-transfer.
+  skewProtection: false,
+  aiReady: false,
 
   primevue: {
     options: {

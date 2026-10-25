@@ -124,7 +124,7 @@ export async function selectFile(accept?: string): Promise<File> {
 
     input.onchange = () => {
       if (input.files && input.files.length > 0) {
-        resolve(input.files[0])
+        resolve(input.files[0]!)
       } else {
         reject(new Error('未选择文件'))
       }

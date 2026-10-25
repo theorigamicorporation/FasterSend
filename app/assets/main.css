@@ -1,3 +1,62 @@
+@import 'tailwindcss';
+
+/* PrimeVue pass-through presets live outside srcDir, so they are not auto-detected */
+@source '../../presets';
+
+@custom-variant dark (&:is(.dark *));
+
+/* inline so utilities resolve the runtime --primary/--surface vars per element (v3 behaviour) */
+@theme inline {
+  --color-primary: rgb(var(--primary));
+  --color-primary-inverse: rgb(var(--primary-inverse));
+  --color-primary-hover: rgb(var(--primary-hover));
+  --color-primary-active-color: rgb(var(--primary-active-color));
+  --color-primary-highlight: rgb(var(--primary) / var(--primary-highlight-opacity));
+  --color-primary-highlight-inverse: rgb(var(--primary-highlight-inverse));
+  --color-primary-highlight-hover: rgb(var(--primary) / var(--primary-highlight-hover-opacity));
+  --color-primary-50: rgb(var(--primary-50));
+  --color-primary-100: rgb(var(--primary-100));
+  --color-primary-200: rgb(var(--primary-200));
+  --color-primary-300: rgb(var(--primary-300));
+  --color-primary-400: rgb(var(--primary-400));
+  --color-primary-500: rgb(var(--primary-500));
+  --color-primary-600: rgb(var(--primary-600));
+  --color-primary-700: rgb(var(--primary-700));
+  --color-primary-800: rgb(var(--primary-800));
+  --color-primary-900: rgb(var(--primary-900));
+  --color-primary-950: rgb(var(--primary-950));
+  --color-surface-0: rgb(var(--surface-0));
+  --color-surface-50: rgb(var(--surface-50));
+  --color-surface-100: rgb(var(--surface-100));
+  --color-surface-200: rgb(var(--surface-200));
+  --color-surface-300: rgb(var(--surface-300));
+  --color-surface-400: rgb(var(--surface-400));
+  --color-surface-500: rgb(var(--surface-500));
+  --color-surface-600: rgb(var(--surface-600));
+  --color-surface-700: rgb(var(--surface-700));
+  --color-surface-800: rgb(var(--surface-800));
+  --color-surface-900: rgb(var(--surface-900));
+  --color-surface-950: rgb(var(--surface-950));
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
 body {
   @apply bg-white text-black;
   @apply dark:bg-zinc-950 dark:text-white;
