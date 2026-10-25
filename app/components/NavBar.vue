@@ -7,39 +7,34 @@ const userStore = useUserStore()
 const { userInfo, isConfirmDefault } = storeToRefs(userStore)
 const tmpNickname = ref('')
 const userInfoPopover = ref()
+const helpOpen = useHelpOpen()
 
-// 暗色模式切换
-// 按实际生效的主题切换，跟随系统时也能正确显示图标
+// Toggle from the theme actually in effect so the icon is right when following the system
 function switchColorMode() {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 }
 
 const localeCodes = ['en', 'de', 'fr'] as const
 
-// 是否开启发送方自动确认
 function switchConfirmDefault() {
   userStore.setConfirmDefault(isConfirmDefault.value)
 }
 
-// 展示昵称编辑弹框
 function showNicknameEditor(event: Event) {
   tmpNickname.value = userInfo.value.nickname
   userInfoPopover.value.toggle(event)
 }
 
-// 编辑昵称
 function editNickname() {
   userStore.setNickname(tmpNickname.value)
   tmpNickname.value = userInfo.value.nickname
   userInfoPopover.value.hide()
 }
 
-// 编辑头像
 function editAvatar() {
   userStore.openAvatarPicker()
 }
 
-// 重置用户信息
 function clearUserInfo() {
   userStore.resetUserInfo()
   tmpNickname.value = userInfo.value.nickname
@@ -74,7 +69,18 @@ onMounted(() => {
 
       <div class="flex-1"></div>
 
-      <!-- 用户资料 -->
+      <button
+        type="button"
+        data-testid="help-button"
+        class="flex h-9 items-center gap-1.5 rounded-full px-2.5 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-900/5 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
+        :aria-label="$t('nav.help')"
+        @click="helpOpen = true"
+      >
+        <Icon name="solar:question-circle-linear" size="18" />
+        <span class="hidden sm:inline">{{ $t('nav.help') }}</span>
+      </button>
+
+      <!-- Profile -->
       <button
         type="button"
         class="flex items-center gap-2 rounded-full border border-zinc-200 bg-white/80 py-1 pr-1 pl-1 text-sm transition-colors hover:border-zinc-300 sm:pr-3 dark:border-zinc-800 dark:bg-zinc-900/80 dark:hover:border-zinc-700"
@@ -85,7 +91,7 @@ onMounted(() => {
         <span class="hidden max-w-36 truncate font-medium sm:block">{{ userInfo.nickname }}</span>
       </button>
 
-      <!-- 语言 -->
+      <!-- Language -->
       <div
         class="flex items-center rounded-full border border-zinc-200 bg-white/80 p-0.5 text-xs font-semibold dark:border-zinc-800 dark:bg-zinc-900/80"
         role="group"
@@ -108,7 +114,7 @@ onMounted(() => {
         </button>
       </div>
 
-      <!-- 主题 -->
+      <!-- Theme -->
       <button
         type="button"
         class="flex size-9 items-center justify-center rounded-full text-zinc-600 transition-colors hover:bg-zinc-900/5 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
@@ -123,7 +129,7 @@ onMounted(() => {
       </button>
     </div>
 
-    <!-- 用户信息弹出框 -->
+    <!-- Profile popover -->
     <Popover ref="userInfoPopover">
       <div class="w-72 p-4">
         <div class="flex flex-col items-center gap-3">

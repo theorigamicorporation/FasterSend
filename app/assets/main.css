@@ -218,27 +218,11 @@ body > * {
     @apply text-zinc-500 dark:text-zinc-400;
   }
   .fs-eyebrow {
-    @apply text-xs font-semibold uppercase tracking-[0.14em] text-primary-600 dark:text-primary-400;
+    @apply text-sm font-medium text-zinc-500 dark:text-zinc-400;
   }
   .fs-kbd {
     @apply inline-flex items-center rounded-md border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 font-mono text-[0.8em] dark:border-zinc-700 dark:bg-zinc-800;
   }
-}
-
-/* Page background: soft glow on a dot grid */
-.fs-backdrop {
-  @apply pointer-events-none fixed inset-0 -z-50;
-  background-image:
-    radial-gradient(60rem 30rem at 50% -10rem, rgb(var(--primary-500) / 0.12), transparent 70%),
-    radial-gradient(rgb(24 24 27 / 0.07) 1px, transparent 1px);
-  background-size:
-    100% 100%,
-    18px 18px;
-}
-.dark .fs-backdrop {
-  background-image:
-    radial-gradient(60rem 30rem at 50% -10rem, rgb(var(--primary-500) / 0.16), transparent 70%),
-    radial-gradient(rgb(255 255 255 / 0.06) 1px, transparent 1px);
 }
 
 @keyframes fs-ping {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// 分享图需要绝对地址，基于运行时站点配置（NUXT_PUBLIC_SITE_URL）生成
+// OG image needs an absolute URL, built from the runtime site config (NUXT_PUBLIC_SITE_URL)
 const siteConfig = useSiteConfig()
 const ogImageURL = computed(() =>
   siteConfig.url ? new URL('/ogImg.webp', siteConfig.url).href : '/ogImg.webp'
@@ -30,7 +30,6 @@ onMounted(() => {
   <NuxtRouteAnnouncer />
   <FullScreenLoader />
   <Toast position="top-right" />
-  <div class="fs-backdrop"></div>
   <div class="flex min-h-screen flex-col">
     <NavBar />
     <main class="flex-1">
