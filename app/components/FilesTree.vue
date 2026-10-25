@@ -82,7 +82,7 @@ const indent = (depth: number) => ({ paddingLeft: `${0.5 + depth * 1.25}rem` })
         :placeholder="t('label.filterFiles')"
         :aria-label="t('label.filterFiles')"
         :disabled="disabled"
-        class="h-9 w-full rounded-xl border border-zinc-200 bg-white pr-3 pl-9 text-sm shadow-sm shadow-zinc-900/[0.03] transition outline-none placeholder:text-zinc-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 disabled:cursor-not-allowed dark:border-zinc-700 dark:bg-zinc-950 dark:placeholder:text-zinc-500 dark:focus:border-primary-400"
+        class="h-9 w-full rounded-xl border border-zinc-200 bg-white pr-3 pl-9 text-base sm:text-sm shadow-sm shadow-zinc-900/[0.03] transition outline-none placeholder:text-zinc-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 disabled:cursor-not-allowed dark:border-zinc-700 dark:bg-zinc-950 dark:placeholder:text-zinc-500 dark:focus:border-primary-400"
       />
     </div>
     <div

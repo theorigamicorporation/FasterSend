@@ -116,7 +116,7 @@ onMounted(() => {
                     maxlength="16"
                     :placeholder="$t('label.nickname')"
                     :aria-label="$t('label.nickname')"
-                    class="h-10 min-w-0 flex-1 rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-zinc-700 dark:bg-zinc-900"
+                    class="h-10 min-w-0 flex-1 rounded-xl border border-zinc-200 bg-white px-3 text-base sm:text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-zinc-700 dark:bg-zinc-900"
                   />
                   <UiButton
                     type="submit"
