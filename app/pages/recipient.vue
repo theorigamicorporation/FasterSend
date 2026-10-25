@@ -109,13 +109,13 @@ onUnmounted(() => {
       <div>
         <!-- 发送方用户 -->
         <div
-          class="p-2 pr-3 md:p-3 md:pr-5 shadow shadow-black/20 dark:bg-neutral-900 rounded-full flex flex-row items-center"
+          class="p-2 pr-3 md:p-3 md:pr-5 shadow-sm shadow-black/20 dark:bg-neutral-900 rounded-full flex flex-row items-center"
         >
           <Avatar
             :image="peerUserInfo.avatarURL"
             shape="circle"
             size="large"
-            class="shadow shadow-black/15"
+            class="shadow-sm shadow-black/15"
           />
           <span class="ml-3 text-base flex-1">{{ peerUserInfo.nickname }}</span>
           <Icon
@@ -298,7 +298,7 @@ onUnmounted(() => {
             <!-- buy me coffee -->
             <NuxtLink to="https://www.buymeacoffee.com/shouchen" target="_blank">
               <Button rounded outlined severity="contrast" class="w-full tracking-wider"
-                ><IconCoffee class="size-[1.125rem] mr-2" />{{ t('btn.buyMeCoffee') }}</Button
+                ><IconCoffee class="size-4.5 mr-2" />{{ t('btn.buyMeCoffee') }}</Button
               >
             </NuxtLink>
 

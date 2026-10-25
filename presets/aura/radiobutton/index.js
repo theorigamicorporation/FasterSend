@@ -43,7 +43,7 @@ export default {
             {
                 'peer-hover:border-surface-400 dark:peer-hover:border-surface-400': !props.disabled && !props.invalid && !context.checked,
                 'peer-hover:border-primary-emphasis': !props.disabled && !context.checked,
-                'peer-hover:[&>*:first-child]:bg-primary-600 dark:peer-hover:[&>*:first-child]:bg-primary-300': !props.disabled && !context.checked,
+                '[&>*:first-child]:peer-hover:bg-primary-600 dark:[&>*:first-child]:peer-hover:bg-primary-300': !props.disabled && !context.checked,
                 'peer-focus-visible:ring-1 peer-focus-visible:ring-primary-500 dark:peer-focus-visible:ring-primary-400': !props.disabled,
                 'bg-surface-200 [&>*:first-child]:bg-surface-600 dark:bg-surface-700 dark:[&>*:first-child]:bg-surface-400 border-surface-300 dark:border-surface-700 select-none pointer-events-none cursor-default': props.disabled
             }
@@ -69,8 +69,8 @@ export default {
             // Shape
             'opacity-0',
             'rounded-md',
-            'outline-none',
-            'border-1 border-surface-200 dark:border-surface-700',
+            'outline-hidden',
+            'border border-surface-200 dark:border-surface-700',
 
             // Misc
             'appearance-none',

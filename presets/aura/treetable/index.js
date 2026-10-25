@@ -123,7 +123,7 @@ export default {
             {
                 'hover:bg-surface-100 dark:bg-surface-800/50': context.selectable && !context.selected
             },
-            'focus:outline-none focus:outline-offset-0 focus:ring-1 focus:ring-primary-500 ring-inset dark:focus:ring-primary-400',
+            'focus:outline-hidden focus:outline-offset-0 focus:ring-1 focus:ring-primary-500 ring-inset dark:focus:ring-primary-400',
 
             // Transition
             { 'transition duration-200': (props.selectionMode && !context.selected) || props.rowHover }
@@ -149,7 +149,7 @@ export default {
             'border-0 border-b border-solid',
 
             // Spacing
-            context?.size === 'small' ? 'py-[0.375rem] px-2' : context?.size === 'large' ? 'py-[0.9375rem] px-5' : 'py-3 px-4',
+            context?.size === 'small' ? 'py-1.5 px-2' : context?.size === 'large' ? 'py-3.75 px-5' : 'py-3 px-4',
 
             // Color
             (props.sortable === '' || props.sortable) && context.sorted ? 'bg-highlight' : 'bg-surface-0 text-surface-700 dark:text-white/80 dark:bg-surface-900',
@@ -157,7 +157,7 @@ export default {
 
             // States
             { 'hover:bg-surface-100 dark:hover:bg-surface-80/50': (props.sortable === '' || props.sortable) && !context?.sorted },
-            'focus-visible:outline-none focus-visible:outline-offset-0 focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400',
+            'focus-visible:outline-hidden focus-visible:outline-offset-0 focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400',
 
             // Transition
             { 'transition duration-200': props.sortable === '' || props.sortable },
@@ -189,7 +189,7 @@ export default {
                 'border-0 border-b border-solid',
 
                 // Spacing
-                context?.size === 'small' ? 'py-[0.375rem] px-2' : context?.size === 'large' ? 'py-[0.9375rem] px-5' : 'py-3 px-4',
+                context?.size === 'small' ? 'py-1.5 px-2' : context?.size === 'large' ? 'py-3.75 px-5' : 'py-3 px-4',
 
                 // Color
                 (props.sortable === '' || props.sortable) && context.sorted ? 'bg-highlight' : 'bg-surface-0 text-surface-700 dark:text-white/80 dark:bg-surface-900',
@@ -197,7 +197,7 @@ export default {
 
                 // States
                 { 'hover:bg-surface-100 dark:hover:bg-surface-80/50': (props.sortable === '' || props.sortable) && !context?.sorted },
-                'focus-visible:outline-none focus-visible:outline-offset-0 focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400',
+                'focus-visible:outline-hidden focus-visible:outline-offset-0 focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400',
 
                 // Transition
                 { 'transition duration-200': props.sortable === '' || props.sortable },
@@ -234,7 +234,7 @@ export default {
                 { 'first:border-l border-r border-b': context?.showGridlines },
 
                 // Spacing
-                context?.size === 'small' ? 'py-[0.375rem] px-2' : context?.size === 'large' ? 'py-[0.9375rem] px-5' : 'py-3 px-4',
+                context?.size === 'small' ? 'py-1.5 px-2' : context?.size === 'large' ? 'py-3.75 px-5' : 'py-3 px-4',
 
                 // Misc
                 {
@@ -267,7 +267,7 @@ export default {
                 'border-transparent',
 
                 // States
-                'focus:outline-none focus:outline-offset-0 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-400',
+                'focus:outline-hidden focus:outline-offset-0 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-400',
                 'hover:text-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800/50',
 
                 // Transition
@@ -303,7 +303,7 @@ export default {
         },
         transition: {
             enterFromClass: 'opacity-0 scale-y-[0.8]',
-            enterActiveClass: 'transition-[transform,opacity] duration-[120ms] ease-[cubic-bezier(0,0,0.2,1)]',
+            enterActiveClass: 'transition-[transform,opacity] duration-120 ease-out',
             leaveActiveClass: 'transition-opacity duration-100 ease-linear',
             leaveToClass: 'opacity-0'
         }

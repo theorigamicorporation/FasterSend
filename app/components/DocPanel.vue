@@ -23,7 +23,7 @@ onMounted(() => {
       rounded
       severity="contrast"
       size="large"
-      class="shadow-sm shadow-black/25 border-0 dark:border border-white/25"
+      class="shadow-xs shadow-black/25 border-0 dark:border border-white/25"
       @click="showDocPanel"
       aria-label="Document"
     >
@@ -214,6 +214,8 @@ onMounted(() => {
 </template>
 
 <style>
+@reference '~/assets/main.css';
+
 .post {
   @apply tracking-wide;
 }

@@ -79,7 +79,7 @@ onMounted(() => {
 <template>
   <div class="md:px-[10vw] pb-4">
     <div
-      class="fixed top-0 left-0 right-0 bottom-0 inset-0 -z-50 h-full w-full bg-white dark:bg-zinc-950 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#25272b_1px,transparent_1px)] [background-size:16px_16px]"
+      class="fixed top-0 left-0 right-0 bottom-0 inset-0 -z-50 h-full w-full bg-white dark:bg-zinc-950 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#25272b_1px,transparent_1px)] bg-size-[16px_16px]"
     ></div>
     <div class="py-6 px-8 text-center">
       <h1 class="md:text-6xl text-5xl tracking-wider font-serif">Fast Send</h1>
@@ -104,7 +104,7 @@ onMounted(() => {
           ref="fileDragArea"
           @dragover="fileDragOver"
           @drop="fileDrop"
-          class="file-drag-area absolute left-0 top-0 right-0 bottom-0 flex-col items-center justify-center rounded-lg bg-white/60 dark:bg-black/60 backdrop-blur-sm border border-dashed border-neutral-500 z-40"
+          class="file-drag-area absolute left-0 top-0 right-0 bottom-0 flex-col items-center justify-center rounded-lg bg-white/60 dark:bg-black/60 backdrop-blur-xs border border-dashed border-neutral-500 z-40"
         >
           <Icon name="solar:file-send-linear" size="48" />
           <p class="mt-4">{{ $t('label.dragHereToSendFile') }}</p>
@@ -158,7 +158,7 @@ onMounted(() => {
               inputmode="numeric"
               v-bind="attrs"
               v-on="events"
-              class="border border-neutral-500/70 rounded bg-neutral-50 dark:bg-zinc-900 focus:outline-none size-14 text-2xl text-center no-arrows"
+              class="border border-neutral-500/70 rounded-sm bg-neutral-50 dark:bg-zinc-900 focus:outline-hidden size-14 text-2xl text-center no-arrows"
             />
           </template>
         </InputOtp>

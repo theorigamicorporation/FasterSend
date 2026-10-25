@@ -20,7 +20,7 @@ export default {
             },
             {
                 'w-10 px-0 gap-0': instance.hasIcon && !props.label && !props.badge,
-                'rounded-[50%] h-10 [&>[data-pc-section=label]]:w-0 [&>[data-pc-section=label]]:invisible': instance.hasIcon && !props.label && !props.badge && props.rounded
+                'rounded-[50%] h-10 *:data-[pc-section=label]:w-0 *:data-[pc-section=label]:invisible': instance.hasIcon && !props.label && !props.badge && props.rounded
             },
 
             // Shapes
@@ -135,7 +135,7 @@ export default {
             { 'text-surface-900 dark:text-surface-0 border border-surface-900 dark:border-surface-0': props.outlined && props.severity === 'contrast' && !props.plain },
 
             // --- Severity Button States ---
-            'focus:outline-none focus:outline-offset-0 focus:ring-0',
+            'focus:outline-hidden focus:outline-offset-0 focus:ring-0',
 
             // Link
             { 'focus:ring-primary': props.link },
@@ -203,7 +203,7 @@ export default {
             'cursor-pointer overflow-hidden select-none',
 
             // Badge
-            '[&>[data-pc-name=badge]]:min-w-4 [&>[data-pc-name=badge]]:h-4 [&>[data-pc-name=badge]]:leading-4'
+            '*:data-[pc-name=badge]:min-w-4 *:data-[pc-name=badge]:h-4 *:data-[pc-name=badge]:leading-4'
         ]
     }),
     label: ({ props }) => ({
