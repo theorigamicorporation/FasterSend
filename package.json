@@ -31,7 +31,7 @@
     "@nuxtjs/i18n": "^10.6.0",
     "@nuxtjs/seo": "^6.0.1",
     "@pinia/nuxt": "^1.0.3",
-    "@primevue/nuxt-module": "^4.5.5",
+    "@primevue/nuxt-module": "^5.0.3",
     "@tailwindcss/vite": "^4.3.3",
     "@types/qrcode": "^1.5.6",
     "@types/wicg-file-system-access": "^2023.10.7",
