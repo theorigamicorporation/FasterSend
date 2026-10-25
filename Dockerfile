@@ -1,9 +1,10 @@
 # syntax=docker/dockerfile:1
 
-# node:24-alpine, pinned by digest. Dependabot keeps it current.
-ARG NODE_IMAGE=node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
-
-FROM ${NODE_IMAGE} AS builder
+# The build output is plain JavaScript with no native addons, so the builder
+# runs on the host platform and only the runtime stage is per-arch. Drop
+# --platform here if a native dependency is ever added. Both stages use the
+# same digest-pinned node:24-alpine; Dependabot keeps them current.
+FROM --platform=$BUILDPLATFORM node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53 AS builder
 
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 WORKDIR /app
@@ -17,7 +18,7 @@ RUN --mount=type=cache,target=/root/.yarn/berry/cache \
 COPY . .
 RUN yarn build
 
-FROM ${NODE_IMAGE}
+FROM node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
 
 ENV NODE_ENV=production \
     HOST=0.0.0.0 \
