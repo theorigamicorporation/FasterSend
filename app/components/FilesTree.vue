@@ -5,7 +5,7 @@ const props = defineProps({
   /** 可选的虚拟根目录名称，传入后会在树顶层包裹一个根节点方便全选 */
   rootLabel: { type: String, default: '' }
 })
-const selectedKey = defineModel('selectedKey', { default: {} })
+const selectedKey = defineModel<Record<string, boolean>>('selectedKey', { default: () => ({}) })
 const totalFileCount = computed(() => Object.keys(props.fileMap).length)
 const selectedFileCount = computed(
   () => Object.keys(selectedKey.value).filter((n) => !/\/$/.test(n)).length
