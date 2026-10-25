@@ -13,6 +13,27 @@ useSeoMeta({
 
 const confirmUser = senderStore.confirmUser
 const copyLink = senderStore.copyLink
+const copyCode = senderStore.copyCode
+
+// 待发送内容摘要
+const transferConfigStore = useTransferConfigStore()
+const fileSummary = computed(() => {
+  const items = Object.values(transferConfigStore.fileMap)
+  const size = items.reduce((sum, f) => sum + f.size, 0)
+  const first = items[0]
+  const name =
+    transferConfigStore.type === 'transFile'
+      ? first?.paths.at(-1) || ''
+      : first?.paths[0] || t('recipientPage.folder')
+  return { count: items.length, size, name, isFile: transferConfigStore.type === 'transFile' }
+})
+const codeDigits = computed(() => code.value.split(''))
+const curPercent = computed(() =>
+  curFile.value.size === 0 ? 0 : (curFile.value.transmittedBytes / curFile.value.size) * 100
+)
+const totalPercent = computed(() =>
+  fileSummary.value.size === 0 ? 0 : (totalTransmittedBytes.value / fileSummary.value.size) * 100
+)
 
 watch(code, () => {
   if (!code.value) {
@@ -33,204 +54,219 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="mx-auto max-w-xl px-4 py-8 sm:py-14">
     <!-- 错误页面 -->
-    <div v-if="status.error.code !== 0">
-      <!-- 当前连接用户太多 -->
-      <div v-if="status.error.code === -1" class="text-center">
-        <Icon name="material-symbols-light:account-circle-off-outline-rounded" size="100" />
-        <p class="text-xl tracking-wider py-8">{{ t('hint.toManyPeople') }}</p>
-      </div>
-
-      <!-- 其他服务异常 -->
-      <div v-else class="text-center">
-        <Icon name="solar:sad-square-line-duotone" size="100" />
-        <p class="text-xl tracking-wider pt-8">{{ t('hint.serverError') }}</p>
-        <p class="text-sm tracking-wider pb-8 mt-2">({{ t('hint.closeTheProxy') }})</p>
-      </div>
-
-      <div class="text-center py-4">
-        <NuxtLink :to="localePath('/')">
-          <Button severity="contrast" class="tracking-wider"
-            ><Icon name="solar:home-2-linear" class="mr-2" />{{ t('btn.toHome') }}</Button
-          ></NuxtLink
-        >
-      </div>
+    <div v-if="status.error.code !== 0" class="fs-card">
+      <StatusView
+        v-if="status.error.code === -1"
+        tone="warning"
+        icon="material-symbols-light:account-circle-off-outline-rounded"
+        :title="t('hint.toManyPeople')"
+      >
+        <UiButton :to="localePath('/')" icon="solar:home-2-linear">{{ t('btn.toHome') }}</UiButton>
+      </StatusView>
+      <StatusView
+        v-else
+        tone="error"
+        icon="solar:sad-square-line-duotone"
+        :title="t('hint.serverError')"
+        :description="t('hint.closeTheProxy')"
+      >
+        <UiButton :to="localePath('/')" icon="solar:home-2-linear">{{ t('btn.toHome') }}</UiButton>
+      </StatusView>
     </div>
 
     <!-- 加载页面 -->
-    <div v-else-if="status.isIniting" class="flex flex-col gap-4 items-center justify-center py-20">
-      <div class="loader"></div>
-      <p class="text-xs">{{ t('hint.connecting') }}</p>
+    <div v-else-if="status.isIniting" class="flex flex-col items-center gap-4 py-24">
+      <UiSpinner />
+      <p class="fs-muted text-sm">{{ t('hint.connecting') }}</p>
     </div>
 
-    <!-- 等待链接 -->
-    <div v-else-if="status.isWaitingConnect" class="mt-4 mb-16">
-      <div class="md:mx-[10vw] p-4 text-center">
-        <p class="text-xl tracking-wider">{{ t('label.receiveCode') }}</p>
-        <p
-          class="mt-6 inline-block text-6xl md:text-7xl tracking-widest border py-4 px-8 border-dashed border-neutral-400 dark:border-neutral-500"
-        >
-          {{ code }}
+    <!-- 等待连接 -->
+    <div v-else-if="status.isWaitingConnect" class="fs-card overflow-hidden">
+      <div class="p-6 text-center sm:p-8">
+        <p class="fs-eyebrow">{{ t('senderPage.yourCode') }}</p>
+        <div class="mt-4 flex justify-center gap-1.5 sm:gap-2" data-testid="sender-code">
+          <span
+            v-for="(digit, i) in codeDigits"
+            :key="i"
+            class="flex h-14 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 font-mono text-3xl font-semibold sm:h-18 sm:w-14 sm:text-4xl dark:border-zinc-700 dark:bg-zinc-950"
+            >{{ digit }}</span
+          >
+        </div>
+        <p class="fs-muted mx-auto mt-4 max-w-sm text-sm text-balance">
+          {{ t('senderPage.shareHint') }}
         </p>
+
+        <div class="mt-6 flex justify-center">
+          <div class="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700">
+            <canvas ref="qrcodeElm" class="block size-44"></canvas>
+          </div>
+        </div>
+
+        <div class="mt-6 grid grid-cols-2 gap-3">
+          <UiButton variant="secondary" icon="solar:copy-linear" @click="copyCode">{{
+            t('senderPage.copyCode')
+          }}</UiButton>
+          <UiButton variant="secondary" icon="solar:link-minimalistic-2-linear" @click="copyLink">{{
+            t('btn.copyLink')
+          }}</UiButton>
+        </div>
       </div>
 
-      <!-- 二维码和复制链接按钮 -->
-      <div class="flex flex-col items-center justify-center gap-4">
-        <canvas ref="qrcodeElm" class="size-52"></canvas>
-        <Button size="small" severity="contrast" @click="copyLink" class="tracking-wider"
-          ><Icon name="solar:link-minimalistic-2-linear" class="mr-2" />{{
-            t('btn.copyLink')
-          }}</Button
+      <div
+        class="flex items-center gap-3 border-t border-zinc-200 bg-zinc-50/80 px-6 py-4 dark:border-zinc-800 dark:bg-zinc-950/40"
+      >
+        <span
+          class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white text-zinc-600 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:text-zinc-300 dark:ring-zinc-700"
         >
+          <Icon
+            :name="
+              fileSummary.isFile ? 'solar:file-linear' : 'solar:folder-with-files-line-duotone'
+            "
+            size="20"
+          />
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="truncate text-sm font-medium">{{ fileSummary.name }}</p>
+          <p class="fs-muted text-xs">
+            {{ t('senderPage.files', fileSummary.count) }} · {{ formatSize(fileSummary.size) }}
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="flex items-center justify-between gap-3 border-t border-zinc-200 px-6 py-3 dark:border-zinc-800"
+      >
+        <p class="flex items-center gap-2 text-sm">
+          <span class="relative flex size-2.5">
+            <span class="fs-ping absolute inline-flex size-full rounded-full bg-amber-400"></span>
+            <span class="relative inline-flex size-2.5 rounded-full bg-amber-500"></span>
+          </span>
+          {{ t('senderPage.waiting') }}
+        </p>
+        <UiButton variant="ghost" size="sm" :to="localePath('/')">{{
+          t('senderPage.cancel')
+        }}</UiButton>
       </div>
     </div>
 
     <!-- 连接成功 -->
-    <div v-else>
-      <!-- 接入的用户 -->
-      <div class="flex flex-col items-center mt-4">
-        <div class="flex-col items-center py-4 px-8 rounded-lg shadow-sm flex">
-          <Avatar shape="circle" size="xlarge" :image="peerUserInfo.avatarURL" class="shadow-sm" />
-          <p class="text-center mt-2">{{ peerUserInfo.nickname }}</p>
-        </div>
-      </div>
-
+    <template v-else>
       <!-- 业务异常 -->
-      <div
-        v-if="status.warn.code !== 0"
-        class="flex flex-col items-center justify-center py-10 gap-4"
-      >
-        <Icon
-          name="material-symbols-light:warning-outline-rounded"
-          size="96"
-          class="text-amber-500 dark:text-amber-600"
-        />
-        <p v-if="status.warn.code === -1" class="text-xl tracking-wider">
-          {{ t('hint.noSupportDirTrans2') }}
-        </p>
-        <p v-else-if="status.warn.code === -10" class="text-xl tracking-wider">
-          {{ t('hint.connectInterrupted') }}
-        </p>
-
-        <div class="text-center py-4">
-          <NuxtLink :to="localePath('/')">
-            <Button severity="contrast" class="tracking-wider"
-              ><Icon name="solar:home-2-linear" class="mr-2" />{{ t('btn.toHome') }}</Button
-            ></NuxtLink
-          >
-        </div>
+      <div v-if="status.warn.code !== 0" class="fs-card">
+        <StatusView
+          tone="warning"
+          icon="material-symbols-light:warning-outline-rounded"
+          :title="
+            status.warn.code === -1 ? t('hint.noSupportDirTrans2') : t('hint.connectInterrupted')
+          "
+        >
+          <UiButton :to="localePath('/')" icon="solar:home-2-linear">{{
+            t('btn.toHome')
+          }}</UiButton>
+        </StatusView>
       </div>
 
       <!-- 传输确认 -->
-      <div v-else-if="status.isWaitingConfirm" class="p-4 mt-6">
-        <p class="text-center text-2xl tracking-wider">{{ t('hint.areYouSureContinue') }}</p>
-        <div class="flex flex-row items-center justify-center gap-6 mt-8">
-          <Button outlined severity="danger" @click="confirmUser(false)" class="tracking-wider"
-            ><Icon name="solar:close-square-linear" class="mr-2" />{{ t('btn.cancel') }}</Button
+      <div v-else-if="status.isWaitingConfirm" class="fs-card p-6 text-center sm:p-8">
+        <div class="flex justify-center">
+          <Avatar
+            :image="peerUserInfo.avatarURL"
+            shape="circle"
+            size="xlarge"
+            class="ring-4 ring-primary-100 dark:ring-primary-500/20"
+          />
+        </div>
+        <h1 class="mt-5 text-xl font-semibold tracking-tight text-balance">
+          {{ t('senderPage.wantsToReceive', { name: peerUserInfo.nickname }) }}
+        </h1>
+        <p class="fs-muted mt-2 text-sm">
+          {{ fileSummary.name }} · {{ t('senderPage.files', fileSummary.count) }} ·
+          {{ formatSize(fileSummary.size) }}
+        </p>
+        <p
+          class="mx-auto mt-5 flex max-w-sm items-center justify-center gap-2 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-500/10 dark:text-amber-300"
+        >
+          <Icon name="solar:shield-warning-linear" size="16" class="shrink-0" />{{
+            t('senderPage.approveHint')
+          }}
+        </p>
+        <div class="mt-6 grid grid-cols-2 gap-3">
+          <UiButton
+            variant="danger"
+            size="lg"
+            icon="solar:close-circle-linear"
+            data-testid="confirm-decline"
+            @click="confirmUser(false)"
+            >{{ t('senderPage.decline') }}</UiButton
           >
-
-          <Button severity="contrast" @click="confirmUser(true)" class="tracking-wider"
-            ><Icon name="solar:check-square-linear" class="mr-2" />{{ t('btn.ok') }}</Button
+          <UiButton
+            size="lg"
+            icon="solar:check-circle-linear"
+            data-testid="confirm-allow"
+            @click="confirmUser(true)"
+            >{{ t('senderPage.allow') }}</UiButton
           >
         </div>
       </div>
 
-      <!-- 发送端主界面 -->
-      <div v-else-if="!status.isDone" class="p-4 mt-4 md:w-[50%] md:mx-auto">
-        <p class="text-center text-xl tracking-wider my-4">{{ t('hint.inTransit') }}</p>
+      <!-- 发送中 -->
+      <div v-else-if="!status.isDone" class="fs-card p-6 sm:p-8">
+        <PeerChip
+          :nickname="peerUserInfo.nickname"
+          :avatar-url="peerUserInfo.avatarURL"
+          :label="t('senderPage.sendingTo')"
+          :connected="true"
+        />
 
-        <div class="mt-8">
-          <p class="text-sm mt-2">{{ curFile.name }}</p>
-          <ProgressBar
-            :value="
-              Math.round(curFile.size === 0 ? 0 : (curFile.transmittedBytes / curFile.size) * 100)
-            "
-          />
-          <p class="text-right text-sm">
-            <span>{{ formatSize(curFile.speed) }}/s</span
-            ><span class="ml-4">{{ formatSize(curFile.transmittedBytes) }}</span
-            ><span class="mx-1">/</span><span>{{ formatSize(curFile.size) }}</span>
+        <div class="mt-7">
+          <div class="flex items-baseline justify-between gap-4 text-sm">
+            <p class="truncate font-medium">{{ curFile.name }}</p>
+            <p class="fs-muted shrink-0 tabular-nums">{{ Math.round(curPercent) }}%</p>
+          </div>
+          <UiProgress :value="curPercent" class="mt-2" />
+          <p class="fs-muted mt-2 flex justify-between text-xs tabular-nums">
+            <span>{{ formatSize(curFile.transmittedBytes) }} / {{ formatSize(curFile.size) }}</span>
+            <span>{{ formatSize(curFile.speed) }}/s</span>
           </p>
         </div>
 
-        <div class="text-center mt-8">
-          <NuxtLink :to="localePath('/')">
-            <Button outlined severity="danger" class="tracking-wider"
-              ><Icon name="solar:stop-linear" class="mr-2" />{{ t('btn.terminate') }}</Button
-            ></NuxtLink
-          >
+        <div v-if="fileSummary.count > 1" class="mt-5">
+          <div class="flex items-baseline justify-between text-sm">
+            <p class="font-medium">{{ t('label.totalProgress') }}</p>
+            <p class="fs-muted tabular-nums">{{ Math.round(totalPercent) }}%</p>
+          </div>
+          <UiProgress :value="totalPercent" class="mt-2" />
+          <p class="fs-muted mt-2 flex justify-between text-xs tabular-nums">
+            <span
+              >{{ formatSize(totalTransmittedBytes) }} / {{ formatSize(fileSummary.size) }}</span
+            >
+            <span>{{ durationTimeStr }} · {{ formatSize(totalSpeed) }}/s</span>
+          </p>
+        </div>
+
+        <p class="fs-muted mt-6 text-center text-xs">{{ t('senderPage.keepOpen') }}</p>
+        <div class="mt-4 flex justify-center">
+          <UiButton variant="danger" icon="solar:stop-linear" :to="localePath('/')">{{
+            t('btn.terminate')
+          }}</UiButton>
         </div>
       </div>
 
       <!-- 发送完毕 -->
-      <div v-else class="flex flex-col items-center justify-center py-10 gap-4">
-        <Icon name="solar:confetti-line-duotone" size="100" class="text-amber-500" />
-        <p class="text-xl tracking-wider">{{ t('hint.transCompleted') }}</p>
-
-        <div class="py-4 flex flex-col md:flex-row items-center justify-center gap-6">
-          <NuxtLink :to="localePath('/')">
-            <Button severity="contrast" class="tracking-wider"
-              ><Icon name="solar:home-2-linear" class="mr-2" />{{ t('btn.toHome') }}</Button
-            ></NuxtLink
-          >
-        </div>
+      <div v-else class="fs-card">
+        <StatusView
+          tone="success"
+          icon="solar:check-circle-linear"
+          :title="t('hint.transCompleted')"
+          :description="`${fileSummary.name} · ${formatSize(fileSummary.size)}`"
+        >
+          <UiButton :to="localePath('/')" icon="solar:upload-minimalistic-linear">{{
+            t('senderPage.sendMore')
+          }}</UiButton>
+        </StatusView>
       </div>
-    </div>
+    </template>
   </div>
 </template>
-
-<style scoped>
-.loader {
-  width: 100px;
-  height: 40px;
-  --g: radial-gradient(
-      farthest-side,
-      transparent calc(95% - 3px),
-      currentColor calc(100% - 3px) 98%,
-      transparent 101%
-    )
-    no-repeat;
-  background: var(--g), var(--g), var(--g);
-  background-size: 30px 30px;
-  animation: l9 1s infinite alternate;
-}
-@keyframes l9 {
-  0% {
-    background-position:
-      0 50%,
-      50% 50%,
-      100% 50%;
-  }
-  20% {
-    background-position:
-      0 0,
-      50% 50%,
-      100% 50%;
-  }
-  40% {
-    background-position:
-      0 100%,
-      50% 0,
-      100% 50%;
-  }
-  60% {
-    background-position:
-      0 50%,
-      50% 100%,
-      100% 0;
-  }
-  80% {
-    background-position:
-      0 50%,
-      50% 50%,
-      100% 100%;
-  }
-  100% {
-    background-position:
-      0 50%,
-      50% 50%,
-      100% 50%;
-  }
-}
-</style>

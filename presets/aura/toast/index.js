@@ -2,7 +2,7 @@ export default {
     root: ({ props }) => ({
         class: [
             //Size and Shape
-            'w-96 rounded-md',
+            'w-[calc(100vw-2rem)] sm:w-96 rounded-xl',
 
             // Positioning
             { '-translate-x-2/4': props.position == 'top-center' || props.position == 'bottom-center' }
@@ -10,35 +10,11 @@ export default {
     }),
     message: ({ props }) => ({
         class: [
-            'mb-4 rounded-md w-full',
-            'border border-transparent',
-            'backdrop-blur-[10px] shadow-md',
-
-            // Colors
-            {
-                'bg-blue-50/90 dark:bg-blue-500/20': props.message.severity == 'info',
-                'bg-green-50/90 dark:bg-green-500/20': props.message.severity == 'success',
-                'bg-surface-50 dark:bg-surface-800': props.message.severity == 'secondary',
-                'bg-orange-50/90 dark:bg-orange-500/20': props.message.severity == 'warn',
-                'bg-red-50/90 dark:bg-red-500/20': props.message.severity == 'error',
-                'bg-surface-950 dark:bg-surface-0': props.message.severity == 'contrast'
-            },
-            {
-                'border-blue-200 dark:border-blue-500/20': props.message.severity == 'info',
-                'border-green-200 dark:border-green-500/20': props.message.severity == 'success',
-                'border-surface-300 dark:border-surface-500/20': props.message.severity == 'secondary',
-                'border-orange-200 dark:border-orange-500/20': props.message.severity == 'warn',
-                'border-red-200 dark:border-red-500/20': props.message.severity == 'error',
-                'border-surface-950 dark:border-surface-0': props.message.severity == 'contrast'
-            },
-            {
-                'text-blue-700 dark:text-blue-300': props.message.severity == 'info',
-                'text-green-700 dark:text-green-300': props.message.severity == 'success',
-                'text-surface-700 dark:text-surface-300': props.message.severity == 'secondary',
-                'text-orange-700 dark:text-orange-300': props.message.severity == 'warn',
-                'text-red-700 dark:text-red-300': props.message.severity == 'error',
-                'text-surface-0 dark:text-surface-950': props.message.severity == 'contrast'
-            }
+            'mb-3 rounded-xl w-full',
+            'border backdrop-blur-md shadow-lg shadow-zinc-950/10',
+            props.message.severity == 'contrast'
+                ? 'bg-zinc-900 border-zinc-900 text-white dark:bg-white dark:border-white dark:text-zinc-900'
+                : 'bg-white/95 border-zinc-200 text-zinc-900 dark:bg-zinc-900/95 dark:border-zinc-800 dark:text-zinc-100'
         ]
     }),
     messageContent: ({ props }) => ({
@@ -53,23 +29,29 @@ export default {
     messageIcon: ({ props }) => ({
         class: [
             // Sizing and Spacing
-            props.message.severity === 'contrast' || props.message.severity === 'secondary' ? 'w-0' : 'w-4.5 h-4.5 mr-2',
-            'text-lg leading-[normal]'
+            props.message.severity === 'contrast' || props.message.severity === 'secondary' ? 'w-0' : 'w-4.5 h-4.5 mr-1 mt-px',
+            'text-lg leading-[normal]',
+            {
+                'text-sky-500': props.message.severity == 'info',
+                'text-emerald-500': props.message.severity == 'success',
+                'text-amber-500': props.message.severity == 'warn',
+                'text-rose-500': props.message.severity == 'error'
+            }
         ]
     }),
     messageText: {
         class: [
             // Font and Text
-            'text-base leading-[normal]',
+            'text-sm leading-[normal]',
             'ml-2',
             'flex-1'
         ]
     },
     summary: {
-        class: 'font-medium block'
+        class: 'font-semibold block'
     },
     detail: ({ props }) => ({
-        class: ['block', 'text-sm', props.message.severity === 'contrast' ? 'text-surface-0 dark:text-surface-950' : 'text-surface-700 dark:text-surface-0', { 'mt-2': props.message.summary }]
+        class: ['block', 'text-sm', props.message.severity === 'contrast' ? 'text-white/80 dark:text-zinc-600' : 'text-zinc-500 dark:text-zinc-400', { 'mt-1': props.message.summary }]
     }),
     closeButton: ({ props }) => ({
         class: [
@@ -92,7 +74,7 @@ export default {
             'transition duration-200 ease-in-out',
 
             // States
-            'hover:bg-surface-0/30 dark:hover:bg-[rgba(255,255,255,0.03)]',
+            'text-zinc-400 hover:bg-zinc-900/5 hover:text-zinc-700 dark:hover:bg-white/10 dark:hover:text-zinc-200',
             'focus:outline-hidden focus:outline-offset-0 focus:ring-1',
             {
                 'focus:ring-blue-500 dark:focus:ring-blue-400': props.severity == 'info',

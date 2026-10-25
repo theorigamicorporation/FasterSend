@@ -193,8 +193,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
         status.value.warn.code = -3
         toast.add({
           severity: 'error',
-          summary: 'Error',
-          detail: t('hint.hashCheckFail'),
+          summary: t('hint.hashCheckFail'),
           life: 5e3
         })
         // 校验失败时关闭写入流并尝试清理已写入的文件
@@ -235,12 +234,11 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
         status.value.error.msg = t('hint.refusesToTransmit')
         toast.add({
           severity: 'error',
-          summary: 'Error',
-          detail: t('hint.refusesToTransmit'),
+          summary: t('hint.refusesToTransmit'),
           life: 5e3
         })
       } else if (obj.data === 404) {
-        toast.add({ severity: 'warn', summary: 'Warn', detail: t('hint.fileNotFound'), life: 5e3 })
+        toast.add({ severity: 'warn', summary: t('hint.fileNotFound'), life: 5e3 })
       }
     }
   }
@@ -262,7 +260,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
         status.value.warn.msg = t('hint.connectInterrupted')
       }
       dispose()
-      toast.add({ severity: 'warn', summary: 'Warn', detail: t('hint.disconnected'), life: 5e3 })
+      toast.add({ severity: 'warn', summary: t('hint.disconnected'), life: 5e3 })
     }
     pdc.onError = (err) => {
       console.error(err)
@@ -273,7 +271,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
         status.value.error.msg = `${err}`
       }
       dispose()
-      toast.add({ severity: 'error', summary: 'Error', detail: `${err}`, life: 5e3 })
+      toast.add({ severity: 'error', summary: errorMessage(err), life: 5e3 })
     }
     pdc.onConnected = () => {
       status.value.isConnectPeer = true
@@ -421,8 +419,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
           syncDirStatus.value.isDiffing = false
           toast.add({
             severity: 'error',
-            summary: 'Error',
-            detail: t('hint.syncDiffFailed'),
+            summary: t('hint.syncDiffFailed'),
             life: 5e3
           })
         }
@@ -444,7 +441,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
         (name) => !/\/$/.test(name)
       )
       if (waitReceiveFileList.value.length === 0) {
-        toast.add({ severity: 'warn', summary: 'Warn', detail: t('hint.selectAtLeastOneFile'), life: 5e3 })
+        toast.add({ severity: 'warn', summary: t('hint.selectAtLeastOneFile'), life: 5e3 })
         status.value.isReceiving = false
         status.value.isLock = false
         return
@@ -469,7 +466,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
         syncDirStatus.value.waitUpdateList.length === 0 &&
         syncDirStatus.value.waitDeleteList.length === 0
       ) {
-        toast.add({ severity: 'warn', summary: 'Warn', detail: t('hint.selectAtLeastOneFile'), life: 5e3 })
+        toast.add({ severity: 'warn', summary: t('hint.selectAtLeastOneFile'), life: 5e3 })
         status.value.isReceiving = false
         status.value.isLock = false
         return
@@ -568,8 +565,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
       dispose()
       toast.add({
         severity: 'success',
-        summary: 'Success',
-        detail: t('hint.transCompleted'),
+        summary: t('hint.transCompleted'),
         life: 5e3
       })
     } catch (error) {
@@ -580,7 +576,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
         clearInterval(calcSpeedJobId)
         calcSpeedJobId = undefined
       }
-      toast.add({ severity: 'error', summary: 'Error', detail: `${error}`, life: 5e3 })
+      toast.add({ severity: 'error', summary: errorMessage(error), life: 5e3 })
       status.value.isLock = false
       status.value.isReceiving = false
     }

@@ -135,37 +135,36 @@ export function doDownloadFromBlob(blob: Blob | File, filename: string) {
   URL.revokeObjectURL(objUrl)
 }
 
-export async function copyToClipboard(content: string | ImageData): Promise<void> {
-  // Check if the environment is SSR
-  if (typeof window === 'undefined' || typeof navigator === 'undefined' || !navigator.clipboard) {
-    return
+export async function copyToClipboard(content: string): Promise<boolean> {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return false
   }
 
-  try {
-    if (typeof content === 'string') {
+  // Clipboard API 只在安全上下文（https 或 localhost）可用
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
       await navigator.clipboard.writeText(content)
-    } else {
-      const canvas = document.createElement('canvas')
-      canvas.width = content.width
-      canvas.height = content.height
-      const context = canvas.getContext('2d')
-
-      if (!context) {
-        throw new Error('Failed to get canvas context')
-      }
-
-      context.putImageData(content, 0, 0)
-      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve))
-
-      if (!blob) {
-        throw new Error('Failed to create blob from canvas')
-      }
-
-      const item = new ClipboardItem({ 'image/png': blob })
-      await navigator.clipboard.write([item])
+      return true
+    } catch (error) {
+      console.warn(error)
     }
+  }
+
+  // http 页面退回到 execCommand
+  const textarea = document.createElement('textarea')
+  textarea.value = content
+  textarea.setAttribute('readonly', '')
+  textarea.style.position = 'fixed'
+  textarea.style.opacity = '0'
+  document.body.appendChild(textarea)
+  textarea.select()
+  try {
+    return document.execCommand('copy')
   } catch (error) {
     console.warn(error)
+    return false
+  } finally {
+    textarea.remove()
   }
 }
 
@@ -269,4 +268,11 @@ export function formatTime(milliseconds: number) {
   return hours === 0
     ? `${formattedMinutes}:${formattedSeconds}`
     : `${hours}:${formattedMinutes}:${formattedSeconds}`
+}
+
+/**
+ * 把异常转成可读的提示文本，去掉 "Error:" 前缀
+ */
+export function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
 }

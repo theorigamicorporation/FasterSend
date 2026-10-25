@@ -44,7 +44,7 @@ export const useHomeStore = defineStore('home', () => {
       await applyTransferSelection('syncDir', fileMap)
     } catch (error) {
       console.warn(error)
-      toast.add({ severity: 'error', summary: 'Error', detail: `${error}`, life: 5e3 })
+      toast.add({ severity: 'error', summary: errorMessage(error), life: 5e3 })
       appStore.setFullScreenLoading(false)
     }
   }
@@ -57,7 +57,7 @@ export const useHomeStore = defineStore('home', () => {
       await applyTransferSelection('transDir', fileMap)
     } catch (error) {
       console.warn(error)
-      toast.add({ severity: 'error', summary: 'Error', detail: `${error}`, life: 5e3 })
+      toast.add({ severity: 'error', summary: errorMessage(error), life: 5e3 })
       appStore.setFullScreenLoading(false)
     }
   }
@@ -69,7 +69,7 @@ export const useHomeStore = defineStore('home', () => {
       await applyTransferSelection('transFile', dealFilesFormFile(file))
     } catch (error) {
       console.warn(error)
-      toast.add({ severity: 'error', summary: 'Error', detail: `${error}`, life: 5e3 })
+      toast.add({ severity: 'error', summary: errorMessage(error), life: 5e3 })
       appStore.setFullScreenLoading(false)
     }
   }
@@ -107,8 +107,7 @@ export const useHomeStore = defineStore('home', () => {
     if (item.isDirectory) {
       toast.add({
         severity: 'warn',
-        summary: 'Warn',
-        detail: t('hint.noSupportFolderDrag'),
+        summary: t('hint.noSupportFolderDrag'),
         life: 5e3
       })
     }
