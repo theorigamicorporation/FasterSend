@@ -138,3 +138,21 @@ docker-compose up -d
 ## ⭐ 支持项目
 
 如果这个项目对你有帮助，欢迎给一个 star 支持一下！
+
+## Configuration
+
+All settings are read from environment variables when the server starts, so one build or image works in every environment.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `NUXT_PUBLIC_ICE_SERVERS` | `[{"urls":"stun:stun.l.google.com:19302"}]` | JSON array of [`RTCIceServer`](https://developer.mozilla.org/en-US/docs/Web/API/RTCIceServer) objects (`urls`, optional `username` / `credential`). Add a TURN server so transfers work across restrictive NATs. Invalid JSON falls back to the default. |
+| `NUXT_PUBLIC_ICE_TRANSPORT_POLICY` | `all` | `all` or `relay`. `relay` forces traffic through TURN, useful for testing a relay. |
+
+Example:
+
+```bash
+NUXT_PUBLIC_ICE_SERVERS='[{"urls":"stun:turn.example.com:3478"},{"urls":["turn:turn.example.com:3478","turns:turn.example.com:5349"],"username":"user","credential":"secret"}]' \
+node .output/server/index.mjs
+```
+
+ICE servers are sent to the browser, so any TURN credentials here are visible to every visitor. Use a dedicated TURN user with quotas for this deployment.

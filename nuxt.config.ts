@@ -124,6 +124,16 @@ export default defineNuxtConfig({
     }
   },
 
+  // 运行时配置，均可通过 NUXT_* 环境变量在启动时覆盖，无需重新构建镜像
+  runtimeConfig: {
+    public: {
+      // NUXT_PUBLIC_ICE_SERVERS：RTCIceServer[] 的 JSON
+      iceServers: '',
+      // NUXT_PUBLIC_ICE_TRANSPORT_POLICY：all | relay
+      iceTransportPolicy: ''
+    }
+  },
+
   nitro: {
     experimental: {
       websocket: true

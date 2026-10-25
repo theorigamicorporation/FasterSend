@@ -21,6 +21,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
 
   const appStore = useAppStore()
   const userStore = useUserStore()
+  const iceConfig = useIceConfig()
   const transferConfigStore = useTransferConfigStore()
 
   const peerUserInfo = ref<UserInfo>({ nickname: 'unknown', avatarURL: '' })
@@ -199,7 +200,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
   }
 
   function initPDC() {
-    pdc = new PeerDataChannel({ iceServers: pubIceServers })
+    pdc = new PeerDataChannel({ ...iceConfig })
     pdc.onSDP = (sdp) => ws?.send(JSON.stringify({ type: 'sdp', data: sdp }))
     pdc.onICECandidate = (candidate) =>
       ws?.send(JSON.stringify({ type: 'candidate', data: candidate }))

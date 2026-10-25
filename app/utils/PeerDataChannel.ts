@@ -3,6 +3,7 @@
  */
 interface PeerDataChannelConfig {
   iceServers?: RTCIceServer[]
+  iceTransportPolicy?: RTCIceTransportPolicy
   blockSize?: number
   initializeDataChannel?: boolean
 }
@@ -44,7 +45,11 @@ export class PeerDataChannel {
   constructor(config: PeerDataChannelConfig = {}) {
     this.blockSize = config.blockSize || PeerDataChannel.DEFAULT_BLOCK_SIZE
     this.eventQueue = new EventQueue(this.onData.bind(this))
-    this.pc = new RTCPeerConnection({ iceServers: config.iceServers })
+    const rtcConfig: RTCConfiguration = { iceServers: config.iceServers }
+    if (config.iceTransportPolicy) {
+      rtcConfig.iceTransportPolicy = config.iceTransportPolicy
+    }
+    this.pc = new RTCPeerConnection(rtcConfig)
 
     this.setupPeerConnection()
 
