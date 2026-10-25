@@ -135,22 +135,11 @@ onMounted(() => {
     </div>
 
     <div
-      class="mt-6 flex flex-col items-start justify-between gap-2 border-t border-zinc-200 pt-4 text-xs sm:flex-row sm:items-center dark:border-zinc-800"
+      class="mt-6 flex items-center gap-2 border-t border-zinc-200 pt-4 text-xs dark:border-zinc-800"
     >
       <span class="fs-muted"
         >{{ $t('help.ipLabel') }}:
         <span class="fs-kbd text-zinc-700 dark:text-zinc-200">{{ curIP || '…' }}</span></span
-      >
-      <span class="fs-muted"
-        >{{ $t('footer.basedOn') }}
-        <a
-          target="_blank"
-          rel="noopener"
-          href="https://github.com/ShouChenICU/FastSend"
-          class="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-white"
-          >FastSend</a
-        >
-        {{ $t('footer.by') }} ShouChenICU (MIT)</span
       >
     </div>
   </Dialog>
