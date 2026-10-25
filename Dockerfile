@@ -4,7 +4,7 @@
 # runs on the host platform and only the runtime stage is per-arch. Drop
 # --platform here if a native dependency is ever added. Both stages use the
 # same digest-pinned node:24-alpine; Dependabot keeps them current.
-FROM --platform=$BUILDPLATFORM node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53 AS builder
+FROM --platform=$BUILDPLATFORM node:26-alpine@sha256:40cd011b55415bc894e45b02fdd5a5dfde056921b7d23a64c74f80497af48797 AS builder
 
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 WORKDIR /app
@@ -18,7 +18,7 @@ RUN --mount=type=cache,target=/root/.yarn/berry/cache \
 COPY . .
 RUN yarn build
 
-FROM node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
+FROM node:26-alpine@sha256:40cd011b55415bc894e45b02fdd5a5dfde056921b7d23a64c74f80497af48797
 
 ENV NODE_ENV=production \
     HOST=0.0.0.0 \
