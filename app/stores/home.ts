@@ -30,7 +30,7 @@ export const useHomeStore = defineStore('home', () => {
     fileMap: FlatFileMap
   ) {
     if (Object.keys(fileMap).length === 0) {
-      throw new Error(type === 'transFile' ? '未选择文件' : '目录为空')
+      throw new Error(type === 'transFile' ? t('hint.noFileSelected') : t('hint.dirIsEmpty'))
     }
     transferConfigStore.setTransferFiles(type, fileMap)
     await router.push(localePath('/sender'))

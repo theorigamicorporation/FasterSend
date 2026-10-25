@@ -17,14 +17,7 @@ function switchColorMode() {
   }
 }
 
-// 中英语言切换
-function switchI18n() {
-  if (locale.value === 'en') {
-    setLocale('zh')
-  } else {
-    setLocale('en')
-  }
-}
+const localeCodes = ['en', 'de', 'fr'] as const
 
 // 是否开启发送方自动确认
 function switchConfirmDefault() {
@@ -117,7 +110,7 @@ onMounted(() => {
             <InputText
               severity="contrast"
               size="small"
-              placeholder="昵称"
+              :placeholder="$t('label.nickname')"
               v-model:model-value="tmpNickname"
               @keydown.enter="editNickname"
             />
@@ -137,40 +130,24 @@ onMounted(() => {
     </Popover>
 
     <div class="contents">
-      <Button
-        severity="secondary"
-        text
-        @click="switchI18n"
-        size="small"
-        class="py-3"
-        aria-label="Language"
-      >
-        <Icon
-          name="icon-park-outline:chinese"
-          class="text-black/90 dark:text-white/90"
-          v-if="locale === 'zh'"
-        />
-        <Icon
-          name="icon-park-outline:english"
-          class="text-black/90 dark:text-white/90"
-          v-else-if="locale === 'en'"
-        />
-      </Button>
-
-      <!-- <Popover ref="i18nPopover">
-        <Listbox
-          v-model="selectedLocale"
-          :options="availableLocales"
-          optionLabel="name"
-          class="border-0"
-          ><template #option="slotProps">
-            <div class="flex items-center gap-2 text-sm">
-              <Icon :name="slotProps.option.icon" />
-              <div>{{ slotProps.option.name }}</div>
-            </div>
-          </template>
-        </Listbox>
-      </Popover> -->
+      <div class="flex items-center text-xs font-medium" role="group" aria-label="Language">
+        <template v-for="(code, i) in localeCodes" :key="code">
+          <span v-if="i > 0" class="text-black/30 dark:text-white/30">/</span>
+          <button
+            type="button"
+            class="px-1.5 py-3 uppercase cursor-pointer transition-colors"
+            :class="
+              locale === code
+                ? 'text-black dark:text-white'
+                : 'text-black/45 hover:text-black/80 dark:text-white/45 dark:hover:text-white/80'
+            "
+            :aria-pressed="locale === code"
+            @click="setLocale(code)"
+          >
+            {{ code }}
+          </button>
+        </template>
+      </div>
 
       <Button
         severity="secondary"

@@ -258,7 +258,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
     }
 
     if (Object.keys(transferConfigStore.fileMap).length === 0) {
-      toast.add({ severity: 'warn', summary: 'Warn', detail: '目录为空', life: 5e3 })
+      toast.add({ severity: 'warn', summary: 'Warn', detail: t('hint.dirIsEmpty'), life: 5e3 })
       router.replace(localePath('/'))
       return
     }
