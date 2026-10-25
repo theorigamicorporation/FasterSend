@@ -115,11 +115,11 @@ export const useHomeStore = defineStore('home', () => {
   }
 
   async function handleReceiveCodeChange() {
-    if (receiveCode.value.length !== 4) {
+    if (receiveCode.value.length !== RECEIVE_CODE_LENGTH) {
       return
     }
 
-    if (/^\d{4}$/.test(receiveCode.value)) {
+    if (new RegExp(`^\\d{${RECEIVE_CODE_LENGTH}}$`).test(receiveCode.value)) {
       appStore.setFullScreenLoading(true)
       await router.push({ path: localePath('recipient'), query: { code: receiveCode.value } })
       return

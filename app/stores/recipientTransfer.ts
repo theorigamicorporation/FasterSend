@@ -22,6 +22,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
 
   const appStore = useAppStore()
   const userStore = useUserStore()
+  const iceConfig = useIceConfig()
 
   const isModernFileAPISupport = ref(true)
   const peerUserInfo = ref<UserInfo>({ nickname: 'unknown', avatarURL: '' })
@@ -246,7 +247,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
 
   function initPDC() {
     status.value.isPeerConnecting = true
-    pdc = new PeerDataChannel({ iceServers: pubIceServers, initializeDataChannel: true })
+    pdc = new PeerDataChannel({ ...iceConfig, initializeDataChannel: true })
     pdc.onSDP = (sdp) => ws?.send(JSON.stringify({ type: 'sdp', data: sdp }))
     pdc.onICECandidate = (candidate) =>
       ws?.send(JSON.stringify({ type: 'candidate', data: candidate }))
@@ -610,6 +611,11 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
         if (data.code === 404) {
           status.value.error.code = 404
           status.value.error.msg = '404'
+          dispose()
+        } else if (data.code === 429) {
+          // 429：该 IP 取件码查询失败次数过多，被信令服务限流
+          status.value.error.code = 429
+          status.value.error.msg = '429'
           dispose()
         } else if (data.code === 0) {
           initPDC()

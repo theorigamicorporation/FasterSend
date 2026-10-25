@@ -124,6 +124,22 @@ export default defineNuxtConfig({
     }
   },
 
+  // 运行时配置，均可通过 NUXT_* 环境变量在启动时覆盖，无需重新构建镜像
+  runtimeConfig: {
+    // NUXT_TRUST_PROXY：true 或可信代理跳数，仅在位于反向代理之后时开启
+    trustProxy: false,
+    // NUXT_MAX_CONNECTIONS_PER_IP
+    maxConnectionsPerIp: 32,
+    // NUXT_RECEIVE_FAILURES_PER_MINUTE
+    receiveFailuresPerMinute: 10,
+    public: {
+      // NUXT_PUBLIC_ICE_SERVERS：RTCIceServer[] 的 JSON
+      iceServers: '',
+      // NUXT_PUBLIC_ICE_TRANSPORT_POLICY：all | relay
+      iceTransportPolicy: ''
+    }
+  },
+
   nitro: {
     experimental: {
       websocket: true

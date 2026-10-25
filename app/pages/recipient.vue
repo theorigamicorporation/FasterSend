@@ -54,6 +54,15 @@ onUnmounted(() => {
         />
         <p class="text-xl tracking-wider py-8">{{ t('hint.invalidPickupCode') }}</p>
       </div>
+      <!-- 查询过于频繁，被限流 -->
+      <div v-else-if="status.error.code === 429" class="text-center">
+        <Icon
+          name="material-symbols:timer-off-outline-rounded"
+          size="100"
+          class="text-rose-500 dark:text-rose-600"
+        />
+        <p class="text-xl tracking-wider py-8">{{ t('hint.tooManyAttempts') }}</p>
+      </div>
       <!-- 对方拒绝传输 -->
       <div v-else-if="status.error.code === 403" class="text-center">
         <Icon
