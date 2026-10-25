@@ -56,7 +56,7 @@ All settings are read from environment variables when the server starts, so one 
 | `NUXT_PUBLIC_SITE_URL` | unset | Public URL of the deployment, e.g. `https://send.example.com`. Used for canonical links and Open Graph image URLs. When unset, the request origin is used. |
 | `PORT` | `3000` | Port the server listens on. |
 | `HOST` | `0.0.0.0` | Address the server binds to (set in the Docker image). |
-| `NUXT_TRUST_PROXY` | `false` | Set to `true` when running behind a reverse proxy so the client IP is taken from `X-Forwarded-For`. Leave it off when the server is exposed directly, since the header can be spoofed. |
+| `NUXT_TRUST_PROXY` | `false` | Set to `true` (or the number of proxy hops) when running behind a reverse proxy, so the client IP is taken from `X-Forwarded-For`. Leave it off otherwise, the header can be spoofed. |
 | `NUXT_PUBLIC_ICE_SERVERS` | `[{"urls":"stun:stun.l.google.com:19302"}]` | JSON array of [`RTCIceServer`](https://developer.mozilla.org/en-US/docs/Web/API/RTCIceServer) objects (`urls`, optional `username` / `credential`). Add a TURN server so transfers work across restrictive NATs. Invalid JSON falls back to the default. |
 | `NUXT_PUBLIC_ICE_TRANSPORT_POLICY` | `all` | `all` or `relay`. `relay` forces traffic through TURN, useful for testing a relay. |
 | `NUXT_MAX_CONNECTIONS_PER_IP` | `32` | Maximum concurrent signalling connections per client IP. |
