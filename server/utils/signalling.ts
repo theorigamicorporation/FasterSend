@@ -3,7 +3,7 @@ import { TTLCache } from '@isaacs/ttlcache'
 import { ConcurrencyCounter, RateLimiter } from './rateLimiter'
 
 /**
- * 信令服务对 WebSocket 连接的最小抽象，便于脱离真实 socket 做单元测试。
+ * Minimal WebSocket abstraction for the signalling service, so it can be unit tested without a real socket.
  */
 export interface SignalPeer {
   id: string
@@ -14,34 +14,30 @@ export interface SignalPeer {
 }
 
 export type RejectReason =
-  | 'too-many-connections'
-  | 'rate-limited'
-  | 'invalid-code'
-  | 'oversize'
-  | 'code-allocation-failed'
+  'too-many-connections' | 'rate-limited' | 'invalid-code' | 'oversize' | 'code-allocation-failed'
 
 export interface SignallingOptions {
-  /** 取件码位数 */
+  /** Pickup code length */
   codeLength: number
-  /** 单条信令消息的最大字节数，超过即断开 */
+  /** Max bytes per signalling message; larger ones disconnect */
   maxMessageBytes: number
-  /** 同一 IP 的最大并发连接数 */
+  /** Max concurrent connections per IP */
   maxConnectionsPerIp: number
-  /** 同一 IP 每分钟允许的取件码查询失败次数 */
+  /** Failed pickup-code lookups allowed per IP per minute */
   receiveFailuresPerMinute: number
-  /** 心跳间隔，保持反向代理不因空闲关闭连接，ICE 重启需要信令通道仍然可用 */
+  /** Heartbeat interval; keeps reverse proxies from closing idle connections, since ICE restart needs the signalling channel */
   heartbeatMs: number
-  /** 未初始化连接的存活时间 */
+  /** TTL for uninitialised connections */
   initTtlMs: number
-  /** 发送端等待接收端的存活时间 */
+  /** TTL for a sender waiting for a receiver */
   waitTtlMs: number
-  /** 配对后信令通道的存活时间 */
+  /** TTL for the signalling channel after pairing */
   pairedTtlMs: number
-  /** 生成取件码，默认使用 crypto.randomInt */
+  /** Pickup code generator; defaults to crypto.randomInt */
   genCode?: (length: number) => string
-  /** 配对成功回调 */
+  /** Called when a pair is established */
   onPaired?: (senderId: string, receiverId: string) => void
-  /** 连接被拒绝或强制断开时回调，用于日志 */
+  /** Called when a connection is rejected or force-closed, for logging */
   onReject?: (peerId: string, reason: RejectReason) => void
   now?: () => number
 }
@@ -57,11 +53,11 @@ export const DEFAULT_SIGNALLING_OPTIONS: SignallingOptions = {
   pairedTtlMs: 12 * 3600e3
 }
 
-/** 允许在已配对的两端之间转发的消息类型 */
+/** Message types that may be relayed between paired peers */
 const RELAY_TYPES = new Set(['sdp', 'candidate'])
 
 /**
- * 使用密码学安全随机数生成纯数字取件码
+ * Generate a numeric pickup code with a cryptographically secure RNG
  */
 export function genDigitCode(length: number, rand: (max: number) => number = randomInt): string {
   if (!Number.isInteger(length) || length <= 0) {
@@ -75,7 +71,7 @@ export function genDigitCode(length: number, rand: (max: number) => number = ran
 }
 
 /**
- * 生成一个未被占用的取件码，碰撞时重试，重试耗尽返回 null
+ * Generate an unused pickup code, retrying on collision; null when retries run out
  */
 export function allocateCode(
   isTaken: (code: string) => boolean,
@@ -92,7 +88,7 @@ export function allocateCode(
 }
 
 /**
- * 解析信令消息：超长返回 'oversize'，非 JSON 对象或缺少 type 返回 null
+ * Parse a signalling message: 'oversize' if too long, null if not a JSON object or missing type
  */
 export function parseSignalMessage(
   text: string,
@@ -129,7 +125,7 @@ interface PeerState {
 }
 
 /**
- * 信令中心：管理取件码分配、收发两端配对和 SDP / ICE 消息转发。
+ * Signalling hub: allocates pickup codes, pairs sender and receiver, and relays SDP / ICE messages.
  */
 export class SignallingHub {
   private readonly opts: SignallingOptions
@@ -137,11 +133,11 @@ export class SignallingHub {
   private readonly connections: ConcurrencyCounter
   private readonly receiveFailures: RateLimiter
   private readonly genCode: (length: number) => string
-  // 未初始化连接池，超时未初始化则断开
+  // Uninitialised connections; closed if not initialised in time
   private readonly initPool: TTLCache<string, PeerState>
-  // 等待接收端连接的发送端，key 为取件码
+  // Senders waiting for a receiver, keyed by pickup code
   private readonly waitPool: TTLCache<string, PeerState>
-  // 已配对连接池
+  // Paired connections
   private readonly pairedPool: TTLCache<string, PeerState>
 
   constructor(options: Partial<SignallingOptions> = {}) {
@@ -149,7 +145,7 @@ export class SignallingHub {
     this.genCode = this.opts.genCode || ((n) => genDigitCode(n))
     this.connections = new ConcurrencyCounter(this.opts.maxConnectionsPerIp)
     this.receiveFailures = new RateLimiter(this.opts.receiveFailuresPerMinute, 60e3, this.opts.now)
-    // 只在过期或被挤出时断开，主动 delete 由 disposePeer 自己处理
+    // Only closes on expiry or eviction; explicit deletes are handled by disposePeer
     const onExpire = (s: PeerState, _k: string, reason: string) => {
       if (reason === 'stale' || reason === 'evict') {
         this.disposePeer(s)
@@ -181,7 +177,7 @@ export class SignallingHub {
   }
 
   /**
-   * 断开并清理连接。disposed 标记保证每个连接只处理一次，配对双方互相清理不会无限递归。
+   * Close and clean up a connection. The disposed flag ensures each connection is handled once, so paired peers cleaning up each other cannot recurse forever.
    */
   private disposePeer(s: PeerState): void {
     if (s.disposed) {
@@ -207,7 +203,7 @@ export class SignallingHub {
         s.peer.close()
       }
     } catch {
-      // 连接可能已经关闭
+      // The connection may already be closed
     }
     if (s.pair) {
       this.disposePeer(s.pair)
@@ -215,7 +211,7 @@ export class SignallingHub {
   }
 
   /**
-   * 新连接接入，超过同 IP 并发上限时直接断开，返回是否接受
+   * Handle a new connection; closes it if the per-IP limit is exceeded. Returns whether it was accepted
    */
   public open(peer: SignalPeer): boolean {
     const s: PeerState = {
@@ -258,7 +254,7 @@ export class SignallingHub {
       return
     }
     if (!data) {
-      // 非 JSON 或格式不符的消息直接丢弃
+      // Drop non-JSON or malformed messages
       return
     }
     if (data.type === 'send') {
@@ -266,14 +262,14 @@ export class SignallingHub {
     } else if (data.type === 'receive') {
       this.initReceive(s, data.code)
     } else if (RELAY_TYPES.has(data.type)) {
-      // 只转发 SDP / ICE 信令，未配对时丢弃
+      // Relay only SDP / ICE messages; drop when unpaired
       if (s.pair && !s.pair.disposed) {
         s.pair.peer.send(text)
       }
     }
   }
 
-  // 初始化发送端：分配取件码并进入等待池
+  // Init sender: allocate a pickup code and join the waiting pool
   private initSend(s: PeerState): void {
     if (s.role) {
       return
@@ -296,7 +292,7 @@ export class SignallingHub {
     this.startHeartbeat(s)
   }
 
-  // 初始化接收端：按取件码查找发送端并配对，失败计入该 IP 的限流
+  // Init receiver: look up the sender by pickup code and pair; failures count against the IP's rate limit
   private initReceive(s: PeerState, code: unknown): void {
     if (s.role) {
       return
@@ -326,13 +322,13 @@ export class SignallingHub {
     this.initPool.delete(s.peer.id)
     this.pairedPool.set(s.peer.id, s)
     this.pairedPool.set(target.peer.id, target)
-    // 配对成功
+    // Paired
     this.sendJSON(s, { type: 'status', code: 0 })
     this.startHeartbeat(s)
     this.opts.onPaired?.(target.peer.id, s.peer.id)
   }
 
-  /** 测试与监控用：当前状态统计 */
+  /** For tests and monitoring: current state counts */
   public stats() {
     return {
       peers: this.states.size,

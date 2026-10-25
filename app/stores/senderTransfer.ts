@@ -10,8 +10,8 @@ import {
 } from '~/types/transfer'
 
 /**
- * 发送端业务仓库。
- * 所有发送流程状态、连接控制和文件发送动作都集中在这里，页面仅负责绑定展示。
+ * Sender business store.
+ * Holds all send-flow state, connection control and file sending; pages only bind and display.
  */
 export const useSenderTransferStore = defineStore('senderTransfer', () => {
   const { t } = useI18n()
@@ -37,7 +37,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
   let ws: WebSocket | null = null
   let pdc: PeerDataChannel | null = null
   const hasher = createMD5Hasher()
-  // syncDir 场景下，payload 中的键是去根后的，需要映射回原始文件项
+  // With syncDir, payload keys have the root stripped; map them back to the original file items
   let payloadFileMap: FlatFileMap = {}
 
   const shareLink = computed(() => {
@@ -92,7 +92,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
 
     const payload = transferConfigStore.buildSenderPayload()
 
-    // syncDir 场景下 payload 的键已经去根，需要建立去根键到原始文件项的映射
+    // With syncDir, payload keys have the root stripped; build a map from stripped keys to original file items
     if (transferConfigStore.type === 'syncDir') {
       payloadFileMap = {}
       const originalFileMap: FlatFileMap = transferConfigStore.fileMap
@@ -158,7 +158,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
 
         const nowTime = new Date().getTime()
         const elapsed = nowTime - curFile.value.startTime
-        // 防止时间差为零导致除零异常
+        // Avoid division by zero when the time delta is zero
         if (elapsed > 0) {
           curFile.value.speed = (curFile.value.speed + ab.byteLength / (elapsed / 1e3)) / 2
         }

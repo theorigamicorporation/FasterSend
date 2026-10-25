@@ -1,39 +1,39 @@
-# 场景列表
+# Scenarios
 
-## 发送端
+## Sender
 
-- 选择文件或目录
-- 初始阶段
-  - 连接信令服务器
-    - 连接失败（报错
-  - 获取收件码
-    - 当前连接人数太多，稍后再试（报错 -1
-- 等待接入
-  - 信令连接断开或超时（报错
-  - 对方不支持传输目录（现代文件访问API（报错
-  - 用户确认是否传输
-- 开始传输
-  - 与对等端断开（报错
-- 完成传输任务
+- Choose a file or directory
+- Setup
+  - Connect to the signalling server
+    - Connection fails (error)
+  - Get a receive code
+    - Too many connections, try again later (error -1)
+- Waiting for the recipient
+  - Signalling connection drops or times out (error)
+  - Recipient cannot receive directories, no File System Access API (error)
+  - User confirms whether to send
+- Transfer
+  - Peer disconnects (error)
+- Transfer complete
 
-## 接收端
+## Recipient
 
-- 初始阶段
-  - 连接信令服务器
-    - 失败报错
-    - 找不到对等端（报错 404
-  - 连接对等端
-    - 超时报错
-  - 传输基本信息（用户，类型，文件
-    - 不支持目录传输（报错
-  - 展示信息，等待用户继续
-    - 同步目录
-      - 等待用户选择目录
-      - 对比差异
-      - 等待用户选择文件（新增、更新、删除
-      - 等待继续
-- 传输阶段
-  - 对等端断开（报错
-- 传输完成
-  - 展示本次传输信息
-  - 展示回首页等按钮
+- Setup
+  - Connect to the signalling server
+    - Fails (error)
+    - Peer not found (error 404)
+  - Connect to the peer
+    - Times out (error)
+  - Receive basic info (user, type, files)
+    - Directory transfer not supported (error)
+  - Show the info and wait for the user to continue
+    - Directory sync
+      - Wait for the user to choose a directory
+      - Compare differences
+      - Wait for the user to choose files (added, updated, deleted)
+      - Wait to continue
+- Transfer
+  - Peer disconnects (error)
+- Transfer complete
+  - Show a summary of the transfer
+  - Show buttons such as back to home

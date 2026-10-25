@@ -1,5 +1,5 @@
 /**
- * 读取运行时 ICE 配置（NUXT_PUBLIC_ICE_SERVERS / NUXT_PUBLIC_ICE_TRANSPORT_POLICY）
+ * Reads the runtime ICE config (NUXT_PUBLIC_ICE_SERVERS / NUXT_PUBLIC_ICE_TRANSPORT_POLICY)
  */
 export function useIceConfig(): {
   iceServers: RTCIceServer[]

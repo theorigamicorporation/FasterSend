@@ -2,8 +2,8 @@ import type { FilesPayload, FlatFileMap, TransferType } from '~/types/transfer'
 import { cloneFlatFileMap } from '~/types/transfer'
 
 /**
- * 待发送文件配置仓库。
- * 该仓库只负责保存发送前选中的文件信息，不掺杂页面展示逻辑。
+ * Store for the files queued to send.
+ * Only holds the selection made before sending; no page display logic.
  */
 export const useTransferConfigStore = defineStore('transferConfig', () => {
   const type = ref<TransferType>('')
@@ -29,8 +29,8 @@ export const useTransferConfigStore = defineStore('transferConfig', () => {
   }
 
   /**
-   * 为发送端构造最终发送给接收端的载荷。
-   * 目录同步场景下会自动提取根目录名，并生成去根后的文件树。
+   * Builds the final payload sent to the recipient.
+   * For directory sync, extracts the root directory name and builds a file tree without it.
    */
   function buildSenderPayload(): FilesPayload {
     const nextFileMap = cloneFlatFileMap(fileMap.value)

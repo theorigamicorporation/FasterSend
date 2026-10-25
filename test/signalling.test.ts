@@ -17,7 +17,7 @@ class FakePeer implements SignalPeer {
   close() {
     this.closeCalls++
     this.open = false
-    // 模拟 crossws：关闭时同步回调 close 钩子
+    // Mimic crossws: call the close hook synchronously on close
     this.hub?.close(this)
   }
   isOpen() {
@@ -69,7 +69,7 @@ describe('SignallingHub pairing', () => {
     hub.message(sender, msg({ type: 'candidate', data: { candidate: 'c' } }))
     expect(recipient.last()).toEqual({ type: 'candidate', data: { candidate: 'c' } })
 
-    // 取件码只能用一次
+    // A pickup code is single-use
     const third = peer('3.3.3.3')
     hub.message(third, msg({ type: 'receive', code }))
     expect(third.last()).toEqual({ type: 'status', code: 404 })
@@ -128,7 +128,7 @@ describe('SignallingHub pairing', () => {
     hub.message(sender, msg({ type: 'send' }))
     const recipient = peer('2.2.2.2')
     hub.message(recipient, msg({ type: 'receive', code: sender.last().code }))
-    // FakePeer.close 会同步回调 hub.close，模拟最容易递归的情况
+    // FakePeer.close calls hub.close synchronously, the case most prone to recursion
     recipient.close()
     expect(sender.open).toBe(false)
     expect(sender.closeCalls).toBe(1)
@@ -172,7 +172,7 @@ describe('SignallingHub limits', () => {
       expect(r.last()).toEqual({ type: 'status', code: 404 })
       expect(r.open).toBe(false)
     }
-    // 即使取件码正确，被限流的 IP 也会被拒绝
+    // A rate-limited IP is rejected even with a correct code
     const sender = peer('1.1.1.1')
     hub.message(sender, msg({ type: 'send' }))
     const code = sender.last().code
@@ -181,7 +181,7 @@ describe('SignallingHub limits', () => {
     expect(blocked.last()).toEqual({ type: 'status', code: 429 })
     expect(blocked.open).toBe(false)
 
-    // 其他 IP 不受影响
+    // Other IPs are unaffected
     const other = peer('7.7.7.7')
     hub.message(other, msg({ type: 'receive', code }))
     expect(other.last()).toEqual({ type: 'status', code: 0 })

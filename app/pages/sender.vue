@@ -15,7 +15,7 @@ const confirmUser = senderStore.confirmUser
 const copyLink = senderStore.copyLink
 const copyCode = senderStore.copyCode
 
-// 待发送内容摘要
+// Summary of the content to send
 const transferConfigStore = useTransferConfigStore()
 const fileSummary = computed(() => {
   const items = Object.values(transferConfigStore.fileMap)
@@ -55,7 +55,7 @@ onUnmounted(() => {
 
 <template>
   <div class="mx-auto max-w-xl px-4 py-8 sm:py-14">
-    <!-- 错误页面 -->
+    <!-- Error view -->
     <div v-if="status.error.code !== 0" class="fs-card">
       <StatusView
         v-if="status.error.code === -1"
@@ -76,13 +76,13 @@ onUnmounted(() => {
       </StatusView>
     </div>
 
-    <!-- 加载页面 -->
+    <!-- Loading view -->
     <div v-else-if="status.isIniting" class="flex flex-col items-center gap-4 py-24">
       <UiSpinner />
       <p class="fs-muted text-sm">{{ t('hint.connecting') }}</p>
     </div>
 
-    <!-- 等待连接 -->
+    <!-- Waiting for connection -->
     <div v-else-if="status.isWaitingConnect" class="fs-card overflow-hidden">
       <div class="p-6 text-center sm:p-8">
         <p class="fs-eyebrow">{{ t('senderPage.yourCode') }}</p>
@@ -151,9 +151,9 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <!-- 连接成功 -->
+    <!-- Connected -->
     <template v-else>
-      <!-- 业务异常 -->
+      <!-- Business error -->
       <div v-if="status.warn.code !== 0" class="fs-card">
         <StatusView
           tone="warning"
@@ -168,7 +168,7 @@ onUnmounted(() => {
         </StatusView>
       </div>
 
-      <!-- 传输确认 -->
+      <!-- Transfer confirmation -->
       <div v-else-if="status.isWaitingConfirm" class="fs-card p-6 text-center sm:p-8">
         <div class="flex justify-center">
           <Avatar
@@ -211,7 +211,7 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- 发送中 -->
+      <!-- Sending -->
       <div v-else-if="!status.isDone" class="fs-card p-6 sm:p-8">
         <PeerChip
           :nickname="peerUserInfo.nickname"
@@ -254,7 +254,7 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- 发送完毕 -->
+      <!-- Send complete -->
       <div v-else class="fs-card">
         <StatusView
           tone="success"

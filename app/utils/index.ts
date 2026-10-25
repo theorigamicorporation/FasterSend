@@ -1,30 +1,30 @@
 import { createMD5, type IHasher } from 'hash-wasm'
 
 /**
- * 获取浏览器当前滚动高度
- * @returns 浏览器滚动高度
+ * Gets the current browser scroll height
+ * @returns scroll height
  */
 export function getScrollTop(): number {
-  // 检查 window 和 document 是否存在，以处理 SSR 的情况
+  // Guard for SSR, where window/document don't exist
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     return 0
   }
-  // 使用不同的方式获取滚动条高度，以处理浏览器兼容性问题
+  // Different browsers expose the scroll offset differently
   if (typeof window.scrollY !== 'undefined') {
-    // 支持现代浏览器
+    // Modern browsers
     return window.scrollY
   } else if (document.documentElement && document.documentElement.scrollTop) {
-    // 兼容IE 6-8
+    // IE 6-8
     return document.documentElement.scrollTop
   } else if (document.body && document.body.scrollTop) {
-    // 兼容一些老的浏览器
+    // Older browsers
     return document.body.scrollTop
   }
   return 0
 }
 
 /**
- * 判断浏览器是否支持现代文件操作
+ * Checks whether the browser supports the modern file APIs
  */
 export function isModernFileAPIAvailable() {
   const fileHandleSupported = 'FileSystemHandle' in window
@@ -41,8 +41,8 @@ export function isModernFileAPIAvailable() {
 }
 
 /**
- * 判断浏览器是否支持目录选择
- * @returns 是否支持目录选择
+ * Checks whether the browser supports directory selection
+ * @returns whether directory selection is supported
  */
 export function supportsDirectorySelection() {
   var input = document.createElement('input')
@@ -51,8 +51,8 @@ export function supportsDirectorySelection() {
 }
 
 /**
- * 选择头像图片
- * @param cb 回调
+ * Picks an avatar image
+ * @param cb callback
  * @returns
  */
 export function selectAvatar(cb: (url: string) => void) {
@@ -69,7 +69,7 @@ export function selectAvatar(cb: (url: string) => void) {
       input.remove()
       createImageBitmap(file!)
         .then((img) => {
-          // 将图片转256x256的webp格式，节省空间
+          // Convert to 256x256 webp to save space
           const oc = new OffscreenCanvas(256, 256)
           const ctx = oc.getContext('2d')
           if (!ctx) {
@@ -79,7 +79,7 @@ export function selectAvatar(cb: (url: string) => void) {
           return oc.convertToBlob({ type: 'image/webp', quality: 0.61 })
         })
         .then((blob) => {
-          // 再转换成DataURL方便存储
+          // Then to a data URL for easy storage
           const fr = new FileReader()
           fr.onload = () => {
             cb(fr.result + '')
@@ -97,12 +97,12 @@ export function selectAvatar(cb: (url: string) => void) {
 }
 
 /**
- * 将字节格式化为人类友好的文本
+ * Formats a byte count as human-readable text
  *
- * @param bytes 字节数量
- * @param decimals 显示的小数位数
+ * @param bytes number of bytes
+ * @param decimals number of decimal places
  *
- * @return 格式化后的字符串
+ * @return formatted string
  */
 export function humanFileSize(bytes: number, decimals = 2): string {
   if (!bytes) return '0B'
@@ -124,7 +124,7 @@ export function doDownloadFromHref(href: string, filename: string) {
 }
 
 /**
- * 从Blob下载
+ * Downloads a Blob as a file
  *
  * @param {Blob} blob
  * @param {string} filename
@@ -140,7 +140,7 @@ export async function copyToClipboard(content: string): Promise<boolean> {
     return false
   }
 
-  // Clipboard API 只在安全上下文（https 或 localhost）可用
+  // Clipboard API is only available in secure contexts (https or localhost)
   if (navigator.clipboard && window.isSecureContext) {
     try {
       await navigator.clipboard.writeText(content)
@@ -150,7 +150,7 @@ export async function copyToClipboard(content: string): Promise<boolean> {
     }
   }
 
-  // http 页面退回到 execCommand
+  // Fall back to execCommand on plain http pages
   const textarea = document.createElement('textarea')
   textarea.value = content
   textarea.setAttribute('readonly', '')
@@ -169,7 +169,7 @@ export async function copyToClipboard(content: string): Promise<boolean> {
 }
 
 /**
- * 判断当前页面是否在独立窗口打开（PWA）
+ * Checks whether the page runs in a standalone window (PWA)
  */
 export function isStandalone(): boolean {
   if (typeof window === 'undefined') {
@@ -179,7 +179,7 @@ export function isStandalone(): boolean {
 }
 
 /**
- * 从localStorage读取值，如果未找到并且提供了默认值，则更新localStorage并返回默认值
+ * Reads a value from localStorage; if missing and a default is given, stores and returns the default
  * @param key
  * @param defVal
  * @returns
@@ -207,8 +207,8 @@ function bytesToBase64(bytes: Uint8Array) {
 }
 
 /**
- * 增量 MD5 计算器，摘要以 Base64 字符串输出（与传输协议中的校验值格式一致）。
- * wasm 实例在首次使用时才加载，避免在 SSR 阶段初始化。
+ * Incremental MD5 calculator; the digest is a Base64 string (same format as the checksum in the transfer protocol).
+ * The wasm instance loads lazily on first use, so nothing is initialized during SSR.
  */
 export function createMD5Hasher() {
   let hasher: IHasher | undefined
@@ -235,7 +235,7 @@ export function createMD5Hasher() {
   }
 }
 
-// 计算文件或Blob的MD5哈希值
+// Computes the MD5 hash of a file or Blob
 export async function calcMD5(file: File | Blob) {
   const hasher = createMD5Hasher()
 
@@ -249,19 +249,16 @@ export async function calcMD5(file: File | Blob) {
 }
 
 /**
- * 将毫秒数格式化为 HH:mm:ss
+ * Formats milliseconds as HH:mm:ss
  * @param {number} milliseconds
  * @returns
  */
 export function formatTime(milliseconds: number) {
-  // 计算小时数
   const hours = Math.floor(milliseconds / (1000 * 60 * 60))
-  // 计算剩余的分钟数
   const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60))
-  // 计算剩余的秒数
   const seconds = Math.floor((milliseconds % (1000 * 60)) / 1000)
 
-  // 格式化分钟和秒数为两位数
+  // Zero-pad minutes and seconds
   const formattedMinutes = minutes.toString().padStart(2, '0')
   const formattedSeconds = seconds.toString().padStart(2, '0')
 
@@ -271,7 +268,7 @@ export function formatTime(milliseconds: number) {
 }
 
 /**
- * 把异常转成可读的提示文本，去掉 "Error:" 前缀
+ * Converts an error into readable message text, stripping the "Error:" prefix
  */
 export function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error)

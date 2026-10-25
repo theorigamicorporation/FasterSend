@@ -11,8 +11,8 @@ import {
 import { PeerDataChannel } from '~/utils/PeerDataChannel'
 
 /**
- * 接收端业务仓库。
- * 负责接收连接、文件写入、目录对比与同步动作，页面只保留展示与组件绑定。
+ * Recipient business store.
+ * Handles incoming connections, file writing, directory comparison and sync; pages only display and bind components.
  */
 export const useRecipientTransferStore = defineStore('recipientTransfer', () => {
   const { t } = useI18n()
@@ -128,13 +128,13 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
   }
 
   /**
-   * 关闭当前文件写入流，用于文件传输完成或异常时清理资源。
+   * Closes the current file write stream, to clean up when a transfer finishes or fails.
    */
   async function closeCurFileWriter() {
     try {
       await curFileWriter?.close()
     } catch {
-      // writer 可能已关闭或处于异常状态，忽略
+      // writer may already be closed or in an error state; ignore
     }
     curFileWriter = undefined
   }
@@ -196,17 +196,17 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
           summary: t('hint.hashCheckFail'),
           life: 5e3
         })
-        // 校验失败时关闭写入流并尝试清理已写入的文件
+        // On verification failure, close the write stream and try to remove the partly written file
         await closeCurFileWriter()
         if (saveFileFH) {
-          // @ts-ignore 运行时浏览器 API 可用，类型定义未完整覆盖 remove。
+          // @ts-ignore remove is available at runtime but missing from the type definitions.
           saveFileFH.remove()
         }
         dispose()
         return
       }
 
-      // 校验通过，关闭写入流
+      // Verification passed, close the write stream
       await closeCurFileWriter()
       transmittedCount.value++
 
@@ -306,7 +306,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
   }
 
   /**
-   * 统一校验路径片段，避免文件系统 API 接收到 undefined。
+   * Validates path segments so the file system API never receives undefined.
    */
   function getPathSegment(segment: string | undefined) {
     if (!segment) {
@@ -316,15 +316,15 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
   }
 
   /**
-   * 删除文件后尝试清理空的父目录。
-   * 从被删除文件的父目录向上逐级检查，如果目录为空则移除。
+   * Tries to remove empty parent directories after a file is deleted.
+   * Walks up from the deleted file's parent, removing each directory that is empty.
    */
   async function cleanupEmptyDirs(
     rootDH: FileSystemDirectoryHandle | undefined,
     deletedKeys: string[]
   ) {
     if (!rootDH) return
-    // 收集所有可能变空的目录路径（去重），按深度从深到浅排序
+    // Collect all directories that may become empty (deduplicated), sorted deepest first
     const dirPaths = new Set<string>()
     for (const key of deletedKeys) {
       const parts = key.split('/')
@@ -343,9 +343,9 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
         }
         const targetName = parts[parts.length - 1]!
         const targetDH = await parentDH.getDirectoryHandle(targetName)
-        // 检查目录是否为空
+        // Check whether the directory is empty
         let isEmpty = true
-        // @ts-ignore entries() 在 FileSystemDirectoryHandle 上可用
+        // @ts-ignore entries() is available on FileSystemDirectoryHandle
         for await (const _ of targetDH.entries()) {
           isEmpty = false
           break
@@ -354,7 +354,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
           await parentDH.removeEntry(targetName)
         }
       } catch {
-        // 目录不存在或无权限，忽略
+        // Directory missing or no permission; ignore
       }
     }
   }
@@ -378,13 +378,13 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
             const localFile = localFileMap[key]
             if (remoteFile?.size === localFile?.size) {
               if (isQuick) {
-                // 快速模式：大小相同且修改时间一致则视为相同
+                // Fast mode: same size and modified time count as identical
                 if (remoteFile?.lastModified === localFile?.lastModified) {
                   localFile.isEqual = true
                   continue
                 }
               } else {
-                // 精确模式：大小相同时进一步比较 MD5
+                // Exact mode: when sizes match, also compare MD5
                 const peerHashPromise = calcPeerFileHash(key)
                 const localFileHash = await calcMD5(localFileMap[key].file)
                 const peerFileHash = await peerHashPromise
@@ -394,7 +394,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
                 }
               }
             }
-            // 使用远端文件信息，FilesTree 展示的大小为远端文件大小
+            // Use the remote file info; FilesTree shows the remote file size
             syncDirStatus.value.fileMapUpdate[key] = remoteFile!
             localFile.isUpdate = true
           } else {
@@ -412,8 +412,8 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
         syncDirStatus.value.isDiffing = false
       })
       .catch((error: unknown) => {
-        // 目录选择取消时 isWaitingSelectDir 仍为 true，用户可重新选择
-        // 如果是目录已选择后的异常（对比阶段），则需要恢复 UI 状态
+        // If directory selection was cancelled, isWaitingSelectDir stays true so the user can pick again
+        // If it failed after a directory was chosen (comparison stage), restore the UI state
         if (!syncDirStatus.value.isWaitingSelectDir) {
           syncDirStatus.value.isWaitingSelectDir = true
           syncDirStatus.value.isDiffing = false
@@ -554,7 +554,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
           }
         }
 
-        // 删除文件后尝试清理空的父目录
+        // Try to remove empty parent directories after deleting the file
         await cleanupEmptyDirs(syncTargetDH, syncDirStatus.value.waitDeleteList)
       }
 
@@ -570,7 +570,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
       })
     } catch (error) {
       console.warn(error)
-      // 异常时关闭未完成的写入流，避免文件句柄泄漏
+      // On error, close any unfinished write stream to avoid leaking file handles
       await closeCurFileWriter()
       if (calcSpeedJobId) {
         clearInterval(calcSpeedJobId)
@@ -609,7 +609,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
           status.value.error.msg = '404'
           dispose()
         } else if (data.code === 429) {
-          // 429：该 IP 取件码查询失败次数过多，被信令服务限流
+          // 429: too many failed pickup-code lookups from this IP; rate-limited by the signaling server
           status.value.error.code = 429
           status.value.error.msg = '429'
           dispose()

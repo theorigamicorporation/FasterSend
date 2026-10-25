@@ -1,8 +1,8 @@
 import type { UserInfo } from '~/types/transfer'
 
 /**
- * 用户偏好与身份信息仓库。
- * 负责管理昵称、头像以及发送端自动确认配置，并统一做本地持久化。
+ * User preferences and identity store.
+ * Manages nickname, avatar and sender auto-confirm settings, with local persistence.
  */
 export const useUserStore = defineStore('user', () => {
   const userInfo = reactive<UserInfo>({

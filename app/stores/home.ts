@@ -1,8 +1,8 @@
 import type { FlatFileMap } from '~/types/transfer'
 
 /**
- * 首页业务仓库。
- * 负责选择文件/目录、处理拖拽和取件码跳转，避免首页脚本直接承载业务流程。
+ * Home page business store.
+ * Handles file/directory selection, drag and drop and pickup-code navigation, keeping flow logic out of the page script.
  */
 export const useHomeStore = defineStore('home', () => {
   const { t } = useI18n()

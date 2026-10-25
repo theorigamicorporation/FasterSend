@@ -81,7 +81,7 @@ onUnmounted(() => {
 
 <template>
   <div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-14">
-    <!-- 错误界面 -->
+    <!-- Error view -->
     <div v-if="status.error.code !== 0" class="fs-card mx-auto max-w-xl">
       <StatusView
         tone="error"
@@ -93,13 +93,13 @@ onUnmounted(() => {
       </StatusView>
     </div>
 
-    <!-- 加载页面 -->
+    <!-- Loading view -->
     <div v-else-if="status.isIniting" class="flex flex-col items-center gap-4 py-24">
       <UiSpinner />
       <p class="fs-muted text-sm">{{ t('hint.connecting') }}</p>
     </div>
 
-    <!-- 等待对方确认 -->
+    <!-- Waiting for sender confirmation -->
     <div v-else-if="status.isWaitingPeerConfirm" class="fs-card mx-auto max-w-xl">
       <StatusView
         :title="t('recipientPage.waitingApproval')"
@@ -109,9 +109,9 @@ onUnmounted(() => {
       </StatusView>
     </div>
 
-    <!-- 连接成功页面 -->
+    <!-- Connected view -->
     <div v-else class="grid items-start gap-5 md:grid-cols-5">
-      <!-- 发送方和文件 -->
+      <!-- Sender and files -->
       <div class="fs-card p-5 sm:p-6 md:col-span-3">
         <PeerChip
           :nickname="peerUserInfo.nickname"
@@ -121,7 +121,7 @@ onUnmounted(() => {
         />
 
         <div class="mt-6">
-          <!-- 单个文件 -->
+          <!-- Single file -->
           <div
             v-if="peerFilesInfo.type === 'transFile'"
             class="flex items-center gap-4 rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800"
@@ -136,16 +136,16 @@ onUnmounted(() => {
               <p class="fs-muted text-sm">{{ formatSize(curFile.size) }}</p>
             </div>
           </div>
-          <!-- 目录 -->
+          <!-- Directory -->
           <FilesTree
             v-else-if="peerFilesInfo.type === 'transDir'"
             :file-map="peerFilesInfo.fileMap"
             :disabled="status.isLock"
             v-model:selected-key="selectedKeys"
           />
-          <!-- 同步目录 -->
+          <!-- Sync directory -->
           <div v-else-if="peerFilesInfo.type === 'syncDir'">
-            <!-- 选择要同步的目录 -->
+            <!-- Pick the directory to sync -->
             <div v-if="syncDirStatus.isWaitingSelectDir">
               <div
                 class="flex items-center gap-4 rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800"
@@ -171,12 +171,12 @@ onUnmounted(() => {
                 >{{ t('btn.selectDir') }}</UiButton
               >
             </div>
-            <!-- 对比目录结构 -->
+            <!-- Compare directory structures -->
             <div v-else-if="syncDirStatus.isDiffing" class="flex flex-col items-center py-10">
               <UiSpinner />
               <p class="fs-muted mt-4 text-sm">{{ t('hint.inCompStructure') }}</p>
             </div>
-            <!-- 选择要新增、更新、删除的文件列表 -->
+            <!-- Pick files to add, update or delete -->
             <div v-else class="space-y-5">
               <div>
                 <p class="mb-2 text-sm font-medium">{{ t('hint.pleaseSelectAdd') }}</p>
@@ -210,9 +210,9 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- 进度和操作 -->
+      <!-- Progress and actions -->
       <div class="fs-card p-5 sm:p-6 md:col-span-2">
-        <!-- 业务异常 -->
+        <!-- Business error -->
         <StatusView
           v-if="status.warn.code !== 0"
           tone="warning"
@@ -225,7 +225,7 @@ onUnmounted(() => {
           }}</UiButton>
         </StatusView>
 
-        <!-- 传输完成 -->
+        <!-- Transfer complete -->
         <template v-else-if="status.isDone">
           <StatusView
             tone="success"
@@ -253,7 +253,7 @@ onUnmounted(() => {
           </div>
         </template>
 
-        <!-- 进度 -->
+        <!-- Progress -->
         <template v-else>
           <p class="fs-eyebrow">
             {{ status.isReceiving ? t('hint.inTransit') : t('recipientPage.ready') }}

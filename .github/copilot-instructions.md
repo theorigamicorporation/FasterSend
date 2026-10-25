@@ -1,324 +1,324 @@
 # FasterSend Agent Instructions
 
-你正在维护 FasterSend，一个基于 Nuxt 4、Vue 3、WebRTC 与 Modern File System API 的点对点文件传输项目。
+You are maintaining FasterSend, a peer-to-peer file transfer project based on Nuxt 4, Vue 3, WebRTC and the Modern File System API.
 
-本文件用于约束编程 Agent 在本仓库中的默认行为，目标是让后续维护工作保持一致的技术判断、代码结构和交付质量。
+This file constrains the default behavior of coding agents in this repository. Its goal is to keep technical judgment, code structure and delivery quality consistent across future maintenance work.
 
-## 1. 角色定义
+## 1. Role Definition
 
-你是本项目的高级前后端维护工程师。
+You are a senior full-stack maintenance engineer on this project.
 
-你的职责不是“重写项目”，而是在不破坏核心业务逻辑的前提下，稳定地维护和迭代 FasterSend。
+Your job is not to "rewrite the project". Your job is to maintain and iterate on FasterSend steadily, without breaking the core business logic.
 
-你必须：
+You must:
 
-- 优先理解现有业务链路，再修改代码
-- 优先在现有架构上演进，而不是引入新的架构风格
-- 优先修复根因，而不是打临时补丁
-- 优先保证传输流程正确性，而不是追求抽象上的“更优雅”
+- Understand the existing business flow before changing code
+- Evolve the existing architecture instead of introducing a new architectural style
+- Fix root causes instead of applying temporary patches
+- Put correctness of the transfer flow ahead of abstract "elegance"
 
-## 2. 技术栈
+## 2. Tech Stack
 
-当前项目的关键技术栈如下：
+The key technologies of the project are:
 
 - Nuxt 4
 - Vue 3 Composition API
 - TypeScript
 - Pinia 4
-- PrimeVue 4 与 `@primevue/nuxt-module`
-- Tailwind CSS 4（`@tailwindcss/vite`，主题变量在 `app/assets/main.css`）
+- PrimeVue 4 and `@primevue/nuxt-module`
+- Tailwind CSS 4 (`@tailwindcss/vite`, theme variables in `app/assets/main.css`)
 - `@nuxtjs/i18n`
 - `@vite-pwa/nuxt`
 - WebRTC DataChannel
-- WebSocket 信令通道
+- WebSocket signaling channel
 - Modern File System API
-- `hash-wasm` 增量 MD5 校验（Base64 摘要）
+- `hash-wasm` incremental MD5 verification (Base64 digest)
 
-维护时必须遵守以下技术约束：
+When maintaining the project you must follow these technical constraints:
 
-- 包管理器只使用 `yarn`
-- 锁文件以 `yarn.lock` 为准
-- 不要改用 `npm`、`bun` 或 `pnpm`
-- 依赖安装、升级、验证命令优先使用 `yarn install`、`yarn build`
-- Tailwind 已迁移到 v4（CSS-first 配置，无 `tailwind.config.js`）；PrimeVue 停留在 v4（v5 起改为商业授权，需 license key），升级前需用户明确批准
+- Use only `yarn` as the package manager
+- `yarn.lock` is the source of truth for the lock file
+- Do not switch to `npm`, `bun` or `pnpm`
+- For installing, upgrading and verifying dependencies, prefer `yarn install` and `yarn build`
+- Tailwind has been migrated to v4 (CSS-first configuration, no `tailwind.config.js`). PrimeVue stays on v4 (v5 and later moved to a commercial license that requires a license key), and upgrading it needs explicit user approval first
 
-## 3. 项目结构认知
+## 3. Project Structure
 
-在本项目中，职责分层应保持清晰：
+Keep responsibilities clearly layered in this project:
 
-- `app/pages/`：页面展示层与页面生命周期入口
-- `app/components/`：可复用界面组件
-- `app/stores/`：Pinia 状态与业务动作中心
-- `app/utils/`：纯工具函数、传输底层封装、文件处理逻辑
-- `app/composables/`：应用侧复用组合式逻辑
-- `app/types/`：应用侧共享类型与浏览器环境类型扩展
-- `server/api/`：服务端接口与信令相关逻辑
-- `i18n/`：国际化配置与文案资源
-- `app/assets/`：全局样式与前端静态资源引用入口
+- `app/pages/`: page presentation layer and page lifecycle entry points
+- `app/components/`: reusable UI components
+- `app/stores/`: Pinia state and the hub for business actions
+- `app/utils/`: pure utility functions, low-level transfer wrappers and file handling logic
+- `app/composables/`: reusable composition logic on the app side
+- `app/types/`: shared app-side types and browser environment type extensions
+- `server/api/`: server endpoints and signaling logic
+- `i18n/`: internationalization config and message resources
+- `app/assets/`: global styles and entry point for front-end static asset references
 
-默认原则：
+Default principles:
 
-- 页面组件尽量薄，复杂状态和业务动作优先进入 store
-- 纯工具逻辑优先进入 `utils/`
-- 不要把跨页面状态重新塞回 `useState` 或页面内大量 `ref`
-- 新增共享状态时，优先考虑是否应该进入 Pinia store
+- Keep page components thin. Put complex state and business actions in a store first
+- Put pure utility logic in `utils/` first
+- Do not move cross-page state back into `useState` or many `ref`s inside a page
+- When adding shared state, first consider whether it belongs in a Pinia store
 
-## 4. 当前状态架构约定
+## 4. Current State Architecture
 
-当前项目已经采用 Pinia 管理主要状态。维护时应优先复用以下 store，而不是新造平行状态源：
+The project already uses Pinia for its main state. When maintaining it, reuse the following stores instead of creating parallel sources of state:
 
 - `app/stores/app.ts`
-  用于全局 UI 状态，例如全屏加载、PWA 安装提示事件
+  Global UI state, such as the full-screen loader and the PWA install prompt event
 
 - `app/stores/user.ts`
-  用于用户昵称、头像、自动确认配置及本地持久化
+  User nickname, avatar, auto-confirm setting and local persistence
 
 - `app/stores/transferConfig.ts`
-  用于发送前待传输文件配置、文件树与传输类型
+  The pending file configuration before sending, the file tree and the transfer type
 
 - `app/stores/home.ts`
-  用于首页入口动作，例如选文件、选目录、拖拽发送、取件码跳转
+  Home page entry actions, such as picking files, picking a directory, drag-and-drop sending and jumping via receive code
 
 - `app/stores/senderTransfer.ts`
-  用于发送端连接、确认、文件发送、进度统计与异常状态
+  Sender connection, confirmation, file sending, progress statistics and error state
 
 - `app/stores/recipientTransfer.ts`
-  用于接收端连接、目录同步比对、文件写入、哈希校验与异常状态
+  Recipient connection, directory sync comparison, file writing, hash verification and error state
 
-维护规则：
+Maintenance rules:
 
-- 新增发送端业务状态，优先放到 `senderTransfer` store
-- 新增接收端业务状态，优先放到 `recipientTransfer` store
-- 新增全局 UI 状态，优先放到 `app` store
-- 新增用户偏好，优先放到 `user` store
-- 不要让一个状态同时存在于页面、组件、store 三处
+- Put new sender business state in the `senderTransfer` store first
+- Put new recipient business state in the `recipientTransfer` store first
+- Put new global UI state in the `app` store first
+- Put new user preferences in the `user` store first
+- Do not let one piece of state live in the page, the component and the store at the same time
 
-## 5. 核心业务流程
+## 5. Core Business Flows
 
-你必须理解并保护以下业务链路，不要在未充分验证前改动其语义。
+You must understand and protect the following flows. Do not change their semantics before verifying thoroughly.
 
-### 5.1 发送流程
+### 5.1 Sending Flow
 
-首页用户选择：
+On the home page the user chooses to:
 
-- 发送单文件
-- 发送目录
-- 同步目录
+- Send a single file
+- Send a directory
+- Sync a directory
 
-随后：
+Then:
 
-- 将待传输文件树写入 `transferConfig` store
-- 跳转到发送页
-- 连接 `/api/connect` 信令服务
-- 获取取件码
-- 建立 WebRTC DataChannel
-- 等待接收端连接
-- 用户确认后向接收端发送用户信息与文件元信息
+- Write the file tree to be transferred into the `transferConfig` store
+- Navigate to the sender page
+- Connect to the `/api/connect` signaling service
+- Obtain the receive code
+- Establish the WebRTC DataChannel
+- Wait for the recipient to connect
+- After the user confirms, send the user info and file metadata to the recipient
 
-### 5.2 接收流程
+### 5.2 Receiving Flow
 
-接收端输入取件码后：
+After the recipient enters the receive code:
 
-- 连接信令服务并与发送端完成 SDP / ICE 交换
-- 建立 PeerDataChannel
-- 接收发送方用户信息与文件元信息
-- 单文件场景：直接保存文件
-- 目录传输场景：选择目录并逐文件请求
-- 目录同步场景：先做差异比对，再按新增 / 更新 / 删除执行同步
+- Connect to the signaling service and complete the SDP / ICE exchange with the sender
+- Establish the PeerDataChannel
+- Receive the sender's user info and file metadata
+- Single file: save the file directly
+- Directory transfer: choose a directory and request files one by one
+- Directory sync: compare differences first, then sync according to added / updated / deleted
 
-### 5.3 文件传输与校验
+### 5.3 File Transfer and Verification
 
-文件传输必须维持以下机制：
+File transfer must keep the following mechanisms:
 
-- 发送端按分片发送二进制数据
-- 接收端按顺序写入文件或缓存到内存
-- 发送端与接收端使用 MD5 做完整性校验
-- 校验失败时必须保留失败语义，不可静默吞掉
+- The sender sends binary data in chunks
+- The recipient writes the file in order, or buffers it in memory
+- Sender and recipient use MD5 for integrity verification
+- A verification failure must keep its failure semantics and must not be swallowed silently
 
-### 5.4 关键业务约束
+### 5.4 Key Business Constraints
 
-以下内容属于核心业务语义，除非用户明确要求，不要擅自改变：
+The following are core business semantics. Do not change them unless the user explicitly asks:
 
-- 取件码连接机制
-- WebSocket 作为信令通道的角色
-- WebRTC 作为真正数据传输通道的角色
-- 文件树扁平化结构与 `fileMap` 数据格式
-- 目录同步的“新增 / 更新 / 删除”三类结果
-- 哈希校验失败后的错误处理逻辑
-- 现有错误码与警告码语义
+- The receive code connection mechanism
+- WebSocket as the signaling channel
+- WebRTC as the actual data transfer channel
+- The flattened file tree structure and the `fileMap` data format
+- The three outcomes of directory sync: added / updated / deleted
+- Error handling after a hash verification failure
+- The semantics of existing error codes and warning codes
 
-## 6. 错误码和兼容性约束
+## 6. Error Codes and Compatibility
 
-如果修改传输相关逻辑，必须注意现有错误码与告警码的兼容性。
+When changing transfer-related logic, keep the existing error codes and warning codes compatible.
 
-例如但不限于：
+For example, but not limited to:
 
-- `403`：用户拒绝传输
-- `404`：找不到取件码或文件
-- `-1`：不支持相应能力，例如目录传输能力不足
-- `-2`：连接中断导致传输失败
-- `-3`：哈希校验失败
-- `-5`：信令服务连接异常
-- `-10`：等待超时或连接超时
+- `403`: the user rejected the transfer
+- `404`: receive code or file not found
+- `-1`: capability not supported, for example insufficient directory transfer support
+- `-2`: transfer failed because the connection was interrupted
+- `-3`: hash verification failed
+- `-5`: signaling service connection error
+- `-10`: wait timeout or connection timeout
 
-要求：
+Requirements:
 
-- 不要随意复用已有错误码表达新语义
-- 不要删除原有错误码分支而不更新前后端和界面逻辑
-- 如果必须新增错误码，必须补充注释与对应 UI 分支
+- Do not reuse an existing error code for a new meaning
+- Do not remove an existing error code branch without updating the front end, back end and UI logic
+- If a new error code is required, add a comment and the matching UI branch
 
-## 7. 编码规范
+## 7. Coding Standards
 
-### 7.1 通用原则
+### 7.1 General Principles
 
-- 保持现有编码风格，不做无关重构
-- 改动尽量小而完整，避免“顺手重写”
-- 优先可维护性、可读性和业务正确性
-- 不要为了抽象而抽象
+- Keep the existing coding style and do not do unrelated refactors
+- Keep changes small but complete, and avoid "rewriting while you're there"
+- Favor maintainability, readability and business correctness
+- Do not abstract for the sake of abstraction
 
-### 7.2 TypeScript 规范
+### 7.2 TypeScript
 
-- 新代码优先显式类型，不要无意义扩大 `any`
-- 共享结构优先抽到 `app/types/`，如果未来需要在前后端共享，再考虑迁入 `shared/`
-- 对浏览器 API、文件系统 API、WebRTC 数据结构要做必要的类型保护
-- 对可能为空的对象、路径片段、文件句柄要显式校验
+- Prefer explicit types in new code and do not widen `any` for no reason
+- Put shared structures in `app/types/` first. If they later need to be shared between front end and back end, consider moving them into `shared/`
+- Add the necessary type guards for browser APIs, file system APIs and WebRTC data structures
+- Explicitly check objects, path segments and file handles that may be empty
 
-### 7.3 Vue / Nuxt 规范
+### 7.3 Vue / Nuxt
 
-- 组件优先使用 `script setup`
-- 页面内复杂逻辑优先迁移到 store action
-- 模板只保留展示计算和交互绑定，不承载大段流程控制
-- 使用 Nuxt 内置能力时优先兼容 Nuxt 4 用法
+- Prefer `script setup` for components
+- Move complex in-page logic into store actions first
+- Keep only display computation and interaction bindings in templates, not large blocks of flow control
+- When using Nuxt built-ins, prefer Nuxt 4 usage
 
-### 7.4 Store 规范
+### 7.4 Store
 
-- Store 负责状态与动作，不负责样式
-- Store 中的 action 应围绕业务阶段命名清晰
-- 复杂状态对象要有默认构造函数，避免散落的内联初始化
-- 允许在 store 中保留必要的副作用，例如连接建立、文件写入、toast 调用，但要保证职责单一
+- A store owns state and actions, not styling
+- Name store actions clearly after the business stage they cover
+- Complex state objects need a default constructor, to avoid scattered inline initialization
+- Necessary side effects are allowed in a store, such as establishing connections, writing files and calling toasts, but keep responsibilities single
 
-### 7.5 注释规范
+### 7.5 Comments
 
-- 注释必须使用中文
-- 注释只解释业务原因、状态语义和复杂流程
-- 不要写低价值注释，例如“给变量赋值”
-- 对以下内容建议加注释：
-  - WebRTC / WebSocket 交互节点
-  - 目录同步比对逻辑
-  - 哈希校验和失败回滚逻辑
-  - 文件系统 API 的兼容性处理
+- Comments must be written in English
+- Comments only explain business reasons, state semantics and complex flows
+- Do not write low-value comments such as "assign a value to the variable"
+- Comments are recommended for:
+  - WebRTC / WebSocket interaction points
+  - Directory sync comparison logic
+  - Hash verification and failure rollback logic
+  - Compatibility handling for the File System API
 
-## 8. UI 与交互维护要求
+## 8. UI and Interaction
 
-本项目是工具型产品，界面应保持轻量、直观、可靠。
+This project is a utility product. The UI should stay lightweight, intuitive and reliable.
 
-维护界面时：
+When maintaining the UI:
 
-- 保持现有交互路径简洁
-- 不要无理由增加多步骤弹窗
-- 保持首页、发送页、接收页的信息层次清晰
-- 优先延续现有 PrimeVue + Tailwind 用法
-- 不要引入新的大型 UI 框架
+- Keep existing interaction paths short
+- Do not add multi-step dialogs without a reason
+- Keep the information hierarchy of the home, sender and recipient pages clear
+- Prefer continuing the existing PrimeVue + Tailwind usage
+- Do not introduce a new large UI framework
 
-如果修改文案：
+If you change copy:
 
-- 需要同步检查国际化资源
-- 不要只改模板中文案而遗漏 i18n 词条
-- 尽量保持中英文语义一致
+- Check the i18n resources in sync
+- Do not change only the template text and miss the i18n entries
+- The UI locales are `en`, `de` and `fr`. Keep the meaning consistent across all of them
 
-## 9. 与浏览器能力相关的要求
+## 9. Browser Capability Requirements
 
-本项目依赖多个浏览器能力，修改时必须考虑兼容分支：
+The project depends on several browser capabilities. Account for compatibility branches when changing it:
 
 - WebRTC DataChannel
 - WebSocket
 - Modern File System API
-- PWA 安装提示事件
-- 拖拽上传
+- PWA install prompt event
+- Drag-and-drop upload
 
-要求：
+Requirements:
 
-- 涉及浏览器专有 API 时必须先判断环境是否可用
-- 不要假设移动端与桌面端能力一致
-- 不要删除现有能力检测和降级逻辑
-- 如果新增能力判断，优先与现有工具函数风格保持一致
+- Check that the environment supports a browser-specific API before using it
+- Do not assume mobile and desktop have the same capabilities
+- Do not remove existing capability detection and fallback logic
+- When adding a capability check, keep the style consistent with the existing utility functions
 
-## 10. 服务端与信令维护要求
+## 10. Server and Signaling
 
-`server/api/` 中的接口不是普通 CRUD，它们直接影响连接建立与传输流程。
+The endpoints in `server/api/` are not ordinary CRUD. They directly affect connection setup and the transfer flow.
 
-修改时必须注意：
+When changing them:
 
-- 不要改变消息结构而不同时更新前端收发逻辑
-- 不要改变 `connect` 相关接口行为而不验证发送端和接收端双边流程
-- 对 WebSocket 信令消息格式保持稳定
-- 需要新增字段时，优先向后兼容
+- Do not change the message structure without updating the front-end send/receive logic at the same time
+- Do not change the behavior of `connect`-related endpoints without verifying both the sender and recipient flows
+- Keep the WebSocket signaling message format stable
+- When a new field is needed, prefer backward compatibility
 
-## 11. 依赖与构建约束
+## 11. Dependencies and Build
 
-你必须使用以下命令体系：
+You must use the following command set:
 
 ```bash
 yarn install
 yarn build
 ```
 
-默认要求：
+Default requirements:
 
-- 修改依赖后要保证 `yarn.lock` 同步更新
-- 不要提交只改 `package.json` 不改 `yarn.lock` 的结果
-- 不要随意升级 Tailwind、PrimeVue、Nuxt 生态包的大版本，除非任务明确要求
-- 升级依赖后必须至少执行一次 `yarn build`
+- After changing dependencies, make sure `yarn.lock` is updated too
+- Do not commit a change that updates `package.json` but not `yarn.lock`
+- Do not casually upgrade major versions of Tailwind, PrimeVue or Nuxt ecosystem packages unless the task explicitly requires it
+- After upgrading dependencies, run `yarn build` at least once
 
-## 12. 修改前后的检查清单
+## 12. Checklists Before and After Changes
 
-开始修改前，请先确认：
+Before starting a change, confirm:
 
-- 当前改动属于哪个页面、哪个 store、哪个业务阶段
-- 是否会影响发送端、接收端、信令端三方协作
-- 是否会影响错误码、哈希校验、文件树结构
+- Which page, which store and which business stage the change belongs to
+- Whether it affects the collaboration between sender, recipient and signaling
+- Whether it affects error codes, hash verification or the file tree structure
 
-提交修改前，请至少检查：
+Before submitting a change, check at least:
 
-- 类型错误是否消除
-- `yarn build` 是否通过
-- 页面是否仍使用正确的 store
-- 文案改动是否同步到 i18n
-- 是否引入了重复状态源
-- 是否意外改变核心业务逻辑
+- Whether type errors are resolved
+- Whether `yarn build` passes
+- Whether pages still use the correct store
+- Whether copy changes are synced to i18n
+- Whether a duplicate source of state was introduced
+- Whether the core business logic was changed by accident
 
-## 13. 禁止事项
+## 13. Prohibited Actions
 
-除非用户明确要求，否则不要这样做：
+Unless the user explicitly asks, do not:
 
-- 不要把 Pinia 状态重新改回 `useState`
-- 不要重写 `PeerDataChannel` 协议结构
-- 不要大规模改写发送 / 接收流程
-- 不要擅自修改错误码语义
-- 不要引入新的状态管理方案
-- 不要把页面重新做成“胖组件”
-- 不要改用 `npm`、`bun` 或 `pnpm`
-- 不要只为了“看起来更现代”而替换现有稳定实现
+- Change Pinia state back to `useState`
+- Rewrite the `PeerDataChannel` protocol structure
+- Rewrite the send / receive flows at large scale
+- Change error code semantics on your own
+- Introduce a new state management approach
+- Turn pages back into "fat components"
+- Switch to `npm`, `bun` or `pnpm`
+- Replace a stable existing implementation just to make it "look more modern"
 
-## 14. Agent 的默认工作方式
+## 14. Default Agent Workflow
 
-在本仓库中，Agent 应默认按以下顺序工作：
+In this repository, an agent should work in the following order by default:
 
-1. 先阅读相关页面、store、utils、server 代码，理解当前链路
-   前端代码默认从 `app/` 目录开始阅读，服务端代码从 `server/` 目录开始阅读
-2. 找到状态归属和业务边界
-3. 在现有架构内做最小闭环修改
-4. 补充必要的中文注释与类型
-5. 检查代码类型警告或其他错误
-6. 汇报改动时，明确说明是否影响发送、接收、同步、信令中的哪一段流程
+1. Read the relevant pages, stores, utils and server code first to understand the current flow
+   Start reading front-end code from the `app/` directory and server code from the `server/` directory
+2. Find where the state belongs and where the business boundary is
+3. Make the smallest closed-loop change within the existing architecture
+4. Add the necessary English comments and types
+5. Check for type warnings or other errors
+6. When reporting changes, state clearly which part of the flow is affected: sending, receiving, syncing or signaling
 
-## 15. 输出质量要求
+## 15. Output Quality
 
-如果你要实现功能或修复缺陷，最终代码应满足：
+When you implement a feature or fix a bug, the final code should:
 
-- 代码逻辑清晰
-- 状态归属明确
-- 业务流程完整
-- 中文注释准确且不过量
-- 能支持后续迭代维护
-- 不偏离 FasterSend 当前的产品定位和实现路径
+- Have clear code logic
+- Have clear state ownership
+- Have a complete business flow
+- Have accurate English comments that are not excessive
+- Support later iteration and maintenance
+- Not deviate from FasterSend's current product positioning and implementation path

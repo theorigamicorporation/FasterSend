@@ -21,7 +21,7 @@ async function dealFilesFromHandlerLoop(
 
 /**
  *
- * @param fh 根据目录Handler构建扁平文件树
+ * @param fh directory handle to build the flat file tree from
  * @returns
  */
 export async function dealFilesFromHandler(fh: FileSystemDirectoryHandle) {
@@ -31,7 +31,7 @@ export async function dealFilesFromHandler(fh: FileSystemDirectoryHandle) {
 }
 
 /**
- * 根据文件列表构建扁平文件树
+ * Builds a flat file tree from a file list
  * @param fl
  * @returns
  */
@@ -51,7 +51,7 @@ export async function dealFilesFormList(fl: Array<File>) {
 }
 
 /**
- * 根据文件构建扁平文件树
+ * Builds a flat file tree from a file
  * @param file
  * @returns
  */
@@ -67,7 +67,7 @@ export function dealFilesFormFile(file: File) {
 }
 
 /**
- * 选择目录
+ * Picks a directory
  * @returns
  */
 export async function selectDir() {
@@ -105,8 +105,8 @@ export async function selectDir() {
 }
 
 /**
- * 选择文件
- * @param accept 接受的MIME类型
+ * Picks files
+ * @param accept accepted MIME types
  * @returns
  */
 export async function selectFile(accept?: string): Promise<File> {
@@ -148,7 +148,7 @@ export async function selectFile(accept?: string): Promise<File> {
 }
 
 /**
- * 扁平文件树去根
+ * Strips the root from a flat file tree
  * @param fileMap
  */
 export function fileMapWithoutRoot(fileMap: any) {

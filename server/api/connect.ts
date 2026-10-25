@@ -1,7 +1,7 @@
 import { getClientIP, parseTrustProxy } from '../utils/clientIP'
 import { DEFAULT_SIGNALLING_OPTIONS, SignallingHub, type SignalPeer } from '../utils/signalling'
 
-// 不记录 IP，只记录连接 id 和事件
+// Do not log IPs, only connection id and events
 function log(level: 'info' | 'warn' | 'error', msg: string) {
   const line = `${new Date().toISOString()} ${level}: ${msg}`
   if (level === 'info') console.log(line)
@@ -11,7 +11,7 @@ function log(level: 'info' | 'warn' | 'error', msg: string) {
 
 const MAX_MESSAGE_BYTES = DEFAULT_SIGNALLING_OPTIONS.maxMessageBytes
 
-// crossws 的 peer 在每个回调里都是同一个实例，这里缓存其适配对象
+// crossws passes the same peer instance to every callback, so cache its adapter
 const adapters = new WeakMap<object, SignalPeer>()
 let hub: SignallingHub | null = null
 let trustProxyHops = 0
@@ -67,13 +67,16 @@ export default defineWebSocketHandler({
   message(peer, msg) {
     const raw = msg.rawData as { byteLength?: number } | undefined
     const size = raw?.byteLength
-    // 超长消息不做解码，交给 hub 按长度直接断开
+    // Skip decoding oversize messages; the hub closes them by length
     const text = size !== undefined && size > MAX_MESSAGE_BYTES ? '' : msg.text()
     getHub().message(adapt(peer), text, size ?? text.length)
   },
 
   error(peer, error) {
-    log('error', `socket error: #${peer.id} ${error instanceof Error ? error.message : String(error)}`)
+    log(
+      'error',
+      `socket error: #${peer.id} ${error instanceof Error ? error.message : String(error)}`
+    )
     getHub().close(adapt(peer))
   }
 })
