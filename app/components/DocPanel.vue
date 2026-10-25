@@ -34,12 +34,12 @@ onMounted(() => {
       v-model:visible="isDocPanelShow"
       dismissable-mask
       modal
-      header="FastSend"
+      header="FasterSend"
       class="w-[90vw] md:w-[60vw] max-h-[80vh]"
     >
       <article class="post" v-if="locale === 'zh'">
         <p>
-          欢迎使用<b class="underline">FastSend</b
+          欢迎使用<b class="underline">FasterSend</b
           >，这是一个使用浏览器<code>`点对点`</code>加密传输文件的网页工具
         </p>
         <p>
@@ -107,7 +107,7 @@ onMounted(() => {
       </article>
       <article class="post" v-else>
         <p>
-          Welcome to <b class="underline">FastSend</b>, a web tool for securely transferring files
+          Welcome to <b class="underline">FasterSend</b>, a web tool for securely transferring files
           using browser <code>`peer-to-peer`</code> encryption.
         </p>
         <p>
@@ -199,6 +199,16 @@ onMounted(() => {
         </p>
       </article>
       <Divider />
+      <p class="text-center text-xs tracking-wider mb-4">
+        Based on
+        <a
+          target="_blank"
+          href="https://github.com/ShouChenICU/FastSend"
+          class="underline hover:text-sky-500"
+          >FastSend</a
+        >
+        by ShouChenICU (MIT)
+      </p>
       <div class="text-center tracking-wider" v-if="locale === 'zh'">
         <p class="text-xs">您当前的IP地址为</p>
         <p class="my-1">{{ curIP }}</p>

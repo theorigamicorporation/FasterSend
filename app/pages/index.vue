@@ -1,14 +1,9 @@
 <script setup lang="ts">
 const { t } = useI18n()
-const toast = useToast()
 const homeStore = useHomeStore()
 const { isModernFileAPISupport, isDirSupport, receiveCode, isFileDraging } = storeToRefs(homeStore)
 const fileDragArea = ref()
 const codeLength = RECEIVE_CODE_LENGTH
-
-const { data: transCount, error: transCountError } = await useFetch('/api/transCount', {
-  method: 'post'
-})
 
 useSeoMeta({
   title: t('home')
@@ -30,17 +25,6 @@ watch(isFileDraging, (val) => {
       }
     }, 300)
   }
-})
-
-watch(transCountError, (error) => {
-  if (!error) {
-    return
-  }
-  toast.add({
-    severity: 'error',
-    summary: 'Error',
-    detail: t('hint.serviceUnavailable')
-  })
 })
 
 function fileDragOver(e: Event) {
@@ -83,7 +67,7 @@ onMounted(() => {
       class="fixed top-0 left-0 right-0 bottom-0 inset-0 -z-50 h-full w-full bg-white dark:bg-zinc-950 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#25272b_1px,transparent_1px)] bg-size-[16px_16px]"
     ></div>
     <div class="py-6 px-8 text-center">
-      <h1 class="md:text-6xl text-5xl tracking-wider font-serif">Fast Send</h1>
+      <h1 class="md:text-6xl text-5xl tracking-wider font-serif">FasterSend</h1>
       <p
         class="mt-4 leading-6 tracking-widest text-sm md:text-base text-gray-600 dark:text-gray-200"
       >
@@ -164,12 +148,6 @@ onMounted(() => {
           </template>
         </InputOtp>
       </div>
-    </div>
-
-    <div class="flex flex-row items-baseline justify-center pt-8 text-sm">
-      <span>{{ $t('label.transmitted') }}</span>
-      <span class="text-2xl m-2 tracking-wider">{{ transCount }}</span>
-      <span>{{ $t('label.times') }}</span>
     </div>
   </div>
 </template>

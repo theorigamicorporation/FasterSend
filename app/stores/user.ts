@@ -50,7 +50,7 @@ export const useUserStore = defineStore('user', () => {
     fr.onload = () => {
       setAvatarURL(`${fr.result || ''}`)
     }
-    fetch('/akari.webp')
+    fetch('/favicon.webp')
       .then((res) => res.blob())
       .then((blob) => fr.readAsDataURL(blob))
       .catch(console.warn)
