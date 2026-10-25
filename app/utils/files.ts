@@ -126,7 +126,7 @@ export async function selectFile(accept?: string): Promise<File> {
       if (input.files && input.files.length > 0) {
         resolve(input.files[0]!)
       } else {
-        reject(new Error('未选择文件'))
+        reject(new Error('No file selected'))
       }
       cleanup()
     }

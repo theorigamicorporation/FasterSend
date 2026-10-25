@@ -37,72 +37,182 @@ onMounted(() => {
       header="FasterSend"
       class="w-[90vw] md:w-[60vw] max-h-[80vh]"
     >
-      <article class="post" v-if="locale === 'zh'">
+      <article class="post" v-if="locale === 'de'">
         <p>
-          欢迎使用<b class="underline">FasterSend</b
-          >，这是一个使用浏览器<code>`点对点`</code>加密传输文件的网页工具
+          Willkommen bei <b class="underline">FasterSend</b>, einem Web-Tool, das Dateien
+          <code>`Peer-to-Peer`</code> und verschlüsselt direkt zwischen Browsern überträgt.
         </p>
         <p>
-          你的文件数据不会经过第三方服务器，保证隐私安全，相应的，需要发送方在传输过程中保持在线
+          Ihre Dateien laufen über keinen fremden Server, das schützt Ihre Privatsphäre. Dafür muss
+          der Sender während der Übertragung online bleiben.
         </p>
-        <h2>一、快速上手</h2>
-        <h3>发送单个文件</h3>
-        <p>1. 发送方点击<b>发送文件</b>，获取文件<b>取件码</b>（也可将文件拖放到发送区域）</p>
-        <p>2. 接收方输入<b>取件码</b>开始点对点配对，配对成功后等待发送方确认</p>
-        <p>3. 发送方点击<b>确认</b>继续传输（可点开头像设置自动确认）</p>
+        <h2>I. Schnellstart</h2>
+        <h3>Eine Datei senden</h3>
         <p>
-          4.
-          接收方点击<b>接收</b>，选择保存路径，然后开始传输（如果浏览器不支持直接访问文件系统，数据将暂存在内存中，传输完毕后触发下载）
-        </p>
-        <h3>发送目录</h3>
-        <p>发送方点击<b>发送目录</b>，其他步骤同上（目录暂不支持直接拖放）</p>
-        <h2>二、工作原理</h2>
-        <p>
-          本工具使用<b>WebRTC</b>提供点对点数据传输，使用<b>现代文件访问API</b>提供直接文件系统读写
+          1. Der Sender klickt auf <b>Datei senden</b> und erhält einen <b>Abholcode</b> (Dateien
+          können auch in den Sendebereich gezogen werden).
         </p>
         <p>
-          因此，请确保浏览器开启了<b>WebRTC</b>功能，<b>现代文件访问API</b>可选，这个不可用将导致传输<b>文件大小限制</b>以及<b
-            >不可接收目录</b
-          >
+          2. Der Empfänger gibt den <b>Abholcode</b> ein, um die Verbindung herzustellen, und wartet
+          dann auf die Bestätigung des Senders.
         </p>
         <p>
-          <b>WebRTC</b
-          >会遍历所有可行的网络，自动选择最优线路，如果收发双方在<b>同一局域网</b>，将自动走局域网传输，<b
-            >不会消耗外部流量</b
-          >
-        </p>
-        <h2>三、注意事项</h2>
-        <p>
-          1.
-          由于<b>点对点连接</b>一般需要进行NAT网络穿透，对于复杂的网络环境如开启代理的情况下，可能导致<b>点对点连接</b>失败，请切换网络或关闭代理再重试
+          3. Der Sender klickt auf <b>Bestätigen</b>, um die Übertragung zu starten (über das
+          Profilbild lässt sich die automatische Bestätigung einschalten).
         </p>
         <p>
-          2.
-          点对点加密传输能保证文件数据的安全，但可能向对方泄漏你的<b>出口IP地址</b>，大部分情况下这是一个动态的<b>NAT出口地址</b>，因此不用担心，你可以在下方看到你当前相对于本站的出口IP地址。<b
-            >如果您觉得这有风险，请暂停使用本工具</b
-          >
+          4. Der Empfänger klickt auf <b>Empfangen</b>, wählt einen Speicherort, und die Übertragung
+          beginnt (ohne direkten Dateisystemzugriff im Browser werden die Daten im Arbeitsspeicher
+          gehalten und nach der Übertragung heruntergeladen).
         </p>
-        <h2>四、隐私声明</h2>
-        <h3>1. 信息收集</h3>
+        <h3>Einen Ordner senden</h3>
         <p>
-          <b>我们不会收集或存储您的任何个人信息或文件。</b
-          >您在使用我们的工具时，所有文件均通过点对点加密技术直接传输，确保您的数据在传输过程中保持私密和安全。
+          Der Sender klickt auf <b>Ordner senden</b>, die übrigen Schritte sind gleich (Ordner können
+          derzeit nicht per Drag-and-drop gesendet werden).
         </p>
-        <h3>2. 文件存储</h3>
+        <h2>II. Funktionsweise</h2>
         <p>
-          我们的工具不会暂存用户的文件。所有传输的文件仅在用户之间直接传递，文件数据不会经过我们的系统。
+          Das Tool nutzt <b>WebRTC</b> für die Peer-to-Peer-Übertragung und die
+          <b>modernen Dateizugriffs-APIs</b> zum direkten Lesen und Schreiben im Dateisystem.
         </p>
-        <h3>3. 数据安全</h3>
         <p>
-          我们采用先进的加密技术来保护您的文件在传输过程中的安全性。您的文件在传输过程中将被加密，确保只有您和接收方能够访问。
+          Bitte stellen Sie daher sicher, dass <b>WebRTC</b> im Browser aktiviert ist. Die
+          <b>modernen Dateizugriffs-APIs</b> sind optional; fehlen sie, gilt eine
+          <b>Größenbeschränkung</b> und es können <b>keine Ordner empfangen</b> werden.
         </p>
-        <h3>4. 用户责任</h3>
         <p>
-          请确保您在使用我们的工具时遵循相关法律法规，并对您传输的文件内容负责。我们不对用户传输的文件内容承担任何责任。
+          <b>WebRTC</b> prüft alle verfügbaren Netzwerkwege und wählt automatisch den besten. Sind
+          Sender und Empfänger im <b>selben lokalen Netzwerk</b>, läuft die Übertragung lokal und
+          <b>verbraucht kein externes Datenvolumen</b>.
         </p>
-        <h3>5. 隐私政策的变更</h3>
+        <h2>III. Hinweise</h2>
         <p>
-          我们可能会不时更新本隐私声明。任何更改将在本页面上发布，建议您定期查看以了解最新信息。
+          1. <b>Peer-to-Peer-Verbindungen</b> müssen in der Regel NAT durchqueren. In komplexen
+          Netzwerken, etwa mit aktivem Proxy, kann die <b>Peer-to-Peer-Verbindung</b> scheitern.
+          Wechseln Sie dann das Netzwerk oder deaktivieren Sie den Proxy und versuchen Sie es erneut.
+        </p>
+        <p>
+          2. Die verschlüsselte Übertragung schützt Ihre Dateien, kann der Gegenseite aber Ihre
+          <b>öffentliche IP-Adresse</b> verraten. Meist ist das eine dynamische
+          <b>NAT-Adresse</b>, also unbedenklich. Ihre aktuelle Adresse, wie diese Seite sie sieht,
+          steht unten.
+          <b>Wenn Ihnen das zu riskant ist, verwenden Sie dieses Tool bitte nicht.</b>
+        </p>
+        <h2>IV. Datenschutz</h2>
+        <h3>1. Datenerhebung</h3>
+        <p>
+          <b>Wir erheben und speichern keine personenbezogenen Daten oder Dateien.</b> Alle Dateien
+          werden per verschlüsselter Peer-to-Peer-Verbindung direkt übertragen und bleiben dabei
+          privat.
+        </p>
+        <h3>2. Dateispeicherung</h3>
+        <p>
+          Das Tool speichert keine Dateien zwischen. Alle Dateien gehen direkt von Nutzer zu Nutzer,
+          die Dateidaten laufen nicht über unsere Systeme.
+        </p>
+        <h3>3. Datensicherheit</h3>
+        <p>
+          Die Übertragung ist verschlüsselt, sodass nur Sie und der Empfänger auf die Dateien
+          zugreifen können.
+        </p>
+        <h3>4. Verantwortung der Nutzer</h3>
+        <p>
+          Bitte halten Sie bei der Nutzung die geltenden Gesetze ein. Sie sind für die Inhalte der
+          übertragenen Dateien verantwortlich; wir übernehmen dafür keine Haftung.
+        </p>
+        <h3>5. Änderungen dieser Erklärung</h3>
+        <p>
+          Wir können diese Datenschutzerklärung gelegentlich aktualisieren. Änderungen werden auf
+          dieser Seite veröffentlicht.
+        </p>
+      </article>
+      <article class="post" v-else-if="locale === 'fr'">
+        <p>
+          Bienvenue sur <b class="underline">FasterSend</b>, un outil web qui transfère des fichiers
+          chiffrés directement entre navigateurs, en <code>`pair à pair`</code>.
+        </p>
+        <p>
+          Vos fichiers ne passent par aucun serveur tiers, ce qui protège votre vie privée. En
+          contrepartie, l'expéditeur doit rester en ligne pendant le transfert.
+        </p>
+        <h2>I. Démarrage rapide</h2>
+        <h3>Envoyer un fichier</h3>
+        <p>
+          1. L'expéditeur clique sur <b>Envoyer un fichier</b> et obtient un
+          <b>code de retrait</b> (on peut aussi glisser les fichiers dans la zone d'envoi).
+        </p>
+        <p>
+          2. Le destinataire saisit le <b>code de retrait</b> pour établir la connexion, puis attend
+          la confirmation de l'expéditeur.
+        </p>
+        <p>
+          3. L'expéditeur clique sur <b>Confirmer</b> pour lancer le transfert (la confirmation
+          automatique s'active depuis la photo de profil).
+        </p>
+        <p>
+          4. Le destinataire clique sur <b>Recevoir</b>, choisit l'emplacement d'enregistrement et le
+          transfert démarre (si le navigateur n'a pas d'accès direct au système de fichiers, les
+          données restent en mémoire et sont téléchargées à la fin du transfert).
+        </p>
+        <h3>Envoyer un dossier</h3>
+        <p>
+          L'expéditeur clique sur <b>Envoyer un dossier</b>, les autres étapes sont identiques (le
+          glisser-déposer de dossiers n'est pas encore pris en charge).
+        </p>
+        <h2>II. Fonctionnement</h2>
+        <p>
+          L'outil utilise <b>WebRTC</b> pour le transfert en pair à pair et les
+          <b>API modernes d'accès aux fichiers</b> pour lire et écrire directement sur le disque.
+        </p>
+        <p>
+          Assurez-vous donc que <b>WebRTC</b> est activé dans votre navigateur. Les
+          <b>API modernes d'accès aux fichiers</b> sont facultatives ; sans elles, la
+          <b>taille des fichiers est limitée</b> et il est <b>impossible de recevoir des dossiers</b>.
+        </p>
+        <p>
+          <b>WebRTC</b> teste tous les chemins réseau disponibles et choisit automatiquement le
+          meilleur. Si l'expéditeur et le destinataire sont sur le <b>même réseau local</b>, le
+          transfert reste local et <b>ne consomme pas de bande passante externe</b>.
+        </p>
+        <h2>III. Précautions</h2>
+        <p>
+          1. Les <b>connexions pair à pair</b> doivent généralement traverser le NAT. Dans un réseau
+          complexe, par exemple avec un proxy actif, la <b>connexion pair à pair</b> peut échouer.
+          Changez de réseau ou désactivez le proxy, puis réessayez.
+        </p>
+        <p>
+          2. Le transfert chiffré protège vos fichiers, mais peut révéler votre
+          <b>adresse IP publique</b> au correspondant. Il s'agit le plus souvent d'une
+          <b>adresse NAT</b> dynamique, sans danger particulier. Votre adresse actuelle, telle que ce
+          site la voit, est affichée ci-dessous.
+          <b>Si cela vous semble risqué, n'utilisez pas cet outil.</b>
+        </p>
+        <h2>IV. Confidentialité</h2>
+        <h3>1. Collecte d'informations</h3>
+        <p>
+          <b>Nous ne collectons ni ne conservons aucune donnée personnelle ni aucun fichier.</b> Tous
+          les fichiers sont transmis directement par une connexion pair à pair chiffrée et restent
+          privés.
+        </p>
+        <h3>2. Stockage des fichiers</h3>
+        <p>
+          L'outil ne stocke aucun fichier, même temporairement. Les fichiers passent directement
+          d'un utilisateur à l'autre, sans transiter par nos systèmes.
+        </p>
+        <h3>3. Sécurité des données</h3>
+        <p>
+          Le transfert est chiffré, de sorte que seuls vous et le destinataire pouvez accéder aux
+          fichiers.
+        </p>
+        <h3>4. Responsabilité des utilisateurs</h3>
+        <p>
+          Respectez la législation en vigueur lorsque vous utilisez l'outil. Vous êtes responsable
+          du contenu des fichiers transférés ; nous déclinons toute responsabilité à ce sujet.
+        </p>
+        <h3>5. Modifications de cette déclaration</h3>
+        <p>
+          Cette déclaration de confidentialité peut être mise à jour. Les modifications seront
+          publiées sur cette page.
         </p>
       </article>
       <article class="post" v-else>
@@ -209,15 +319,10 @@ onMounted(() => {
         >
         by ShouChenICU (MIT)
       </p>
-      <div class="text-center tracking-wider" v-if="locale === 'zh'">
-        <p class="text-xs">您当前的IP地址为</p>
+      <div class="text-center tracking-wider">
+        <p class="text-xs">{{ $t('label.yourIP') }}</p>
         <p class="my-1">{{ curIP }}</p>
-        <p class="text-xs">（相对于本站）</p>
-      </div>
-      <div class="text-center tracking-wider" v-else>
-        <p class="text-xs">Your current IP address is</p>
-        <p class="my-1">{{ curIP }}</p>
-        <p class="text-xs">（relative to this site）</p>
+        <p class="text-xs">{{ $t('label.relativeToSite') }}</p>
       </div>
     </Dialog>
   </div>

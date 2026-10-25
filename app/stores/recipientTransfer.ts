@@ -169,7 +169,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
         totalFileSize.value = curFile.value.size
       } else if (!isModernFileAPISupport.value) {
         status.value.warn.code = -1
-        status.value.warn.msg = '不支持目录传输'
+        status.value.warn.msg = t('hint.noSupportDirTrans')
         await pdc?.sendData(JSON.stringify({ type: 'err', data: -1 }))
         dispose()
       } else if (peerFilesInfo.value.type === 'syncDir') {
@@ -232,7 +232,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
       console.warn(obj.data)
       if (obj.data === 403) {
         status.value.error.code = 403
-        status.value.error.msg = '用户拒绝传输'
+        status.value.error.msg = t('hint.refusesToTransmit')
         toast.add({
           severity: 'error',
           summary: 'Error',
@@ -240,7 +240,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
           life: 5e3
         })
       } else if (obj.data === 404) {
-        toast.add({ severity: 'warn', summary: 'Warn', detail: '文件找不到', life: 5e3 })
+        toast.add({ severity: 'warn', summary: 'Warn', detail: t('hint.fileNotFound'), life: 5e3 })
       }
     }
   }
@@ -259,10 +259,10 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
         status.value.error.code = 403
       } else if (status.value.isReceiving) {
         status.value.warn.code = -2
-        status.value.warn.msg = '连接断开，传输失败'
+        status.value.warn.msg = t('hint.connectInterrupted')
       }
       dispose()
-      toast.add({ severity: 'warn', summary: 'Warn', detail: 'Disconnected', life: 5e3 })
+      toast.add({ severity: 'warn', summary: 'Warn', detail: t('hint.disconnected'), life: 5e3 })
     }
     pdc.onError = (err) => {
       console.error(err)
@@ -444,7 +444,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
         (name) => !/\/$/.test(name)
       )
       if (waitReceiveFileList.value.length === 0) {
-        toast.add({ severity: 'warn', summary: 'Warn', detail: '请至少选择一个文件', life: 5e3 })
+        toast.add({ severity: 'warn', summary: 'Warn', detail: t('hint.selectAtLeastOneFile'), life: 5e3 })
         status.value.isReceiving = false
         status.value.isLock = false
         return
@@ -469,7 +469,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
         syncDirStatus.value.waitUpdateList.length === 0 &&
         syncDirStatus.value.waitDeleteList.length === 0
       ) {
-        toast.add({ severity: 'warn', summary: 'Warn', detail: '请至少选择一个文件', life: 5e3 })
+        toast.add({ severity: 'warn', summary: 'Warn', detail: t('hint.selectAtLeastOneFile'), life: 5e3 })
         status.value.isReceiving = false
         status.value.isLock = false
         return
@@ -553,7 +553,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
           try {
             await curFolder?.removeEntry(getPathSegment(paths[paths.length - 1]))
           } catch (error) {
-            console.warn('删除失败', key, error)
+            console.warn('Delete failed', key, error)
           }
         }
 

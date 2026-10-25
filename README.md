@@ -19,7 +19,7 @@ FasterSend is a hard fork of [FastSend](https://github.com/ShouChenICU/FastSend)
 - Send single files or whole folders
 - Folder sync with add, update and delete selection
 - Transfers stay on the local network when both peers are on it
-- English and Chinese UI
+- English, German and French UI
 - Installable as a PWA
 
 ## Running with Docker
