@@ -10,6 +10,7 @@ export default defineI18nConfig(() => ({
       recipient: 'Recipient',
       about: 'About',
       label: {
+        filterFiles: 'Filter files',
         title: 'Title',
         secondsAgo: '{n} seconds ago',
         minutesAgo: '{n} minutes ago',
@@ -27,6 +28,7 @@ export default defineI18nConfig(() => ({
         relativeToSite: '(as seen by this site)'
       },
       btn: {
+        close: 'Close',
         submit: 'Submit',
         update: 'Update',
         ok: 'OK',
@@ -180,6 +182,7 @@ export default defineI18nConfig(() => ({
       recipient: 'Empfangen',
       about: 'Über',
       label: {
+        filterFiles: 'Dateien filtern',
         title: 'Titel',
         secondsAgo: 'vor {n} Sekunden',
         minutesAgo: 'vor {n} Minuten',
@@ -197,6 +200,7 @@ export default defineI18nConfig(() => ({
         relativeToSite: '(aus Sicht dieser Seite)'
       },
       btn: {
+        close: 'Schließen',
         submit: 'Absenden',
         update: 'Aktualisieren',
         ok: 'OK',
@@ -352,6 +356,7 @@ export default defineI18nConfig(() => ({
       recipient: 'Recevoir',
       about: 'À propos',
       label: {
+        filterFiles: 'Filtrer les fichiers',
         title: 'Titre',
         secondsAgo: 'il y a {n} secondes',
         minutesAgo: 'il y a {n} minutes',
@@ -369,6 +374,7 @@ export default defineI18nConfig(() => ({
         relativeToSite: '(vue par ce site)'
       },
       btn: {
+        close: 'Fermer',
         submit: 'Valider',
         update: 'Mettre à jour',
         ok: 'OK',

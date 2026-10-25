@@ -207,6 +207,7 @@ New dependency versions are only installed once they are at least three days old
 - Self-hostable: the site URL, ICE servers and limits come from environment variables instead of being hardcoded.
 - Security fixes and hardening of the signalling server (per-IP connection limits, code lookup rate limiting, message size limits).
 - New UI and help dialog, English, German and French translations, fun animal nicknames.
+- PrimeVue (commercial licence from v5) replaced with the MIT-licensed [Reka UI](https://reka-ui.com) primitives, which also cut the client bundle to about a third.
 - Icons and fonts are bundled, so the app makes no external requests.
 - Updated dependencies, CI, and a multi-arch container image on GHCR.
 

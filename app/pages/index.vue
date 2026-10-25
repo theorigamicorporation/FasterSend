@@ -4,6 +4,15 @@ const homeStore = useHomeStore()
 const { isModernFileAPISupport, isDirSupport, receiveCode, isFileDraging } = storeToRefs(homeStore)
 const fileDragArea = ref()
 const codeLength = RECEIVE_CODE_LENGTH
+// PinInput works on an array of digits; hand the store a code only once all of them are filled
+const codeDigits = ref<(number | undefined)[]>([])
+watch(codeDigits, (digits) => {
+  const filled = digits.filter((d) => Number.isInteger(d))
+  receiveCode.value = filled.length === codeLength ? filled.join('') : ''
+})
+watch(receiveCode, (code) => {
+  if (!code) codeDigits.value = []
+})
 
 useSeoMeta({
   title: t('home')
@@ -136,28 +145,27 @@ onMounted(() => {
         </div>
 
         <div class="flex flex-1 flex-col items-center justify-center py-8">
-          <InputOtp
-            integerOnly
-            :length="codeLength"
-            v-model="receiveCode"
-            class="gap-2 sm:gap-3"
+          <PinInputRoot
+            v-model="codeDigits"
+            otp
+            type="number"
+            class="flex gap-2 sm:gap-3"
             data-testid="receive-code"
           >
-            <template #default="{ attrs, events, index }">
-              <input
-                :autofocus="index === 1"
-                type="text"
-                inputmode="numeric"
-                autocomplete="one-time-code"
-                :aria-label="`${$t('label.receiveCode')} ${index}`"
-                v-bind="attrs"
-                v-on="events"
-                class="no-arrows h-14 w-11 rounded-xl border border-zinc-200 bg-white text-center font-mono text-2xl font-semibold shadow-sm shadow-zinc-900/[0.03] transition outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 sm:h-16 sm:w-13 sm:text-3xl dark:border-zinc-700 dark:bg-zinc-950 dark:focus:border-primary-400"
-              />
-            </template>
-          </InputOtp>
+            <PinInputInput
+              v-for="(_, index) in codeLength"
+              :key="index"
+              :index="index"
+              :autofocus="index === 0"
+              inputmode="numeric"
+              :aria-label="`${$t('label.receiveCode')} ${index + 1}`"
+              class="h-14 w-11 rounded-xl border border-zinc-200 bg-white text-center font-mono text-2xl font-semibold shadow-sm shadow-zinc-900/[0.03] transition outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 sm:h-16 sm:w-13 sm:text-3xl dark:border-zinc-700 dark:bg-zinc-950 dark:focus:border-primary-400"
+            />
+          </PinInputRoot>
           <p class="fs-muted mt-6 flex items-start gap-2 text-sm">
-            <Icon name="solar:qr-code-linear" size="18" class="mt-px shrink-0" />{{ $t('receive.scan') }}
+            <Icon name="solar:qr-code-linear" size="18" class="mt-px shrink-0" />{{
+              $t('receive.scan')
+            }}
           </p>
         </div>
       </div>

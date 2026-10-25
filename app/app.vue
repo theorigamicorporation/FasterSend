@@ -29,7 +29,7 @@ onMounted(() => {
   <NuxtPwaManifest />
   <NuxtRouteAnnouncer />
   <FullScreenLoader />
-  <Toast position="top-right" />
+  <AppToaster />
   <div class="flex min-h-screen flex-col">
     <NavBar />
     <main class="flex-1">
@@ -37,7 +37,6 @@ onMounted(() => {
     </main>
     <AppFooter />
   </div>
-  <ScrollTop />
   <InstallPWA />
   <DocPanel />
 </template>
