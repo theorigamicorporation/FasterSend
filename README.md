@@ -71,7 +71,7 @@ The image is `ghcr.io/thereisnotime/fastersend`. It listens on port 3000.
 ```bash
 docker run -d --name fastersend --restart unless-stopped -p 3000:3000 \
   -e NUXT_PUBLIC_SITE_URL=https://send.example.com \
-  ghcr.io/thereisnotime/fastersend:main
+  ghcr.io/thereisnotime/fastersend:latest
 ```
 
 Or with Compose from a checkout of this repository:
@@ -87,7 +87,7 @@ The image runs rootless as-is:
 ```bash
 podman run -d --name fastersend -p 3000:3000 \
   -e NUXT_PUBLIC_SITE_URL=https://send.example.com \
-  ghcr.io/thereisnotime/fastersend:main
+  ghcr.io/thereisnotime/fastersend:latest
 ```
 
 `podman compose up -d` works with the same `docker-compose.yaml`, given a compose provider (`podman-compose` or `docker-compose`) is installed.
@@ -99,7 +99,7 @@ To run it as a systemd service with [Quadlet](https://docs.podman.io/en/latest/m
 Description=FasterSend
 
 [Container]
-Image=ghcr.io/thereisnotime/fastersend:main
+Image=ghcr.io/thereisnotime/fastersend:latest
 ContainerName=fastersend
 PublishPort=3000:3000
 Environment=NUXT_PUBLIC_SITE_URL=https://send.example.com
