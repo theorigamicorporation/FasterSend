@@ -225,3 +225,41 @@ describe('SignallingHub limits', () => {
     }
   })
 })
+
+describe('SignallingHub logging hooks', () => {
+  it('reports each rejection reason', () => {
+    const onReject = vi.fn()
+    const { hub, peer } = setup({
+      onReject,
+      maxConnectionsPerIp: 2,
+      receiveFailuresPerMinute: 1,
+      maxMessageBytes: 64
+    })
+    const bad = peer('2.2.2.2')
+    hub.message(bad, msg({ type: 'receive', code: '000000' }))
+    expect(onReject).toHaveBeenLastCalledWith(bad.id, 'invalid-code')
+
+    const limited = peer('2.2.2.2')
+    hub.message(limited, msg({ type: 'receive', code: '000000' }))
+    expect(onReject).toHaveBeenLastCalledWith(limited.id, 'rate-limited')
+
+    const big = peer('3.3.3.3')
+    hub.message(big, 'x'.repeat(100), 100)
+    expect(onReject).toHaveBeenLastCalledWith(big.id, 'oversize')
+
+    peer('4.4.4.4')
+    peer('4.4.4.4')
+    const third = peer('4.4.4.4')
+    expect(onReject).toHaveBeenLastCalledWith(third.id, 'too-many-connections')
+    expect(onReject).toHaveBeenCalledTimes(4)
+  })
+
+  it('reports both peer ids on pairing', () => {
+    const { hub, peer, onPaired } = setup()
+    const s = peer()
+    hub.message(s, msg({ type: 'send' }))
+    const r = peer('9.9.9.9')
+    hub.message(r, msg({ type: 'receive', code: s.last().code }))
+    expect(onPaired).toHaveBeenCalledWith(s.id, r.id)
+  })
+})

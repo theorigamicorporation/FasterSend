@@ -26,7 +26,7 @@ export const useUserStore = defineStore('user', () => {
 
   function setNickname(nickname: string) {
     const nextNickname = nickname.trim().substring(0, 16)
-    userInfo.nickname = nextNickname || `User_${genRandomString(6)}`
+    userInfo.nickname = nextNickname || genAnimalNickname()
     persistNickname()
   }
 
@@ -75,7 +75,7 @@ export const useUserStore = defineStore('user', () => {
     }
 
     const nickname = localStorage.getItem('nickname')
-    if (nickname) {
+    if (nickname && !isLegacyNickname(nickname)) {
       userInfo.nickname = nickname
     } else {
       setNickname('')

@@ -13,6 +13,13 @@ export interface SignalPeer {
   isOpen(): boolean
 }
 
+export type RejectReason =
+  | 'too-many-connections'
+  | 'rate-limited'
+  | 'invalid-code'
+  | 'oversize'
+  | 'code-allocation-failed'
+
 export interface SignallingOptions {
   /** 取件码位数 */
   codeLength: number
@@ -33,7 +40,9 @@ export interface SignallingOptions {
   /** 生成取件码，默认使用 crypto.randomInt */
   genCode?: (length: number) => string
   /** 配对成功回调 */
-  onPaired?: () => void
+  onPaired?: (senderId: string, receiverId: string) => void
+  /** 连接被拒绝或强制断开时回调，用于日志 */
+  onReject?: (peerId: string, reason: RejectReason) => void
   now?: () => number
 }
 
@@ -220,6 +229,7 @@ export class SignallingHub {
     }
     this.states.set(peer.id, s)
     if (!this.connections.acquire(peer.ip)) {
+      this.opts.onReject?.(peer.id, 'too-many-connections')
       this.sendJSON(s, { type: 'err', data: 429, msg: 'Too many connections' })
       this.disposePeer(s)
       return false
@@ -243,6 +253,7 @@ export class SignallingHub {
     }
     const data = parseSignalMessage(text, byteLength, this.opts.maxMessageBytes)
     if (data === 'oversize') {
+      this.opts.onReject?.(peer.id, 'oversize')
       this.disposePeer(s)
       return
     }
@@ -272,6 +283,7 @@ export class SignallingHub {
       () => this.genCode(this.opts.codeLength)
     )
     if (!code) {
+      this.opts.onReject?.(s.peer.id, 'code-allocation-failed')
       this.sendJSON(s, { type: 'err', data: -1, msg: 'Init code fail' })
       this.disposePeer(s)
       return
@@ -291,6 +303,7 @@ export class SignallingHub {
     }
     const ip = s.peer.ip
     if (this.receiveFailures.isLimited(ip)) {
+      this.opts.onReject?.(s.peer.id, 'rate-limited')
       this.sendJSON(s, { type: 'status', code: 429 })
       this.disposePeer(s)
       return
@@ -300,6 +313,7 @@ export class SignallingHub {
       typeof code === 'string' && pattern.test(code) ? this.waitPool.get(code) : undefined
     if (!target || target.pair || target.disposed || !target.peer.isOpen()) {
       this.receiveFailures.hit(ip)
+      this.opts.onReject?.(s.peer.id, 'invalid-code')
       this.sendJSON(s, { type: 'status', code: 404 })
       this.disposePeer(s)
       return
@@ -315,7 +329,7 @@ export class SignallingHub {
     // 配对成功
     this.sendJSON(s, { type: 'status', code: 0 })
     this.startHeartbeat(s)
-    this.opts.onPaired?.()
+    this.opts.onPaired?.(target.peer.id, s.peer.id)
   }
 
   /** 测试与监控用：当前状态统计 */

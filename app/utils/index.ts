@@ -51,21 +51,6 @@ export function supportsDirectorySelection() {
 }
 
 /**
- * 生成随机字符串
- * @param length 长度
- * @returns
- */
-export function genRandomString(length: number): string {
-  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-  let randomString = ''
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * charset.length)
-    randomString += charset.charAt(randomIndex)
-  }
-  return randomString
-}
-
-/**
  * 选择头像图片
  * @param cb 回调
  * @returns
