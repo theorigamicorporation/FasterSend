@@ -4,7 +4,27 @@ FasterSend is a browser-based tool for sending files and folders directly betwee
 
 FasterSend is a hard fork of [FastSend](https://github.com/ShouChenICU/FastSend) by ShouChenICU, maintained by [thereisnotime](https://github.com/thereisnotime).
 
-> 本项目是 [ShouChenICU/FastSend](https://github.com/ShouChenICU/FastSend) 的硬分叉。中文文档请参阅上游仓库。
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/home-dark.png">
+  <img alt="FasterSend home page with the send and receive panels" src="docs/screenshots/home-light.png">
+</picture>
+
+<table>
+  <tr>
+    <td width="38%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/sender-dark.png">
+        <img alt="Sender view with the 6-digit code and QR code" src="docs/screenshots/sender-light.png">
+      </picture>
+    </td>
+    <td width="62%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/recipient-dark.png">
+        <img alt="Recipient view ready to receive a file" src="docs/screenshots/recipient-light.png">
+      </picture>
+    </td>
+  </tr>
+</table>
 
 ## Changes from upstream
 
