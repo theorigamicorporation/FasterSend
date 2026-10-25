@@ -1,7 +1,34 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { createRequire } from 'node:module'
+import { dirname, join } from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
+
+// In dev, Nitro keeps `hookable` as an external import that resolves from the project root,
+// where Nuxt's hookable 6 is hoisted. Nitro's runtime is written for hookable 5 (it calls
+// `.catch()` on callHookParallel, which v6 no longer always returns a promise from), so every
+// request error turned into a 500 from inside the error handler. Point Nitro's own imports at
+// its bundled hookable 5. Production builds inline dependencies and resolve this correctly.
+const nitroPkgDir = dirname(createRequire(import.meta.url).resolve('nitropack/package.json'))
+const nitroHookable = createRequire(join(nitroPkgDir, 'package.json')).resolve('hookable')
+const nitroHookableEsm = join(dirname(nitroHookable), 'index.mjs')
 export default defineNuxtConfig({
   srcDir: 'app',
+  $development: {
+    nitro: {
+      rollupConfig: {
+        plugins: [
+          {
+            name: 'nitro-own-hookable',
+            resolveId(id: string, importer?: string) {
+              if (id === 'hookable' && importer?.includes('/nitropack/')) {
+                return { id: nitroHookableEsm, external: true }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
   devtools: { enabled: true },
   css: ['@/assets/main.css'],
 
@@ -25,8 +52,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      charset: 'utf-8',
-      viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0',
+      viewport: 'width=device-width, initial-scale=1',
       link: [{ rel: 'icon', href: '/favicon.webp' }]
     }
   },
