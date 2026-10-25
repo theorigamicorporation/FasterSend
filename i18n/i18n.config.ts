@@ -182,9 +182,7 @@ export default defineI18nConfig(() => ({
         responsibility: 'You are responsible for the content you send.'
       },
       footer: {
-        source: 'Source code',
-        basedOn: 'Based on',
-        by: 'by'
+        source: 'Source code'
       }
     },
     de: {
@@ -369,9 +367,7 @@ export default defineI18nConfig(() => ({
         responsibility: 'Sie sind für die gesendeten Inhalte verantwortlich.'
       },
       footer: {
-        source: 'Quellcode',
-        basedOn: 'Basiert auf',
-        by: 'von'
+        source: 'Quellcode'
       }
     },
     fr: {
@@ -554,9 +550,7 @@ export default defineI18nConfig(() => ({
         responsibility: 'Vous êtes responsable du contenu que vous envoyez.'
       },
       footer: {
-        source: 'Code source',
-        basedOn: 'Basé sur',
-        by: 'par'
+        source: 'Code source'
       }
     }
   }
