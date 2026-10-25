@@ -171,10 +171,9 @@ onUnmounted(() => {
       <!-- Transfer confirmation -->
       <div v-else-if="status.isWaitingConfirm" class="fs-card p-6 text-center sm:p-8">
         <div class="flex justify-center">
-          <Avatar
-            :image="peerUserInfo.avatarURL"
-            shape="circle"
-            size="xlarge"
+          <UiAvatar
+            :src="peerUserInfo.avatarURL"
+            size="lg"
             class="ring-4 ring-primary-100 dark:ring-primary-500/20"
           />
         </div>

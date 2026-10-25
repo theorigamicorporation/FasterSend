@@ -159,7 +159,7 @@ onUnmounted(() => {
               </div>
               <p class="fs-muted mt-4 text-sm">{{ t('hint.pleaseSelectDirToReceiveSync') }}</p>
               <label class="mt-3 flex cursor-pointer items-center gap-3">
-                <ToggleSwitch v-model="syncDirStatus.isQuickDiff" />
+                <UiSwitch v-model="syncDirStatus.isQuickDiff" />
                 <span class="text-sm">{{ t('hint.quickDiffMode') }}</span>
               </label>
               <UiButton

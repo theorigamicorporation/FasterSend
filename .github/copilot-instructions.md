@@ -25,7 +25,7 @@ The key technologies of the project are:
 - Vue 3 Composition API
 - TypeScript
 - Pinia 4
-- PrimeVue 4 and `@primevue/nuxt-module`
+- Reka UI (`reka-ui/nuxt`) for headless, accessible primitives (dialog, popover, toast, pin input, switch), styled with Tailwind
 - Tailwind CSS 4 (`@tailwindcss/vite`, theme variables in `app/assets/main.css`)
 - `@nuxtjs/i18n`
 - `@vite-pwa/nuxt`
@@ -40,7 +40,7 @@ When maintaining the project you must follow these technical constraints:
 - `yarn.lock` is the source of truth for the lock file
 - Do not switch to `npm`, `bun` or `pnpm`
 - For installing, upgrading and verifying dependencies, prefer `yarn install` and `yarn build`
-- Tailwind has been migrated to v4 (CSS-first configuration, no `tailwind.config.js`). PrimeVue stays on v4 (v5 and later moved to a commercial license that requires a license key), and upgrading it needs explicit user approval first
+- Tailwind has been migrated to v4 (CSS-first configuration, no `tailwind.config.js`). PrimeVue was removed (v5 and later moved to a commercial license); do not add it back
 
 ## 3. Project Structure
 
@@ -217,7 +217,7 @@ When maintaining the UI:
 - Keep existing interaction paths short
 - Do not add multi-step dialogs without a reason
 - Keep the information hierarchy of the home, sender and recipient pages clear
-- Prefer continuing the existing PrimeVue + Tailwind usage
+- Prefer the existing Reka UI + Tailwind components (`Ui*` components in `app/components/`) over adding new UI libraries
 - Do not introduce a new large UI framework
 
 If you change copy:
@@ -267,7 +267,7 @@ Default requirements:
 
 - After changing dependencies, make sure `yarn.lock` is updated too
 - Do not commit a change that updates `package.json` but not `yarn.lock`
-- Do not casually upgrade major versions of Tailwind, PrimeVue or Nuxt ecosystem packages unless the task explicitly requires it
+- Do not casually upgrade major versions of Tailwind, Reka UI or Nuxt ecosystem packages unless the task explicitly requires it
 - After upgrading dependencies, run `yarn build` at least once
 
 ## 12. Checklists Before and After Changes

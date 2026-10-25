@@ -1,5 +1,4 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   srcDir: 'app',
@@ -17,7 +16,7 @@ export default defineNuxtConfig({
     '@nuxtjs/seo',
     '@nuxt/icon',
     '@vite-pwa/nuxt',
-    '@primevue/nuxt-module'
+    'reka-ui/nuxt'
   ],
 
   vite: {
@@ -73,16 +72,6 @@ export default defineNuxtConfig({
   // service worker next to the PWA one and can reload the page mid-transfer.
   skewProtection: false,
   aiReady: false,
-
-  primevue: {
-    options: {
-      unstyled: true,
-      ripple: true
-    },
-    importPT: { from: path.resolve(__dirname, './presets/aura/') } // Import and apply preset
-    // For Windows
-    // importPT: { as: 'Aura', from: '~/presets/aura' }
-  },
 
   colorMode: {
     preference: 'system', // default value of $colorMode.preference
