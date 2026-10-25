@@ -1,6 +1,14 @@
 import { getClientIP, parseTrustProxy } from '../utils/clientIP'
 import { DEFAULT_SIGNALLING_OPTIONS, SignallingHub, type SignalPeer } from '../utils/signalling'
 
+// 不记录 IP，只记录连接 id 和事件
+function log(level: 'info' | 'warn' | 'error', msg: string) {
+  const line = `${new Date().toISOString()} ${level}: ${msg}`
+  if (level === 'info') console.log(line)
+  else if (level === 'warn') console.warn(line)
+  else console.error(line)
+}
+
 const MAX_MESSAGE_BYTES = DEFAULT_SIGNALLING_OPTIONS.maxMessageBytes
 
 // crossws 的 peer 在每个回调里都是同一个实例，这里缓存其适配对象
@@ -15,7 +23,9 @@ function getHub(): SignallingHub {
     const positive = (v: unknown, d: number) => (Number(v) > 0 ? Number(v) : d)
     hub = new SignallingHub({
       maxConnectionsPerIp: positive(config.maxConnectionsPerIp, 32),
-      receiveFailuresPerMinute: positive(config.receiveFailuresPerMinute, 10)
+      receiveFailuresPerMinute: positive(config.receiveFailuresPerMinute, 10),
+      onPaired: (sender, receiver) => log('info', `paired: #${sender} -> #${receiver}`),
+      onReject: (id, reason) => log('warn', `rejected: #${id} ${reason}`)
     })
   }
   return hub
@@ -45,12 +55,12 @@ export default defineWebSocketHandler({
   open(peer) {
     const h = getHub()
     const p = adapt(peer)
-    console.log(`${new Date().toISOString()} open: #${p.id}`)
+    log('info', `open: #${p.id}`)
     h.open(p)
   },
 
   close(peer) {
-    console.log(`${new Date().toISOString()} close: #${peer.id}`)
+    log('info', `close: #${peer.id}`)
     getHub().close(adapt(peer))
   },
 
@@ -63,7 +73,7 @@ export default defineWebSocketHandler({
   },
 
   error(peer, error) {
-    console.warn(error)
+    log('error', `socket error: #${peer.id} ${error instanceof Error ? error.message : String(error)}`)
     getHub().close(adapt(peer))
   }
 })
