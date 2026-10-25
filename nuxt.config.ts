@@ -55,6 +55,16 @@ export default defineNuxtConfig({
     // defaultLocale: 'zh'
   },
 
+  // Serve every icon from the bundle; never fall back to api.iconify.design
+  icon: {
+    provider: 'none',
+    fallbackToApi: false,
+    clientBundle: {
+      scan: true
+    },
+    serverBundle: false
+  },
+
   ogImage: {
     enabled: false
   },
