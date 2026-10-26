@@ -4,7 +4,7 @@ export default defineI18nConfig(() => ({
   messages: {
     en: {
       welcome: 'Welcome',
-      description: 'Fast peer-to-peer file and directory transfers',
+      description: 'Send files and folders straight to another device',
       home: 'Home',
       sender: 'Sender',
       recipient: 'Recipient',
@@ -52,9 +52,9 @@ export default defineI18nConfig(() => ({
         noModernFileAPIWarn:
           'Warning: Your browser does not support modern file access APIs, making the `Folder synchronization` and `Send folder` features unavailable. Additionally, the file receiving limit is 1GB.',
         toManyPeople: 'There are too many people currently connected, please try again later',
-        serverError: 'The service is abnormal, please try again later',
+        serverError: 'Connection failed',
         closeTheProxy:
-          'If you are currently in a proxy environment, please close the proxy and try again',
+          'The two devices could not reach each other. Try again, or connect both to the same network. VPNs and strict firewalls can block the connection.',
         connecting: 'Connecting',
         noSupportDirTrans2: "The recipient's browser does not support directory transfer",
         connectInterrupted: 'Connection interrupted, transmission failed',
@@ -225,9 +225,9 @@ export default defineI18nConfig(() => ({
           'Hinweis: Ihr Browser unterstützt die modernen Dateizugriffs-APIs nicht, daher sind `Ordner synchronisieren` und `Ordner senden` nicht verfügbar. Außerdem ist der Empfang auf 1 GB begrenzt.',
         toManyPeople:
           'Derzeit sind zu viele Personen verbunden, bitte versuchen Sie es später erneut',
-        serverError: 'Der Dienst hat ein Problem, bitte versuchen Sie es später erneut',
+        serverError: 'Verbindung fehlgeschlagen',
         closeTheProxy:
-          'Falls Sie einen Proxy verwenden, deaktivieren Sie ihn bitte und versuchen Sie es erneut',
+          'Die beiden Geräte konnten sich nicht erreichen. Versuchen Sie es erneut oder verbinden Sie beide mit demselben Netzwerk. VPNs und strenge Firewalls können die Verbindung blockieren.',
         connecting: 'Verbinde',
         noSupportDirTrans2: 'Der Browser des Empfängers unterstützt keine Ordnerübertragung',
         connectInterrupted: 'Verbindung unterbrochen, Übertragung fehlgeschlagen',
@@ -398,8 +398,9 @@ export default defineI18nConfig(() => ({
         noModernFileAPIWarn:
           "Attention : votre navigateur ne prend pas en charge les API modernes d'accès aux fichiers, les fonctions `Synchroniser un dossier` et `Envoyer un dossier` sont donc indisponibles. De plus, la réception est limitée à 1 Go.",
         toManyPeople: 'Trop de personnes sont connectées, veuillez réessayer plus tard',
-        serverError: 'Le service rencontre un problème, veuillez réessayer plus tard',
-        closeTheProxy: 'Si vous utilisez un proxy, désactivez-le et réessayez',
+        serverError: 'Échec de la connexion',
+        closeTheProxy:
+          "Les deux appareils n'ont pas pu se joindre. Réessayez, ou connectez-les au même réseau. Les VPN et les pare-feu stricts peuvent bloquer la connexion.",
         connecting: 'Connexion en cours',
         noSupportDirTrans2:
           'Le navigateur du destinataire ne prend pas en charge le transfert de dossiers',
