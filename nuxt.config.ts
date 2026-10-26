@@ -74,9 +74,8 @@ export default defineNuxtConfig({
   // Site URL is not baked in at build time; injected at deploy via NUXT_PUBLIC_SITE_URL
   site: {
     name: 'FasterSend',
-    // Peer-to-peer directory sync and file transfer over WebRTC
     description:
-      'A tool station based on WebRTC to achieve point-to-point fast directory synchronization and file transfer'
+      'Send files and folders straight to another device. No uploads, no accounts, browser to browser over an encrypted connection.'
     // defaultLocale: 'zh'
   },
 
@@ -142,8 +141,18 @@ export default defineNuxtConfig({
       ],
 
       screenshots: [
-        { src: '/ogImg.webp', sizes: '1280x720', type: 'image/webp', form_factor: 'wide' },
-        { src: '/mobile.webp', sizes: '990x1370', type: 'image/webp', form_factor: 'narrow' }
+        {
+          src: '/screenshot-wide.webp',
+          sizes: '1280x720',
+          type: 'image/webp',
+          form_factor: 'wide'
+        },
+        {
+          src: '/screenshot-narrow.webp',
+          sizes: '824x1784',
+          type: 'image/webp',
+          form_factor: 'narrow'
+        }
       ]
     }
   },
