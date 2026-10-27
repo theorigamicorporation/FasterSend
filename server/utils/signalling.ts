@@ -1,4 +1,4 @@
-import { randomInt } from 'node:crypto'
+import { randomBytes, randomInt } from 'node:crypto'
 import { TTLCache } from '@isaacs/ttlcache'
 import { ConcurrencyCounter, RateLimiter } from './rateLimiter'
 
@@ -33,6 +33,8 @@ export interface SignallingOptions {
   waitTtlMs: number
   /** TTL for the signalling channel after pairing */
   pairedTtlMs: number
+  /** Hand each paired peer a ticket it can exchange for TURN credentials at /api/ice-servers */
+  issueIceTickets?: boolean
   /** Pickup code generator; defaults to crypto.randomInt */
   genCode?: (length: number) => string
   /** Called when a pair is established */
@@ -121,6 +123,7 @@ interface PeerState {
   pair: PeerState | null
   disposed: boolean
   counted: boolean
+  iceTicket: string | null
   heartbeat: ReturnType<typeof setInterval> | null
 }
 
@@ -130,6 +133,8 @@ interface PeerState {
 export class SignallingHub {
   private readonly opts: SignallingOptions
   private readonly states = new Map<string, PeerState>()
+  // TURN tickets of paired peers; removed when the peer goes away
+  private readonly iceTickets = new Map<string, PeerState>()
   private readonly connections: ConcurrencyCounter
   private readonly receiveFailures: RateLimiter
   private readonly genCode: (length: number) => string
@@ -194,6 +199,10 @@ export class SignallingHub {
     if (s.code && this.waitPool.get(s.code) === s) {
       this.waitPool.delete(s.code)
     }
+    if (s.iceTicket) {
+      this.iceTickets.delete(s.iceTicket)
+      s.iceTicket = null
+    }
     if (s.counted) {
       s.counted = false
       this.connections.release(s.peer.ip)
@@ -221,6 +230,7 @@ export class SignallingHub {
       pair: null,
       disposed: false,
       counted: false,
+      iceTicket: null,
       heartbeat: null
     }
     this.states.set(peer.id, s)
@@ -322,10 +332,34 @@ export class SignallingHub {
     this.initPool.delete(s.peer.id)
     this.pairedPool.set(s.peer.id, s)
     this.pairedPool.set(target.peer.id, target)
-    // Paired
-    this.sendJSON(s, { type: 'status', code: 0 })
+    // Paired. TURN tickets are only handed out here, so credentials need a live pair, not just an open socket.
+    // The sender learns about the pair from 'paired'; older clients ignore unknown types.
+    const receiverTicket = this.issueIceTicket(s)
+    const senderTicket = this.issueIceTicket(target)
+    this.sendJSON(s, {
+      type: 'status',
+      code: 0,
+      ...(receiverTicket && { iceTicket: receiverTicket })
+    })
+    this.sendJSON(target, { type: 'paired', ...(senderTicket && { iceTicket: senderTicket }) })
     this.startHeartbeat(s)
     this.opts.onPaired?.(target.peer.id, s.peer.id)
+  }
+
+  private issueIceTicket(s: PeerState): string | null {
+    if (!this.opts.issueIceTickets) {
+      return null
+    }
+    const ticket = randomBytes(24).toString('base64url')
+    s.iceTicket = ticket
+    this.iceTickets.set(ticket, s)
+    return ticket
+  }
+
+  /** Whether a ticket belongs to a peer that is still paired and connected */
+  public isActiveTicket(ticket: string): boolean {
+    const s = this.iceTickets.get(ticket)
+    return !!s && !s.disposed && !!s.pair && !s.pair.disposed && s.peer.isOpen()
   }
 
   /** For tests and monitoring: current state counts */
@@ -334,6 +368,7 @@ export class SignallingHub {
       peers: this.states.size,
       waiting: this.waitPool.size,
       paired: this.pairedPool.size,
+      iceTickets: this.iceTickets.size,
       connectionsFor: (ip: string) => this.connections.count(ip)
     }
   }

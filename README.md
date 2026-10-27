@@ -45,7 +45,7 @@ FasterSend is a self-hostable hard fork of [FastSend](https://github.com/ShouChe
 1. The sender opens a WebSocket to the FasterSend server and gets a 6-digit code.
 2. The recipient enters the code (or scans the QR code), and the server relays the WebRTC offer, answer and ICE candidates between the two browsers.
 3. The browsers open an encrypted (DTLS) data channel directly to each other and the files go over it.
-4. If a direct connection is impossible, for example both sides are behind strict NAT, traffic goes through a TURN relay if you configure one. The relay only sees encrypted data.
+4. If a direct connection is impossible, for example both sides are behind strict NAT, traffic goes through a TURN relay if you configure one. The relay only sees encrypted data. With a Cloudflare TURN key configured, each paired browser gets its own short-lived TURN credential, so no long-lived TURN password is ever sent to browsers.
 
 ## Browser support
 
@@ -90,6 +90,17 @@ podman run -d --name fastersend -p 3000:3000 \
   ghcr.io/thereisnotime/fastersend:latest
 ```
 
+To enable relayed transfers through Cloudflare TURN (see [STUN and TURN](#stun-and-turn)), keep the key out of your shell history with a Podman secret:
+
+```bash
+printf '%s' 'your-turn-key-api-token' | podman secret create fastersend-turn-token -
+podman run -d --name fastersend -p 3000:3000 \
+  -e NUXT_PUBLIC_SITE_URL=https://send.example.com \
+  -e NUXT_TURN_KEY_ID=your-turn-key-id \
+  --secret fastersend-turn-token,type=env,target=NUXT_TURN_KEY_API_TOKEN \
+  ghcr.io/thereisnotime/fastersend:latest
+```
+
 `podman compose up -d` works with the same `docker-compose.yaml`, given a compose provider (`podman-compose` or `docker-compose`) is installed.
 
 To run it as a systemd service with [Quadlet](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html) (Podman 4.4+), save this as `~/.config/containers/systemd/fastersend.container`:
@@ -103,6 +114,9 @@ Image=ghcr.io/thereisnotime/fastersend:latest
 ContainerName=fastersend
 PublishPort=3000:3000
 Environment=NUXT_PUBLIC_SITE_URL=https://send.example.com
+# Optional: Cloudflare TURN key for relayed transfers
+# Environment=NUXT_TURN_KEY_ID=your-turn-key-id
+# Secret=fastersend-turn-token,type=env,target=NUXT_TURN_KEY_API_TOKEN
 # Podman ignores the image HEALTHCHECK for OCI images, so define it here
 HealthCmd=wget -q -O /dev/null http://127.0.0.1:3000/
 HealthInterval=30s
@@ -164,20 +178,46 @@ All settings are read from environment variables when the server starts, so one 
 | `PORT` | `3000` | Port the server listens on. |
 | `HOST` | `0.0.0.0` | Address the server binds to (set in the image). |
 | `NUXT_TRUST_PROXY` | `false` | Set to `true` (or the number of proxy hops) when running behind a reverse proxy, so the client IP is taken from `X-Forwarded-For`. Leave it off otherwise, the header can be spoofed. |
-| `NUXT_PUBLIC_ICE_SERVERS` | `[{"urls":"stun:stun.l.google.com:19302"}]` | JSON array of [`RTCIceServer`](https://developer.mozilla.org/en-US/docs/Web/API/RTCIceServer) objects (`urls`, optional `username` / `credential`). Invalid JSON falls back to the default. |
+| `NUXT_PUBLIC_ICE_SERVERS` | `[{"urls":"stun:stun.cloudflare.com:3478"}]` | JSON array of [`RTCIceServer`](https://developer.mozilla.org/en-US/docs/Web/API/RTCIceServer) objects (`urls`, optional `username` / `credential`). Used as is when no TURN key is set, and as the fallback when minting TURN credentials fails. Invalid JSON falls back to the default. |
+| `NUXT_TURN_KEY_ID` | unset | Cloudflare Realtime TURN key ID. Together with `NUXT_TURN_KEY_API_TOKEN` it enables short-lived TURN credentials. Server only, never sent to browsers. |
+| `NUXT_TURN_KEY_API_TOKEN` | unset | API token of that TURN key. Server only. |
+| `NUXT_TURN_CREDENTIAL_TTL` | `7200` | Lifetime of each TURN credential in seconds (300 to 172800). Browsers renew it at three quarters of the TTL while a transfer runs. |
+| `NUXT_TURN_MINTS_PER_MINUTE` | `60` | Credentials minted per minute across the whole server. Each transfer uses two (one per browser). |
 | `NUXT_PUBLIC_ICE_TRANSPORT_POLICY` | `all` | `all` or `relay`. `relay` forces traffic through TURN, useful for testing a relay. |
 | `NUXT_MAX_CONNECTIONS_PER_IP` | `32` | Maximum concurrent signalling connections per client IP. |
 | `NUXT_RECEIVE_FAILURES_PER_MINUTE` | `10` | Failed code lookups allowed per IP per minute before further attempts are refused. |
 
 ### STUN and TURN
 
-The default STUN server is Google's, and browsers contact it directly to discover their public address. That is the only third-party connection the app makes. To avoid it, or to make transfers work across strict NATs and corporate firewalls, run your own [coturn](https://github.com/coturn/coturn) and point FasterSend at it:
+The default STUN server is Cloudflare's (`stun:stun.cloudflare.com:3478`), and browsers contact it directly to discover their public address. STUN alone cannot relay, so two devices that are both behind strict NAT or corporate firewalls cannot connect without a TURN server. There are two ways to add one.
+
+#### Cloudflare Realtime TURN (short-lived credentials)
+
+Create a TURN key in the Cloudflare dashboard under Realtime > TURN Server, then pass its ID and API token to the server:
+
+```bash
+NUXT_TURN_KEY_ID=your-turn-key-id
+NUXT_TURN_KEY_API_TOKEN=your-turn-key-api-token
+```
+
+How it works:
+
+1. When a recipient enters a valid code, the signalling server hands both browsers a random ticket over their WebSocket. A sender still waiting for a recipient gets nothing.
+2. Each browser posts its ticket to `POST /api/ice-servers` right before creating its peer connection. The server calls Cloudflare's [`generate-ice-servers`](https://developers.cloudflare.com/realtime/turn/generate-credentials/) API with the key and returns a credential valid for `NUXT_TURN_CREDENTIAL_TTL` seconds.
+3. Tickets die with the WebSocket. Each ticket can mint at most three credentials per TTL (first request, one retry, one renewal), and the whole server mints at most `NUXT_TURN_MINTS_PER_MINUTE`. Client IPs are not used for these limits, since behind a CDN many clients share one address.
+4. If minting fails, the browser falls back to `NUXT_PUBLIC_ICE_SERVERS` (or the default STUN server). When the connection then fails, the page says that no relay was available.
+
+Cloudflare bills TURN traffic per GB after a free tier, so set a usage alert in the Cloudflare dashboard.
+
+#### Your own TURN server (static credentials)
+
+Run your own [coturn](https://github.com/coturn/coturn) and point FasterSend at it, leaving the TURN key unset:
 
 ```bash
 NUXT_PUBLIC_ICE_SERVERS='[{"urls":"stun:turn.example.com:3478"},{"urls":["turn:turn.example.com:3478","turns:turn.example.com:5349"],"username":"fastersend","credential":"secret"}]'
 ```
 
-ICE servers are sent to the browser, so any TURN credentials are visible to every visitor. Use a dedicated TURN user with quotas.
+`NUXT_PUBLIC_ICE_SERVERS` is rendered into the page, so these TURN credentials are visible to every visitor. Use a dedicated TURN user with quotas.
 
 ### Logs
 
@@ -205,6 +245,7 @@ New dependency versions are only installed once they are at least three days old
 
 - Rebranded to FasterSend. The donation link, mascot avatar, console banner and public transfer counter are removed.
 - Self-hostable: the site URL, ICE servers and limits come from environment variables instead of being hardcoded.
+- Optional short-lived TURN credentials from Cloudflare Realtime TURN, issued only to paired browsers.
 - Security fixes and hardening of the signalling server (per-IP connection limits, code lookup rate limiting, message size limits).
 - New UI and help dialog, English, German and French translations, fun animal nicknames.
 - PrimeVue (commercial licence from v5) replaced with the MIT-licensed [Reka UI](https://reka-ui.com) primitives, which also cut the client bundle to about a third.

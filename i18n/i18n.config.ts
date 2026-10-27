@@ -82,6 +82,8 @@ export default defineI18nConfig(() => ({
         fileNotFound: 'File not found',
         selectAtLeastOneFile: 'Please select at least one file',
         disconnected: 'Disconnected',
+        relayUnavailable:
+          'No relay server was available, so the two devices had to reach each other directly and could not. Try again in a moment, or connect both to the same network.',
         copyFailed: 'Could not copy, please copy it manually'
       },
       nav: {
@@ -255,6 +257,8 @@ export default defineI18nConfig(() => ({
         fileNotFound: 'Datei nicht gefunden',
         selectAtLeastOneFile: 'Bitte wählen Sie mindestens eine Datei',
         disconnected: 'Verbindung getrennt',
+        relayUnavailable:
+          'Es war kein Relay-Server verfügbar, daher mussten sich die beiden Geräte direkt erreichen, was nicht gelungen ist. Versuchen Sie es gleich noch einmal oder verbinden Sie beide mit demselben Netzwerk.',
         copyFailed: 'Kopieren fehlgeschlagen, bitte manuell kopieren'
       },
       nav: {
@@ -429,6 +433,8 @@ export default defineI18nConfig(() => ({
         fileNotFound: 'Fichier introuvable',
         selectAtLeastOneFile: 'Veuillez choisir au moins un fichier',
         disconnected: 'Déconnecté',
+        relayUnavailable:
+          "Aucun serveur relais n'était disponible, les deux appareils devaient donc se joindre directement et n'y sont pas parvenus. Réessayez dans un instant ou connectez-les au même réseau.",
         copyFailed: 'Copie impossible, veuillez copier manuellement'
       },
       nav: {

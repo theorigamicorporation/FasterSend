@@ -165,8 +165,19 @@ export default defineNuxtConfig({
     maxConnectionsPerIp: 32,
     // NUXT_RECEIVE_FAILURES_PER_MINUTE
     receiveFailuresPerMinute: 10,
+    // Cloudflare Realtime TURN key, server only. When both are set, paired peers get short-lived TURN credentials from /api/ice-servers
+    // NUXT_TURN_KEY_ID
+    turnKeyId: '',
+    // NUXT_TURN_KEY_API_TOKEN
+    turnKeyApiToken: '',
+    // NUXT_TURN_CREDENTIAL_TTL: credential lifetime in seconds (300 to 172800)
+    turnCredentialTtl: 7200,
+    // NUXT_TURN_MINTS_PER_MINUTE: credentials minted per minute across the whole server
+    turnMintsPerMinute: 60,
+    // NUXT_TURN_API_BASE: Cloudflare Realtime API base URL, only changed for tests
+    turnApiBase: 'https://rtc.live.cloudflare.com/v1',
     public: {
-      // NUXT_PUBLIC_ICE_SERVERS: JSON array of RTCIceServer
+      // NUXT_PUBLIC_ICE_SERVERS: JSON array of RTCIceServer. Used as is when no TURN key is set, and as the fallback when minting fails
       iceServers: '',
       // NUXT_PUBLIC_ICE_TRANSPORT_POLICY：all | relay
       iceTransportPolicy: ''

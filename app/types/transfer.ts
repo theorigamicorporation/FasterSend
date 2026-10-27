@@ -68,6 +68,8 @@ export interface SenderStatusState {
   isWaitingConnect: boolean
   isWaitingConfirm: boolean
   isDone: boolean
+  /** The peer connection failed before connecting and no TURN relay was configured or could be obtained */
+  relayUnavailable: boolean
   error: MessageState
   warn: MessageState
 }
@@ -96,6 +98,8 @@ export interface RecipientStatusState {
   isLock: boolean
   isReceiving: boolean
   isDone: boolean
+  /** The peer connection failed before connecting and no TURN relay was configured or could be obtained */
+  relayUnavailable: boolean
   error: MessageState
   warn: MessageState
 }
@@ -155,6 +159,7 @@ export function createSenderStatusState(): SenderStatusState {
     isWaitingConnect: true,
     isWaitingConfirm: true,
     isDone: false,
+    relayUnavailable: false,
     error: createMessageState(),
     warn: createMessageState()
   }
@@ -187,6 +192,7 @@ export function createRecipientStatusState(): RecipientStatusState {
     isLock: false,
     isReceiving: false,
     isDone: false,
+    relayUnavailable: false,
     error: createMessageState(),
     warn: createMessageState()
   }
