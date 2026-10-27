@@ -70,7 +70,9 @@ onUnmounted(() => {
         tone="error"
         icon="solar:sad-square-line-duotone"
         :title="t('hint.serverError')"
-        :description="t('hint.closeTheProxy')"
+        :description="
+          status.relayUnavailable ? t('hint.relayUnavailable') : t('hint.closeTheProxy')
+        "
       >
         <UiButton :to="localePath('/')" icon="solar:home-2-linear">{{ t('btn.toHome') }}</UiButton>
       </StatusView>
@@ -161,6 +163,7 @@ onUnmounted(() => {
           :title="
             status.warn.code === -1 ? t('hint.noSupportDirTrans2') : t('hint.connectInterrupted')
           "
+          :description="status.relayUnavailable ? t('hint.relayUnavailable') : undefined"
         >
           <UiButton :to="localePath('/')" icon="solar:home-2-linear">{{
             t('btn.toHome')

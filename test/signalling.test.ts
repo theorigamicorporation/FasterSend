@@ -120,6 +120,7 @@ describe('SignallingHub pairing', () => {
     const r = peer('2.2.2.2')
     hub.message(r, msg({ type: 'receive', code }))
     expect(r.last()).toEqual({ type: 'status', code: 0 })
+    expect(sender.last()).toEqual({ type: 'paired' })
   })
 
   it('closing one side closes the other without recursing forever', () => {
@@ -261,5 +262,55 @@ describe('SignallingHub logging hooks', () => {
     const r = peer('9.9.9.9')
     hub.message(r, msg({ type: 'receive', code: s.last().code }))
     expect(onPaired).toHaveBeenCalledWith(s.id, r.id)
+  })
+})
+
+describe('SignallingHub ICE tickets', () => {
+  function pair(opts = {}) {
+    const { hub, peer } = setup(opts)
+    const sender = peer()
+    hub.message(sender, msg({ type: 'send' }))
+    const recipient = peer('2.2.2.2')
+    hub.message(recipient, msg({ type: 'receive', code: sender.last().code }))
+    return { hub, peer, sender, recipient }
+  }
+
+  it('issues no tickets unless enabled', () => {
+    const { hub, sender, recipient } = pair()
+    expect(recipient.last()).toEqual({ type: 'status', code: 0 })
+    expect(sender.last()).toEqual({ type: 'paired' })
+    expect(hub.stats().iceTickets).toBe(0)
+  })
+
+  it('gives each paired peer its own ticket', () => {
+    const { hub, sender, recipient } = pair({ issueIceTickets: true })
+    const rt = recipient.last().iceTicket
+    const st = sender.last().iceTicket
+    expect(recipient.last()).toMatchObject({ type: 'status', code: 0 })
+    expect(sender.last()).toMatchObject({ type: 'paired' })
+    expect(rt).toMatch(/^[\w-]{32}$/)
+    expect(st).toMatch(/^[\w-]{32}$/)
+    expect(rt).not.toBe(st)
+    expect(hub.isActiveTicket(rt)).toBe(true)
+    expect(hub.isActiveTicket(st)).toBe(true)
+    expect(hub.isActiveTicket('x'.repeat(32))).toBe(false)
+  })
+
+  it('does not issue tickets to a waiting sender', () => {
+    const { hub, peer } = setup({ issueIceTickets: true })
+    const sender = peer()
+    hub.message(sender, msg({ type: 'send' }))
+    expect(sender.last()).toEqual({ type: 'code', code: expect.any(String) })
+    expect(hub.stats().iceTickets).toBe(0)
+  })
+
+  it('revokes both tickets when either side disconnects', () => {
+    const { hub, sender, recipient } = pair({ issueIceTickets: true })
+    const rt = recipient.last().iceTicket
+    const st = sender.last().iceTicket
+    sender.close()
+    expect(hub.isActiveTicket(rt)).toBe(false)
+    expect(hub.isActiveTicket(st)).toBe(false)
+    expect(hub.stats().iceTickets).toBe(0)
   })
 })

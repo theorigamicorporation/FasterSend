@@ -1,4 +1,5 @@
 import { toCanvas } from 'qrcode'
+import { hasRelayServer, IceSession } from '~/utils/iceConfig'
 import { PeerDataChannel } from '~/utils/PeerDataChannel'
 import {
   createSenderCurrentFileState,
@@ -36,6 +37,12 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
   let calcSpeedJobId: ReturnType<typeof setInterval> | undefined
   let ws: WebSocket | null = null
   let pdc: PeerDataChannel | null = null
+  let iceSession: IceSession | null = null
+  // The recipient may send its offer before our ICE servers are resolved; hold it until the peer connection exists
+  let pendingSignals: { type: string; data: any }[] = []
+  let peerEverConnected = false
+  // A peer connection was attempted with STUN only, so a failure is likely a missing relay
+  let attemptedWithoutRelay = false
   const hasher = createMD5Hasher()
   // With syncDir, payload keys have the root stripped; map them back to the original file items
   let payloadFileMap: FlatFileMap = {}
@@ -58,6 +65,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
     curFile.value = createSenderCurrentFileState()
     status.value = createSenderStatusState()
     payloadFileMap = {}
+    attemptedWithoutRelay = false
   }
 
   function dispose() {
@@ -69,6 +77,9 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
     ws = null
     pdc?.dispose()
     pdc = null
+    iceSession?.dispose()
+    iceSession = null
+    pendingSignals = []
   }
 
   function calcSpeedFn() {
@@ -198,15 +209,63 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
     }
   }
 
-  function initPDC() {
-    pdc = new PeerDataChannel({ ...iceConfig })
+  /**
+   * Resolves ICE servers once the recipient has paired, then creates the peer connection.
+   * The ticket is exchanged for short-lived TURN credentials; without one the public ICE config is used.
+   */
+  async function startPDC(iceTicket: unknown) {
+    const session = new IceSession(
+      typeof iceTicket === 'string' ? iceTicket : undefined,
+      iceConfig.iceServers
+    )
+    iceSession = session
+    const { iceServers, ttl } = await session.resolve()
+    // Disposed or restarted while waiting for credentials
+    if (iceSession !== session || !ws) {
+      session.dispose()
+      return
+    }
+    initPDC(iceServers)
+    if (ttl) {
+      session.keepFresh(ttl, (servers) => pdc?.setIceServers(servers))
+    }
+    // Replay synchronously so the offer and candidates reach the peer connection in arrival order
+    const queued = pendingSignals
+    pendingSignals = []
+    for (const signal of queued) {
+      handleSignal(signal).catch((e) => console.warn(e))
+    }
+  }
+
+  async function handleSignal(signal: { type: string; data: any }) {
+    if (!pdc) {
+      pendingSignals.push(signal)
+      return
+    }
+    if (signal.type === 'sdp') {
+      await pdc.setRemoteSDP(signal.data)
+    } else {
+      await pdc.addICECandidate(signal.data)
+    }
+  }
+
+  function initPDC(iceServers: RTCIceServer[]) {
+    const relayAvailable = hasRelayServer(iceServers)
+    attemptedWithoutRelay = !relayAvailable
+    peerEverConnected = false
+    pdc = new PeerDataChannel({ ...iceConfig, iceServers })
     pdc.onSDP = (sdp) => ws?.send(JSON.stringify({ type: 'sdp', data: sdp }))
     pdc.onICECandidate = (candidate) =>
       ws?.send(JSON.stringify({ type: 'candidate', data: candidate }))
     pdc.onDispose = () => {
       status.value.isConnectPeer = false
       dispose()
-      toast.add({ severity: 'warn', summary: t('hint.disconnected'), life: 5e3 })
+      if (!peerEverConnected && !relayAvailable) {
+        status.value.relayUnavailable = true
+        toast.add({ severity: 'error', summary: t('hint.relayUnavailable'), life: 10e3 })
+      } else {
+        toast.add({ severity: 'warn', summary: t('hint.disconnected'), life: 5e3 })
+      }
       if (!status.value.isDone && status.value.warn.code === 0) {
         status.value.warn.code = -10
       }
@@ -217,6 +276,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
       dispose()
     }
     pdc.onConnected = () => {
+      peerEverConnected = true
       status.value.isConnectPeer = true
       status.value.isWaitingConfirm = true
     }
@@ -283,16 +343,18 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
       const data = JSON.parse(event.data)
       if (data.type === 'code') {
         code.value = data.code
-        initPDC()
         status.value.isIniting = false
         return
       }
-      if (data.type === 'sdp') {
-        await pdc?.setRemoteSDP(data.data)
+      if (data.type === 'paired') {
+        // A recipient used the code; only now are TURN credentials worth minting
+        if (!pdc && !iceSession) {
+          await startPDC(data.iceTicket)
+        }
         return
       }
-      if (data.type === 'candidate') {
-        await pdc?.addICECandidate(data.data)
+      if (data.type === 'sdp' || data.type === 'candidate') {
+        await handleSignal(data)
         return
       }
       if (data.type === 'err') {
@@ -315,6 +377,7 @@ export const useSenderTransferStore = defineStore('senderTransfer', () => {
       } else if (status.value.isWaitingConnect) {
         status.value.error.code = -10
         status.value.error.msg = 'Timeout'
+        status.value.relayUnavailable = attemptedWithoutRelay
       }
     }
     ws.onerror = (error) => {

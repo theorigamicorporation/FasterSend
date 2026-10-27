@@ -45,7 +45,11 @@ const errorView = computed(() => {
     case 403:
       return { icon: 'solar:close-circle-linear', title: t('hint.refusesToTransmit') }
     case -10:
-      return { icon: 'material-symbols:timer-off-outline-rounded', title: t('hint.connectTimeout') }
+      return {
+        icon: 'material-symbols:timer-off-outline-rounded',
+        title: t('hint.connectTimeout'),
+        description: status.value.relayUnavailable ? t('hint.relayUnavailable') : undefined
+      }
     default:
       return {
         icon: 'solar:sad-square-line-duotone',

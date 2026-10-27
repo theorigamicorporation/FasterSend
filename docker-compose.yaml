@@ -10,4 +10,8 @@ services:
     environment:
       # Public URL of this deployment, used for canonical and OG tags
       - NUXT_PUBLIC_SITE_URL=http://localhost:3000
+      # Optional: Cloudflare Realtime TURN key, so peers that cannot connect directly get a relay.
+      # Credentials are minted per transfer on the server; the key never reaches browsers.
+      # - NUXT_TURN_KEY_ID=${NUXT_TURN_KEY_ID}
+      # - NUXT_TURN_KEY_API_TOKEN=${NUXT_TURN_KEY_API_TOKEN}
     restart: unless-stopped

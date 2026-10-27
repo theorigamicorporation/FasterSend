@@ -1,35 +1,13 @@
-import { getClientIP, parseTrustProxy } from '../utils/clientIP'
-import { DEFAULT_SIGNALLING_OPTIONS, SignallingHub, type SignalPeer } from '../utils/signalling'
-
-// Do not log IPs, only connection id and events
-function log(level: 'info' | 'warn' | 'error', msg: string) {
-  const line = `${new Date().toISOString()} ${level}: ${msg}`
-  if (level === 'info') console.log(line)
-  else if (level === 'warn') console.warn(line)
-  else console.error(line)
-}
+import { getClientIP } from '../utils/clientIP'
+import { log, useSignallingHub, useTrustProxyHops } from '../utils/services'
+import { DEFAULT_SIGNALLING_OPTIONS, type SignalPeer } from '../utils/signalling'
 
 const MAX_MESSAGE_BYTES = DEFAULT_SIGNALLING_OPTIONS.maxMessageBytes
 
 // crossws passes the same peer instance to every callback, so cache its adapter
 const adapters = new WeakMap<object, SignalPeer>()
-let hub: SignallingHub | null = null
-let trustProxyHops = 0
 
-function getHub(): SignallingHub {
-  if (!hub) {
-    const config = useRuntimeConfig()
-    trustProxyHops = parseTrustProxy(config.trustProxy)
-    const positive = (v: unknown, d: number) => (Number(v) > 0 ? Number(v) : d)
-    hub = new SignallingHub({
-      maxConnectionsPerIp: positive(config.maxConnectionsPerIp, 32),
-      receiveFailuresPerMinute: positive(config.receiveFailuresPerMinute, 10),
-      onPaired: (sender, receiver) => log('info', `paired: #${sender} -> #${receiver}`),
-      onReject: (id, reason) => log('warn', `rejected: #${id} ${reason}`)
-    })
-  }
-  return hub
-}
+const getHub = useSignallingHub
 
 function adapt(peer: any): SignalPeer {
   let a = adapters.get(peer)
@@ -39,7 +17,7 @@ function adapt(peer: any): SignalPeer {
       ip: getClientIP(
         peer.request?.headers?.get?.('x-forwarded-for'),
         peer.remoteAddress,
-        trustProxyHops
+        useTrustProxyHops()
       ),
       send: (data) => peer.send(data),
       close: () => peer.close(),

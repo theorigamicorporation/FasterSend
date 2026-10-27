@@ -313,6 +313,21 @@ export class PeerDataChannel {
   }
 
   /**
+   * Swaps in fresh ICE servers, e.g. renewed TURN credentials, without dropping the connection.
+   * The other fields must stay unchanged or setConfiguration throws, so start from the current config.
+   */
+  public setIceServers(iceServers: RTCIceServer[]): void {
+    if (this.disposed) {
+      return
+    }
+    try {
+      this.pc.setConfiguration({ ...this.pc.getConfiguration(), iceServers })
+    } catch (e) {
+      console.warn('Could not update ICE servers', e)
+    }
+  }
+
+  /**
    * Checks whether the connection is down
    * @returns true if connected, otherwise false
    */

@@ -8,6 +8,7 @@ import {
   type SyncDirState,
   type UserInfo
 } from '~/types/transfer'
+import { hasRelayServer, IceSession } from '~/utils/iceConfig'
 import { PeerDataChannel } from '~/utils/PeerDataChannel'
 
 /**
@@ -47,6 +48,8 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
   let calcSpeedJobId: ReturnType<typeof setInterval> | undefined
   let ws: WebSocket | null = null
   let pdc: PeerDataChannel | null = null
+  let iceSession: IceSession | null = null
+  let relayAvailable = true
   let saveFileFH: FileSystemFileHandle | undefined
   let curFileWriter: FileSystemWritableFileStream | undefined
   let rootDirDH: FileSystemDirectoryHandle | undefined
@@ -96,6 +99,8 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
     ws = null
     pdc?.dispose()
     pdc = null
+    iceSession?.dispose()
+    iceSession = null
   }
 
   function calcSpeedFn() {
@@ -243,9 +248,33 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
     }
   }
 
-  function initPDC() {
+  /**
+   * Resolves ICE servers after pairing, then creates the peer connection (we are the offerer).
+   * The ticket is exchanged for short-lived TURN credentials; without one the public ICE config is used.
+   */
+  async function startPDC(iceTicket: unknown) {
     status.value.isPeerConnecting = true
-    pdc = new PeerDataChannel({ ...iceConfig, initializeDataChannel: true })
+    const session = new IceSession(
+      typeof iceTicket === 'string' ? iceTicket : undefined,
+      iceConfig.iceServers
+    )
+    iceSession = session
+    const { iceServers, ttl } = await session.resolve()
+    // Disposed while waiting for credentials
+    if (iceSession !== session || !ws) {
+      session.dispose()
+      return
+    }
+    initPDC(iceServers)
+    if (ttl) {
+      session.keepFresh(ttl, (servers) => pdc?.setIceServers(servers))
+    }
+  }
+
+  function initPDC(iceServers: RTCIceServer[]) {
+    relayAvailable = hasRelayServer(iceServers)
+    status.value.isPeerConnecting = true
+    pdc = new PeerDataChannel({ ...iceConfig, iceServers, initializeDataChannel: true })
     pdc.onSDP = (sdp) => ws?.send(JSON.stringify({ type: 'sdp', data: sdp }))
     pdc.onICECandidate = (candidate) =>
       ws?.send(JSON.stringify({ type: 'candidate', data: candidate }))
@@ -253,6 +282,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
       status.value.isConnectPeer = false
       if (status.value.isIniting) {
         status.value.error.code = -10
+        status.value.relayUnavailable = !relayAvailable
       } else if (status.value.isWaitingPeerConfirm) {
         status.value.error.code = 403
       } else if (status.value.isReceiving) {
@@ -594,9 +624,12 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
       ws?.send(JSON.stringify({ type: 'receive', code: code.value }))
       setTimeout(() => {
         if (status.value.isIniting) {
+          // Only blame the missing relay when a peer connection was actually attempted
+          const attempted = !!pdc
           dispose()
           if (status.value.error.code === 0) {
             status.value.error.code = -10
+            status.value.relayUnavailable = attempted && !relayAvailable
           }
         }
       }, 45e3)
@@ -614,7 +647,7 @@ export const useRecipientTransferStore = defineStore('recipientTransfer', () => 
           status.value.error.msg = '429'
           dispose()
         } else if (data.code === 0) {
-          initPDC()
+          await startPDC(data.iceTicket)
         }
         return
       }
